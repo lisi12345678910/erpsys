@@ -1,0 +1,41 @@
+
+spring:
+  mvc:
+    static-path-pattern: /static/**   #静态资源路径
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+  #数据源配置
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql:///db_10_17
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    initialSize: 10
+    minIdle: 1
+    maxActive: 10
+
+  redis:
+    host: 127.0.0.1   # Redis服务器地址
+    port: 6379    #Redis服务器连接端口
+    database: 0   #Redis数据库索引，默认0
+    timeout: 1800000    #Redis连接超时时间(毫秒)
+    lettuce:
+      pool:
+        max-active: 20    # 连接池最大连接数，负值没有限制,默认8
+        max-wait: -1    #最大阻塞等待时间，负值没有限制
+        max-idle: 5   #连接池最大空闲连接
+        min-idle: 0   #连接池最小空闲连接
+
+mybatis-plus:
+  configuration:
+    cache-enabled: true
+    auto-mapping-behavior: full
+    jdbc-type-for-null: null
+  type-aliases-package: com.zte.*.model
+  mapper-locations: classpath*:/mapper/**/*.xml
+pagehelper:
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
