@@ -12,6 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -25,7 +29,7 @@ public class UserAction {
 
     @RequestMapping("/login")
     @ResponseBody
-    public ResultMessage login(LoginUserCondition condition){
+    public ResultMessage login(LoginUserCondition condition, Integer remember, HttpServletResponse response){
         LoginUser loginUser = iLoginService.queryUserByCondition(condition);
         ResultMessage rm = new ResultMessage();
         if (loginUser!=null){
@@ -38,6 +42,14 @@ public class UserAction {
                 rm.setStatus("200");
                 rm.setFlag(true);
                 rm.setMsg("登录成功！");
+                if (remember!=null){
+                    Cookie cookie1 = new Cookie("username", condition.getUname());
+                    Cookie cookie2 = new Cookie("password", condition.getUpassword());
+                    cookie1.setMaxAge(60*60*24*10);
+                    cookie2.setMaxAge(60*60*24*10);
+                    response.addCookie(cookie1);
+                    response.addCookie(cookie2);
+                }
             }else {
                 rm.setStatus("401");
                 rm.setFlag(false);
@@ -51,6 +63,23 @@ public class UserAction {
         return rm;
     }
 
+    @RequestMapping("/loginBack")
+    @ResponseBody
+    public LoginUserCondition loginBack(HttpServletRequest request) {
+        LoginUserCondition condition = new LoginUserCondition();
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null && cookies.length > 0){
+            for (Cookie cookie : cookies) {
+                if ("username".equals(cookie.getName())){
+                    condition.setUname(cookie.getValue());
+                }
+                if ("password".equals(cookie.getName())){
+                    condition.setUpassword(cookie.getValue());
+                }
+            }
+        }
+        return condition;
+    }
     @RequestMapping("/loginName")
     @ResponseBody
     public LoginUser loginName() {
@@ -59,9 +88,9 @@ public class UserAction {
     }
 
     @RequestMapping("/loginExit")
-    public String loginExit() {
+    public String loginExit(HttpServletRequest request) {
         redisTemplate.delete("loginUser");
-        return "login";
+        return "redirect:loginView";
     }
 
     @RequestMapping("/loginPermission")

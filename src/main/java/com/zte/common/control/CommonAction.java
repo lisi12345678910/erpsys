@@ -51,6 +51,7 @@ public class CommonAction {
         return "main";
     }
 
+
     @RequestMapping("/tools")
     public String tools() {
         return "tools";

@@ -13,7 +13,17 @@
 	$(window).resize(function(){  
     $('.loginbox').css({'position':'absolute','left':($(window).width()-692)/2});
     })
+        $.ajax({
+            url:"/loginBack",
+            method:"post",
+            data: {},
+            success:function (data){
+                $("#uname").val(data.uname);
+                $("#upassword").val(data.upassword);
+            }
+        })
     });
+
     function login(){
         $.ajax({
             url:"/login",
@@ -51,16 +61,16 @@
     <div class="loginbox loginbox1">
     <form id="loginForm">
         <ul>
-            <li><input name="uname" type="text" class="loginuser" onclick="JavaScript:this.value=''"/></li>
-            <li><input name="upassword" type="text" class="loginpwd" onclick="JavaScript:this.value=''"/></li>
+            <li><input id="uname" name="uname" type="text" class="loginuser" onclick="JavaScript:this.value=''"/></li>
+            <li><input id="upassword" name="upassword" type="text" class="loginpwd" onclick="JavaScript:this.value=''"/></li>
             <!--    <li class="yzm">-->
             <!--    <span><input name="" type="text" value="验证码" onclick="JavaScript:this.value=''"/></span><cite>X3D5S</cite> -->
             <!--    </li>-->
         </ul>
-    </form>
         <ul>
-            <li><input id="loginbtn" type="button" class="loginbtn" value="登录"  onclick="login()"  /><label><input name="" type="checkbox" value="" checked="checked" />记住密码</label><label><a href="#">忘记密码？</a></label></li>
+            <li><input id="loginbtn" type="button" class="loginbtn" value="登录"  onclick="login()"  /><label><input name="remember" type="checkbox" value="1" checked="checked" />记住密码</label><label><a href="#">忘记密码？</a></label></li>
         </ul>
+    </form>
     </div>
     
     </div>
