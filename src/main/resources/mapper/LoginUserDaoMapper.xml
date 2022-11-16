@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--命名空间-->
+<mapper namespace="com.zte.login.dao.ILoginDao">
+
+    <!--eviction: 缓存策略-->
+    <!--FIFO：先进先出-->
+    <!--LRU ：最近最少使用-->
+    <!--SOFT：软引用-->
+    <!--WEAK：弱引用-->
+    <cache eviction="LRU" flushInterval="60000"
+           size="512" readOnly="true"/>
+
+    <select id="queryUserByCondition" resultType="loginUser" parameterType="loginUserCondition">
+        <![CDATA[
+            select
+                u.U_ID,
+                u.UNAME,
+                u.UPASSWORD,
+                u.UTELEPHONE,
+                u.JOB_ID,
+                u.SEX,
+                u.STATUS_ID,
+                u.HIREDATE,
+                u.LEAVEDATE,
+                u.BIRTHDAY,
+                u.DEPT_ID
+            from users u where 1=1
+        ]]>
+         <if test="uname!=null and uname!=''">
+            <![CDATA[and UNAME = #{uname} ]]>
+        </if>
+        <if test="upassword!=null and upassword!=''">
+            <![CDATA[and UPASSWORD = #{upassword} ]]>
+        </if>
+    </select>
+
+    <select id="queryPermissionByJob" resultType="Integer" parameterType="loginUser">
+        <![CDATA[
+            select
+                p.COMPID
+            from permission p where 1=1
+        ]]>
+        <if test="jobId!=null and jobId!=''">
+            <![CDATA[ and COMRID = #{jobId} ]]>
+        </if>
+    </select>
+
+
+</mapper>

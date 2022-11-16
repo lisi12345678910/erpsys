@@ -1,4 +1,4 @@
-package com.zte.user.model;
+package com.zte.login.model;
 
 
 import lombok.AllArgsConstructor;
@@ -7,12 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Users {
+public class LoginUser {
 
   private Integer uId;
   private String uname;
@@ -25,6 +26,6 @@ public class Users {
   private Date leavedate;
   private Date birthday;
   private Integer deptId;
-
+  private List<Integer> compids;
 
 }

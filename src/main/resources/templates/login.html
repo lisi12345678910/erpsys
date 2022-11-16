@@ -12,8 +12,22 @@
     $('.loginbox').css({'position':'absolute','left':($(window).width()-692)/2});
 	$(window).resize(function(){  
     $('.loginbox').css({'position':'absolute','left':($(window).width()-692)/2});
-    })  
-});  
+    })
+    });
+    function login(){
+        $.ajax({
+            url:"/login",
+            method:"post",
+            data:$("#loginForm").serializeArray(),
+            success:function (data){
+                if (data.flag === true){
+                    location.href = "/main"
+                }else{
+                    alert(data.msg);
+                }
+            }
+        })
+    }
 </script> 
 
 </head>
@@ -35,17 +49,18 @@
     <span class="systemlogo"></span> 
        
     <div class="loginbox loginbox1">
-    
-    <ul>
-    <li><input name="" type="text" class="loginuser" value="admin" onclick="JavaScript:this.value=''"/></li>
-    <li><input name="" type="text" class="loginpwd" value="密码" onclick="JavaScript:this.value=''"/></li>
-    <li class="yzm">
-    <span><input name="" type="text" value="验证码" onclick="JavaScript:this.value=''"/></span><cite>X3D5S</cite> 
-    </li>
-    <li><input name="" type="button" class="loginbtn" value="登录"  onclick="javascript:window.location='main.html'"  /><label><input name="" type="checkbox" value="" checked="checked" />记住密码</label><label><a href="#">忘记密码？</a></label></li>
-    </ul>
-    
-    
+    <form id="loginForm">
+        <ul>
+            <li><input name="uname" type="text" class="loginuser" onclick="JavaScript:this.value=''"/></li>
+            <li><input name="upassword" type="text" class="loginpwd" onclick="JavaScript:this.value=''"/></li>
+            <!--    <li class="yzm">-->
+            <!--    <span><input name="" type="text" value="验证码" onclick="JavaScript:this.value=''"/></span><cite>X3D5S</cite> -->
+            <!--    </li>-->
+        </ul>
+    </form>
+        <ul>
+            <li><input id="loginbtn" type="button" class="loginbtn" value="登录"  onclick="login()"  /><label><input name="" type="checkbox" value="" checked="checked" />记住密码</label><label><a href="#">忘记密码？</a></label></li>
+        </ul>
     </div>
     
     </div>
