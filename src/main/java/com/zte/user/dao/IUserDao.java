@@ -1,13 +1,9 @@
 package com.zte.user.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zte.user.model.Users;
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.stereotype.Repository;
-
 
 @Mapper
-@Repository
-public interface IUserDao {
-
-
-
+public interface IUserDao extends BaseMapper<Users> {
 }
