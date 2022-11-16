@@ -50,5 +50,18 @@ public class UserAction {
         return rm;
     }
 
+    @RequestMapping("/loginName")
+    @ResponseBody
+    public LoginUser loginName() {
+        LoginUser loginUser = (LoginUser) redisTemplate.opsForValue().get("loginUser");
+        return loginUser;
+    }
+
+    @RequestMapping("/loginExit")
+    public String loginExit() {
+        redisTemplate.delete("loginUser");
+        return "login";
+    }
+
 }
 

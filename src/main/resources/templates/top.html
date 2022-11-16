@@ -5,6 +5,18 @@
 <title>无标题文档</title>
 <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../static/js/jquery.js"></script>
+    <script>
+        $(function (){
+            $.ajax({
+                url:"/loginName",
+                method:"post",
+                data:{},
+                success:function (data){
+                    $("#loginName").html(data.uname);
+                }
+            })
+        })
+    </script>
 </head>
 
 <body style="background:url(../static/images/topbg.gif) repeat-x;">
@@ -16,10 +28,10 @@
     <div class="topright">
      
     <div class="user">
-        <span>管理员</span>
-        <i><a href="login.html" target="_parent">退出</a></i>
+        <span id="loginName">管理员</span>
+        <i><a href="/loginExit" target="_parent">退出</a></i>
     </div>    
-    
+
     </div>
 
 </body>
