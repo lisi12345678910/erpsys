@@ -26,6 +26,6 @@ public class LoginUser {
   private Date leavedate;
   private Date birthday;
   private Integer deptId;
-  private List<Integer> compids;
+  private List<Module> modules;
 
 }

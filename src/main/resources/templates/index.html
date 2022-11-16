@@ -5,7 +5,19 @@
 <title>无标题文档</title>
 <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../static/js/jquery.js"></script>
-
+    <script>
+        $(function (){
+            $.ajax({
+                url:"/loginName",
+                method:"post",
+                data:{},
+                success:function (data){
+                    var str = data.uname + "早上好，欢迎使用信息管理系统";
+                    $("#uName").html(str);
+                }
+            })
+        })
+    </script>
 </head>
 
 
@@ -23,7 +35,7 @@
     
     <div class="welinfo">
     <span><img src="../static/images/sun.png" alt="天气" /></span>
-    <b>Admin早上好，欢迎使用信息管理系统</b>(admin@uimaker.com)
+    <b id="uName">Admin早上好，欢迎使用信息管理系统</b>(admin@uimaker.com)
     <a href="#">帐号设置</a>
     </div>
     

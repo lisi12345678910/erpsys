@@ -3,6 +3,7 @@ package com.zte.login.control;
 
 import com.zte.login.model.LoginUser;
 import com.zte.login.model.LoginUserCondition;
+import com.zte.login.model.Module;
 import com.zte.login.service.ILoginService;
 import com.zte.util.ResultMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +30,9 @@ public class UserAction {
         ResultMessage rm = new ResultMessage();
         if (loginUser!=null){
             if (loginUser.getStatusId() == 1){
-                List<Integer> list = iLoginService.queryPermissionByJob(loginUser);
+                List<Module> list = iLoginService.queryPermissionByJob(loginUser);
                 if (list!=null){
-                    loginUser.setCompids(list);
+                    loginUser.setModules(list);
                 }
                 redisTemplate.opsForValue().set("loginUser",loginUser);
                 rm.setStatus("200");
@@ -61,6 +62,14 @@ public class UserAction {
     public String loginExit() {
         redisTemplate.delete("loginUser");
         return "login";
+    }
+
+    @RequestMapping("/loginPermission")
+    @ResponseBody
+    public List<Module> loginPermission() {
+        LoginUser loginUser = (LoginUser) redisTemplate.opsForValue().get("loginUser");
+        List<Module> modules = loginUser.getModules();
+        return modules;
     }
 
 }

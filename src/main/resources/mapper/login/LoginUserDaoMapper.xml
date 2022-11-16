@@ -38,16 +38,23 @@
         </if>
     </select>
 
-    <select id="queryPermissionByJob" resultType="Integer" parameterType="loginUser">
+    <select id="queryPermissionByJob" resultType="module" parameterType="loginUser">
         <![CDATA[
             select
-                p.COMPID
-            from permission p where 1=1
+                m.MODULE_ID,
+                m.MODULE_RNAME,
+                m.MODULE_PID,
+                m.MODULE_MURL,
+                m.MODULE_STATE
+            from module m left join permission p
+                on p.COMPID = m.MODULE_ID
+            where 1=1
+              and m.MODULE_STATE = 0
+              and p.COMSTATE = 0
         ]]>
         <if test="jobId!=null and jobId!=''">
             <![CDATA[ and COMRID = #{jobId} ]]>
         </if>
     </select>
-
 
 </mapper>
