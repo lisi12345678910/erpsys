@@ -29,7 +29,7 @@ public class UserAction {
 
     @RequestMapping("/login")
     @ResponseBody
-    public ResultMessage login(LoginUserCondition condition, Integer remember, HttpServletResponse response){
+    public ResultMessage login(LoginUserCondition condition, String remember, HttpServletResponse response){
         LoginUser loginUser = iLoginService.queryUserByCondition(condition);
         ResultMessage rm = new ResultMessage();
         if (loginUser!=null){
@@ -42,11 +42,11 @@ public class UserAction {
                 rm.setStatus("200");
                 rm.setFlag(true);
                 rm.setMsg("登录成功！");
-                if (remember!=null){
+                if (remember!=null && "on".equals(remember)){
                     Cookie cookie1 = new Cookie("username", condition.getUname());
                     Cookie cookie2 = new Cookie("password", condition.getUpassword());
-                    cookie1.setMaxAge(60*60*24*10);
-                    cookie2.setMaxAge(60*60*24*10);
+                    cookie1.setMaxAge(60*60*24);
+                    cookie2.setMaxAge(60*60*24);
                     response.addCookie(cookie1);
                     response.addCookie(cookie2);
                 }
@@ -70,6 +70,7 @@ public class UserAction {
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length > 0){
             for (Cookie cookie : cookies) {
+                System.out.println(cookie.getValue());
                 if ("username".equals(cookie.getName())){
                     condition.setUname(cookie.getValue());
                 }
@@ -90,7 +91,7 @@ public class UserAction {
     @RequestMapping("/loginExit")
     public String loginExit(HttpServletRequest request) {
         redisTemplate.delete("loginUser");
-        return "redirect:loginView";
+        return "login";
     }
 
     @RequestMapping("/loginPermission")
