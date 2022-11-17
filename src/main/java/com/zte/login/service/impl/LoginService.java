@@ -1,9 +1,9 @@
 package com.zte.login.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zte.login.dao.ILoginDao;
 import com.zte.login.model.LoginUser;
 import com.zte.login.model.LoginUserCondition;
+import com.zte.login.model.Module;
 import com.zte.login.service.ILoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,8 +23,8 @@ public class LoginService implements ILoginService {
     }
 
     @Override
-    public List<Integer> queryPermissionByJob(LoginUser loginUser) {
-        List<Integer> list = iLoginDao.queryPermissionByJob(loginUser);
+    public List<Module> queryPermissionByJob(LoginUser loginUser) {
+        List<Module> list = iLoginDao.queryPermissionByJob(loginUser);
         return list;
     }
 }
