@@ -1,5 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml">-->
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>部门管理</title>
@@ -13,6 +14,139 @@ function tipOpen(content) {
 function tipClose() {
 	$("#tip").fadeOut(200);
 }
+
+
+//查省份
+function queryprovince(){
+  $.ajax({
+    url:"deptProvincelist",
+    type:"post",
+    dataType:"json",
+    data:{},
+    success:function (dat) {
+      let resultData = dat.resultData;
+      let str = ``
+      for (let i = 0; i < resultData.length; i++) {
+        let resultDatum = resultData[i];
+        str += `<option value="${resultDatum.id}">${resultDatum.pname}</option>`
+      }
+      str += `<option value="" selected>请选择</option>`
+      $("#proid").html(str)
+    }
+  })
+}
+
+//查城市
+let pid = ""
+function querycitys(){
+  $.ajax({
+    url:"deptcitylist",
+    type:"post",
+    dataType:"json",
+    data:{pId:pid},
+    success:function (dat) {
+      let resultData = dat.resultData;
+      let str = ``
+      for (let i = 0; i < resultData.length; i++) {
+        let resultDatum = resultData[i];
+        str += `<option value="${resultDatum.id}">${resultDatum.cname}</option>`
+      }
+      str += `<option value="" selected>请选择</option>`
+      $("#cid").html(str)
+    }
+  })
+}
+
+
+//查部门
+let deptname = ""
+let proid = ""
+let cid = ""
+function query(pagenum){
+  $.ajax({
+    url:"deptlist",
+    type:"post",
+    dataType:"json",
+    data:{pageNum:pagenum,deptName:deptname,pId:proid,cId:cid},
+    success:function (dat) {
+      let resultData = dat.resultData.data;
+      //------------------------------------------------------------------------------------------------------------------------
+      let totalPage = dat.resultData["totalPage"];//总页数
+      let totalCount = dat.resultData.totalCount;//总条数
+      let pageNum = dat.resultData.pageNum;//当前页0
+      //上一页
+      let pageBefore = pageNum-1;
+      //下一页
+      let pageNext;
+      if (pageNum + 1 > totalPage) {
+        pageNext = totalPage;
+      }else {
+        pageNext = pageNum+1;
+      }
+      //------------------------------------------------------------------------------------------------------------------------
+      let str = ''
+      for (let i = 0; i < resultData.length; i++) {
+        let resultDatum = resultData[i];
+        if (resultDatum.deptState==1) {
+          resultDatum.deptState="正常"
+        }else {
+          resultDatum.deptState="不正常"
+        }
+        str+=`<tr>
+          <td>${i+1}</td>
+          <td>${resultDatum.deptId}</td>
+          <td>${resultDatum.deptName}</td>
+          <td>${resultDatum.cname}</td>
+          <td>${resultDatum.deptState}</td>
+          <td>
+            <a href="deptUpdate.html" class="tablelink">修改</a>
+            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认注销此条信息？')">注销</a>
+          </td>
+        </tr>`
+
+      }
+      $("#deptlist").html(str)
+      $('.tablelist tbody tr:odd').addClass('odd');
+
+
+      //------------------------------------------------------------------------------------------------------------------------
+      //拼分页
+      let str1 = `<li class="paginItem"><a href="javascript:query(${pageBefore});"><span class="pagenxt"></span></a></li>`
+
+      for (let i = 0; i < totalPage; i++) {
+        let nowPage = i+1;
+        if (pageNum==i+1){
+          str1 += `<li class="paginItem current"><a href="javascript:query(${nowPage});">${nowPage}</a></li>`
+        }else {
+          str1 += `<li class="paginItem"><a href="javascript:query(${nowPage});">${nowPage}</a></li>`
+        }
+      }
+      str1 += ` <li class="paginItem"><a href="javascript:query(${pageNext});"><span class="pagenxt"></span></a></li>`
+
+      $("#pag").html(str1)
+
+      let str2 = `共<i class="blue">${totalCount}</i>条记录，当前显示第&nbsp;<i class="blue">${pageNum}&nbsp;</i>页`
+      $("#pag2").html(str2)
+      //------------------------------------------------------------------------------------------------------------------------
+    }
+  })
+}
+$(function () {
+  let pageNum = 1
+  query(pageNum)
+  queryprovince()
+  $("#proid").blur(function () {
+    pid = $("#proid").val().trim()
+    querycitys()
+  })
+
+  $("#search").click(function () {
+    deptname = $("#deptname").val().trim();
+    proid = $("#proid").val().trim();
+    cid = $("#cid").val().trim();
+    query(pageNum)
+  })
+})
 </script>
 </head>
 
@@ -27,25 +161,25 @@ function tipClose() {
   <form action="" method="post">
     <ul class="tools">
       <li> <label>部门名称:</label>
-        <input type="text" />
+        <input type="text" id="deptname" />
       </li>
       <li> 所属区域：
-        <select>
+        <select id="proid">
           <option>请选择省份</option>
-          <option>北京</option>
-          <option>江苏</option>
-          <option>天津</option>
+<!--          <option>北京</option>-->
+<!--          <option>江苏</option>-->
+<!--          <option>天津</option>-->
         </select>
-        <select>
+        <select id="cid">
           <option>请选择城市</option>
-          <option>北京</option>
-          <option>南京</option>
-          <option>天津</option>
+<!--          <option>北京</option>-->
+<!--          <option>南京</option>-->
+<!--          <option>天津</option>-->
         </select>
       </li>
 
 
-      <li class="subBut" onclick=""><img src="../../../static/images/t06.png" />查询</li>
+      <li class="subBut" onclick="" id="search" ><img src="../../../static/images/t06.png" />查询</li>
       <li class="subBut" onclick="window.location.href='deptAdd.html'"><img src="../../../static/images/t01.png" />添加</li>
     </ul>
     <table class="tablelist">
@@ -59,54 +193,57 @@ function tipClose() {
           <th>操作</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>001</td>
-          <td>研发部</td>
-          <td>深圳</td>
-          <td>正常</td>
-          <td>
-            <a href="deptUpdate.html" class="tablelink">修改</a>
-            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认注销此条信息？')">注销</a>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>002</td>
-          <td>销售部</td>
-          <td>深圳</td>
-          <td>不正常</td>
-          <td>
-            <a href="deptUpdate.html" class="tablelink">修改</a>
-            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认恢复此条信息？')">恢复</a>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>003</td>
-          <td>财务部</td>
-          <td>深圳</td>
-          <td>正常</td>
-          <td>
-            <a href="deptUpdate.html" class="tablelink">修改</a>
-            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认注销此条信息？')">注销</a>
-          </td>
-        </tr>
+      <tbody id = "deptlist">
+<!--        <tr>-->
+<!--          <td>1</td>-->
+<!--          <td>001</td>-->
+<!--          <td>研发部</td>-->
+<!--          <td>深圳</td>-->
+<!--          <td>正常</td>-->
+<!--          <td>-->
+<!--            <a href="deptUpdate.html" class="tablelink">修改</a>-->
+<!--            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认注销此条信息？')">注销</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+
+<!--        <tr>-->
+<!--          <td>2</td>-->
+<!--          <td>002</td>-->
+<!--          <td>销售部</td>-->
+<!--          <td>深圳</td>-->
+<!--          <td>不正常</td>-->
+<!--          <td>-->
+<!--            <a href="deptUpdate.html" class="tablelink">修改</a>-->
+<!--            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认恢复此条信息？')">恢复</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>3</td>-->
+<!--          <td>003</td>-->
+<!--          <td>财务部</td>-->
+<!--          <td>深圳</td>-->
+<!--          <td>正常</td>-->
+<!--          <td>-->
+<!--            <a href="deptUpdate.html" class="tablelink">修改</a>-->
+<!--            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认注销此条信息？')">注销</a>-->
+<!--          </td>-->
+<!--        </tr>-->
       </tbody>
     </table>
     <div class="pagin">
-      <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
-      <ul class="paginList">
-        <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
-        <li class="paginItem"><a href="javascript:;">1</a></li>
-        <li class="paginItem current"><a href="javascript:;">2</a></li>
-        <li class="paginItem"><a href="javascript:;">3</a></li>
-        <li class="paginItem"><a href="javascript:;">4</a></li>
-        <li class="paginItem"><a href="javascript:;">5</a></li>
-        <li class="paginItem more"><a href="javascript:;">...</a></li>
-        <li class="paginItem"><a href="javascript:;">10</a></li>
-        <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>
+      <div class="message" id="pag2">
+        共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页
+      </div>
+      <ul class="paginList" id="pag">
+<!--        <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">1</a></li>-->
+<!--        <li class="paginItem current"><a href="javascript:;">2</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">3</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">4</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">5</a></li>-->
+<!--        <li class="paginItem more"><a href="javascript:;">...</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">10</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>-->
       </ul>
     </div>
   </form>
@@ -126,7 +263,7 @@ function tipClose() {
   </div>
 </div>
 <script type="text/javascript">
-	$('.tablelist tbody tr:odd').addClass('odd');
+
 </script>
 </body>
 </html>

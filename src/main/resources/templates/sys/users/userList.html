@@ -1,5 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml">-->
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>用户管理</title>
@@ -13,6 +14,123 @@ function tipOpen(content) {
 function tipClose() {
 	$("#tip").fadeOut(200);
 }
+
+//查部门
+function querydepts(){
+  $.ajax({
+    url:"usersdeptlist",
+    type:"post",
+    dataType:"json",
+    data:{},
+    success:function (dat) {
+        let resultData = dat.resultData;
+        let str = ``
+      for (let i = 0; i < resultData.length; i++) {
+        let resultDatum = resultData[i];
+        str += `<option value="${resultDatum.deptId}">${resultDatum.deptName}</option>`
+      }
+      str += `<option value="" selected>请选择</option>`
+      $("#deptid").html(str)
+    }
+  })
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+let uid = ""
+let uname = ""
+let deptid = ""
+let statusid = ""
+//------------------------------------------------------------------------------------------------------------------------
+//分页展示数据
+function queryUsers(pagenum){
+  $.ajax(
+          {
+            url:"userlist",
+            type:"post",
+            dataType:"json",
+            data:{pageNum:pagenum,uId:uid,uname:uname,deptId:deptid,statusId:statusid},
+            success:function (dat) {
+              let resultData = dat.resultData.data;//本体数据
+              //------------------------------------------------------------------------------------------------------------------------
+              let totalPage = dat.resultData["totalPage"];//总页数
+              let totalCount = dat.resultData.totalCount;//总条数
+              let pageNum = dat.resultData.pageNum;//当前页0
+              //上一页
+              let pageBefore = pageNum-1;
+              //下一页
+              let pageNext;
+              if (pageNum + 1 > totalPage) {
+                pageNext = totalPage;
+              }else {
+                pageNext = pageNum+1;
+              }
+              //------------------------------------------------------------------------------------------------------------------------
+              let str = ''
+              for (let i = 0; i < resultData.length; i++) {
+                  let resultDatum = resultData[i];
+                str += `<tr>
+          <td>${i+1}</td>
+          <td>${resultDatum.uId}</td>
+          <td>${resultDatum.uname}</td>
+          <td>${resultDatum.utelephone}</td>
+          <td>${resultDatum.deptName}</td>
+          <td>${resultDatum.jobName}</td>
+          <td>男</td>
+          <td>28</td>
+          <td>在职</td>
+          <td>2013-09-09 15:05:05</td>
+          <td></td>
+          <td>
+            <a href="userUpdate.html" class="tablelink">修改</a>
+            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('您确定此员工离职吗？')">离职</a>
+          </td>
+        </tr>`
+              }
+              $("#userlist").html(str)
+              $('.tablelist tbody tr:odd').addClass('odd');
+
+
+              //------------------------------------------------------------------------------------------------------------------------
+              //拼分页
+             let str1 = `<li class="paginItem"><a href="javascript:queryUsers(${pageBefore});"><span class="pagenxt"></span></a></li>`
+
+              for (let i = 0; i < totalPage; i++) {
+                let nowPage = i+1;
+                if (pageNum==i+1){
+                  str1 += `<li class="paginItem current"><a href="javascript:queryUsers(${nowPage});">${nowPage}</a></li>`
+                }else {
+                  str1 += `<li class="paginItem"><a href="javascript:queryUsers(${nowPage});">${nowPage}</a></li>`
+                }
+              }
+              str1 += ` <li class="paginItem"><a href="javascript:queryUsers(${pageNext});"><span class="pagenxt"></span></a></li>`
+
+              $("#pag").html(str1)
+
+              let str2 = `共<i class="blue">${totalCount}</i>条记录，当前显示第&nbsp;<i class="blue">${pageNum}&nbsp;</i>页`
+              $("#pag2").html(str2)
+              //------------------------------------------------------------------------------------------------------------------------
+            }
+          }
+  )
+}
+
+$(function () {
+  //加载部门搜索条件
+  querydepts()
+  //加载分页展示数据
+  let pageNum = 1
+  queryUsers(pageNum)
+
+  $("#search").click(function () {
+    uid = $("#uid").val().trim();
+    uname = $("#uname").val().trim();
+    deptid = $("#deptid").val().trim();
+    statusid = $("#statusid").val().trim();
+    queryUsers(pageNum)
+
+  })
+
+})
 </script>
 </head>
 
@@ -27,13 +145,13 @@ function tipClose() {
   <form action="" method="post">
     <ul class="tools">
       <li> <label>员工编号:</label>
-        <input type="text" />
+        <input type="text" id="uid"/>
       </li>
       <li> <label>员工姓名:</label>
-        <input type="text" />
+        <input type="text" id="uname"/>
       </li>
       <li> <label>所属部门：</label>
-        <select name="">
+        <select name="" id="deptid">
           <option>请选择部门</option>
           <option value="">研发</option>
           <option value="">销售</option>
@@ -41,14 +159,14 @@ function tipClose() {
         </select>
       </li>
       <li> <label>状态：</label>
-        <select name="">
-          <option>请选择</option>
+        <select name="" id="statusid">
+          <option value="">请选择</option>
           <option value="1">在职</option>
           <option value="0">离职</option>
         </select>
       </li>
-      <li class="subBut" onclick=""><img src="../../../static/images/t06.png" />查询</li>
-      <li class="subBut" onclick="window.location.href='userAdd.html'"><img src="../../../static/images/t01.png" />添加</li>
+      <li class="subBut" id="search"><img src="../../../static/images/t06.png" />查询</li>
+      <li class="subBut" id="add" onclick="window.location.href='userAdd.html'"><img src="../../../static/images/t01.png" />添加</li>
     </ul>
     <table class="tablelist">
       <thead>
@@ -67,88 +185,99 @@ function tipClose() {
           <th>操作</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>9527</td>
-          <td>唐寅</td>
-          <td>17370899727</td>
-          <td>研发部</td>
-          <td>经理</td>
-          <td>男</td>
-          <td>28</td>
-          <td>在职</td>
-          <td>2013-09-09 15:05:05</td>
-          <td></td>
-          <td>
-            <a href="userUpdate.html" class="tablelink">修改</a>
-            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('您确定此员工离职吗？')">离职</a>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>9528</td>
-          <td>唐寅</td>
-          <td>17370899727</td>
-          <td>研发部</td>
-          <td>高级工程师</td>
-          <td>男</td>
-          <td>28</td>
-          <td>在职</td>
-          <td>2013-09-09 15:05:05</td>
-          <td>2013-09-09 15:05:05</td>
-          <td>
-            <a href="userUpdate.html" class="tablelink">修改</a>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>9529</td>
-          <td>唐寅</td>
-          <td>17370899727</td>
-          <td>研发部</td>
-          <td>初级工程师</td>
-          <td>男</td>
-          <td>28</td>
-          <td>在职</td>
-          <td>2013-09-09 15:05:05</td>
-          <td></td>
-          <td>
-            <a href="userUpdate.html" class="tablelink">修改</a>
-            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('您确定此员工离职吗？')">离职</a>
-          </td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>9530</td>
-          <td>唐寅</td>
-          <td>17370899727</td>
-          <td>研发部</td>
-          <td>初级工程师</td>
-          <td>男</td>
-          <td>28</td>
-          <td>在职</td>
-          <td>2013-09-09 15:05:05</td>
-          <td></td>
-          <td>
-            <a href="userUpdate.html" class="tablelink">修改</a>
-          </td>
-        </tr>
+      <tbody id="userlist">
+<!--        <tr>-->
+<!--          <td>1</td>-->
+<!--          <td>9527</td>-->
+<!--          <td>唐寅</td>-->
+<!--          <td>17370899727</td>-->
+<!--          <td>研发部</td>-->
+<!--          <td>经理</td>-->
+<!--          <td>男</td>-->
+<!--          <td>28</td>-->
+<!--          <td>在职</td>-->
+<!--          <td>2013-09-09 15:05:05</td>-->
+<!--          <td></td>-->
+<!--          <td>-->
+<!--            <a href="userUpdate.html" class="tablelink">修改</a>-->
+<!--            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('您确定此员工离职吗？')">离职</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        -->
+<!--        <tr>-->
+<!--          <td>2</td>-->
+<!--          <td>9528</td>-->
+<!--          <td>唐寅</td>-->
+<!--          <td>17370899727</td>-->
+<!--          <td>研发部</td>-->
+<!--          <td>高级工程师</td>-->
+<!--          <td>男</td>-->
+<!--          <td>28</td>-->
+<!--          <td>在职</td>-->
+<!--          <td>2013-09-09 15:05:05</td>-->
+<!--          <td>2013-09-09 15:05:05</td>-->
+<!--          <td>-->
+<!--            <a href="userUpdate.html" class="tablelink">修改</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>3</td>-->
+<!--          <td>9529</td>-->
+<!--          <td>唐寅</td>-->
+<!--          <td>17370899727</td>-->
+<!--          <td>研发部</td>-->
+<!--          <td>初级工程师</td>-->
+<!--          <td>男</td>-->
+<!--          <td>28</td>-->
+<!--          <td>在职</td>-->
+<!--          <td>2013-09-09 15:05:05</td>-->
+<!--          <td></td>-->
+<!--          <td>-->
+<!--            <a href="userUpdate.html" class="tablelink">修改</a>-->
+<!--            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('您确定此员工离职吗？')">离职</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        -->
+<!--        <tr>-->
+<!--          <td>4</td>-->
+<!--          <td>9530</td>-->
+<!--          <td>唐寅</td>-->
+<!--          <td>17370899727</td>-->
+<!--          <td>研发部</td>-->
+<!--          <td>初级工程师</td>-->
+<!--          <td>男</td>-->
+<!--          <td>28</td>-->
+<!--          <td>在职</td>-->
+<!--          <td>2013-09-09 15:05:05</td>-->
+<!--          <td></td>-->
+<!--          <td>-->
+<!--            <a href="userUpdate.html" class="tablelink">修改</a>-->
+<!--          </td>-->
+<!--        </tr>-->
       </tbody>
     </table>
-    <div class="pagin">
-      <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
-      <ul class="paginList">
-        <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
-        <li class="paginItem"><a href="javascript:;">1</a></li>
-        <li class="paginItem current"><a href="javascript:;">2</a></li>
-        <li class="paginItem"><a href="javascript:;">3</a></li>
-        <li class="paginItem"><a href="javascript:;">4</a></li>
-        <li class="paginItem"><a href="javascript:;">5</a></li>
-        <li class="paginItem more"><a href="javascript:;">...</a></li>
-        <li class="paginItem"><a href="javascript:;">10</a></li>
-        <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>
+
+    <div class="pagin" id="pag1">
+
+      <div class="message" id="pag2">
+<!--        共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页-->
+      </div>
+      <ul class="paginList" id="pag">
+
+<!--        <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>-->
+
+<!--        <li class="paginItem"><a href="javascript:;">1</a></li>-->
+<!--        <li class="paginItem current"><a href="javascript:;">2</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">3</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">4</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">5</a></li>-->
+<!--        <li class="paginItem more"><a href="javascript:;">...</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">10</a></li>-->
+
+<!--        <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>-->
+
       </ul>
+
     </div>
   </form>
   <!-- 提示框 -->
@@ -167,7 +296,7 @@ function tipClose() {
   </div>
 </div>
 <script type="text/javascript">
-	$('.tablelist tbody tr:odd').addClass('odd');
+	// $('.tablelist tbody tr:odd').addClass('odd');
 </script>
 </body>
 </html>

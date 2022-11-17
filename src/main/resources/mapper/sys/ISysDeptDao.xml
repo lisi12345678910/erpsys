@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zte.sys.dao.ISysDeptDao">
+    <cache>
+    </cache>
+
+    <select id="deptlist" resultType="com.zte.sys.model.Dept">
+        select * from dept,city where dept.C_ID = city.ID
+        <if test="deptName != null and deptName != ''">
+            and dept.DEPT_NAME = #{deptName}
+        </if>
+        <if test="pId != null">
+            and dept.P_ID = #{pId}
+        </if>
+        <if test="cId != null">
+            and dept.C_ID = #{cId}
+        </if>
+    </select>
+
+    <select id="simpledeptlist" resultType="com.zte.sys.model.Dept">
+        select * from dept
+    </select>
+</mapper>

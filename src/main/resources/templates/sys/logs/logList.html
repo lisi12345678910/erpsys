@@ -1,5 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml">-->
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>日志管理</title>
@@ -14,6 +15,108 @@ function tipOpen(content) {
 function tipClose() {
 	$("#tip").fadeOut(200);
 }
+
+let uId = ""
+let uname = ""
+let jcontent = ""
+let moduleRname = ""
+function query(pagenum){
+  $.ajax({
+    url:"/loglist",
+    type:"post",
+    dataType:"json",
+    data:{pageNum:pagenum,uId:uId,uname:uname,jcontent:jcontent,moduleRname:moduleRname},
+    success:function (dat) {
+      let resultData = dat.resultData.data;
+      //------------------------------------------------------------------------------------------------------------------------
+      let totalPage = dat.resultData["totalPage"];//总页数
+      let totalCount = dat.resultData.totalCount;//总条数
+      let pageNum = dat.resultData.pageNum;//当前页0
+      //上一页
+      let pageBefore = pageNum-1;
+      //下一页
+      let pageNext;
+      if (pageNum + 1 > totalPage) {
+        pageNext = totalPage;
+      }else {
+        pageNext = pageNum+1;
+      }
+      //------------------------------------------------------------------------------------------------------------
+      let begin;
+      let end;
+      if (totalPage < 10){
+        begin = 1;
+        end = totalPage;
+      }else{
+        begin = pageNum - 5;
+        end = pageNum + 4;
+
+        if (begin < 1){
+          begin = 1;
+          end = 10;
+        }
+        if (end > totalPage){
+          end = totalPage;
+          begin = end - 9;
+        }
+      }
+      //------------------------------------------------------------------------------------------------------------
+      //------------------------------------------------------------------------------
+      let str = ``
+      for (let i = 0; i < resultData.length; i++) {
+        let resultDatum = resultData[i];
+        str += `<tr>
+          <td>${i+1}</td>
+          <td>${resultDatum.uid}</td>
+          <td>${resultDatum.uname}</td>
+          <td>${resultDatum.moduleRname}</td>
+          <td>${resultDatum.jcontent}</td>
+          <td>${resultDatum.jdate}</td>
+          <td>
+            <a href="logView.html" class="tablelink">查看日志信息</a>
+          </td>
+        </tr>`
+      }
+      $("#loglist").html(str)
+      $('.tablelist tbody tr:odd').addClass('odd');
+
+      //------------------------------------------------------------------------------------------------------------------------
+      //拼分页
+      let str1 = `<li class="paginItem"><a href="javascript:query(${pageBefore});"><span class="pagenxt"></span></a></li>`
+
+      for (let i = begin; i < end; i++) {
+        if (pageNum==i){
+          str1 += `<li class="paginItem current"><a href="javascript:query(${i});">${i}</a></li>`
+        }else {
+          str1 += `<li class="paginItem"><a href="javascript:query(${i});">${i}</a></li>`
+        }
+      }
+      str1 += ` <li class="paginItem"><a href="javascript:query(${pageNext});"><span class="pagenxt"></span></a></li>`
+
+      $("#pag").html(str1)
+
+      let str2 = `共<i class="blue">${totalCount}</i>条记录，当前显示第&nbsp;<i class="blue">${pageNum}&nbsp;</i>页`
+      $("#pag2").html(str2)
+      //------------------------------------------------------------------------------------------------------------------------
+    }
+    
+  })
+}
+$(function () {
+  let pageNum = 1
+  query(pageNum)
+
+
+  $("#search").click(function () {
+    uId = $("#uId").val().trim();
+    uname = $("#uname").val().trim();
+    jcontent = $("#jcontent").val().trim();
+    moduleRname = $("#moduleRname").val().trim();
+    query(pageNum)
+
+  })
+})
+
 </script>
 </head>
 
@@ -28,23 +131,23 @@ function tipClose() {
   <form action="" method="post">
     <ul class="tools">
       <li> <label>员工编号:</label>
-        <input type="text" />
+        <input id="uId" type="text" />
       </li>
       <li> <label>员工姓名:</label>
-        <input type="text" />
+        <input id="uname" type="text" />
       </li>
       <li> <label>日志内容：</label>
-        <input type="text" />
+        <input id="jcontent" type="text" />
       </li>
       <li> <label>操作模块：</label>
-        <input type="text" />
+        <input id="moduleRname" type="text" />
       </li>
       <li> <label>记录时间:</label>
         <input type="text" class="laydate-icon" id="logStartTime"/>
         <label>-</label>
         <input type="text" class="laydate-icon" id="logEndTime"/>
       </li>
-      <li class="subBut" onclick=""><img src="../../../static/images/t06.png" />查询</li>
+      <li class="subBut" id="search" onclick=""><img src="../../../static/images/t06.png" />查询</li>
     </ul>
     <table class="tablelist">
       <thead>
@@ -58,65 +161,67 @@ function tipClose() {
           <th>操作</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>9527</td>
-          <td>唐寅</td>
-          <td>用户管理</td>
-          <td>进行了添加用户xxx的操作</td>
-          <td>2016-11-20 15:05:29</td>
-          <td>
-            <a href="logView.html" class="tablelink">查看日志信息</a>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>9527</td>
-          <td>唐寅</td>
-          <td>用户管理</td>
-          <td>进行了添加用户xxx的操作</td>
-          <td>2016-11-20 15:05:29</td>
-          <td>
-            <a href="logView.html" class="tablelink">查看日志信息</a>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>9527</td>
-          <td>唐寅</td>
-          <td>用户管理</td>
-          <td>进行了添加用户xxx的操作</td>
-          <td>2016-11-20 15:05:29</td>
-          <td>
-            <a href="logView.html" class="tablelink">查看日志信息</a>
-          </td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>9527</td>
-          <td>唐寅</td>
-          <td>用户管理</td>
-          <td>进行了添加用户xxx的操作</td>
-          <td>2016-11-20 15:05:29</td>
-          <td>
-            <a href="logView.html" class="tablelink">查看日志信息</a>
-          </td>
-        </tr>
+      <tbody id="loglist">
+<!--        <tr>-->
+<!--          <td>1</td>-->
+<!--          <td>9527</td>-->
+<!--          <td>唐寅</td>-->
+<!--          <td>用户管理</td>-->
+<!--          <td>进行了添加用户xxx的操作</td>-->
+<!--          <td>2016-11-20 15:05:29</td>-->
+<!--          <td>-->
+<!--            <a href="logView.html" class="tablelink">查看日志信息</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>2</td>-->
+<!--          <td>9527</td>-->
+<!--          <td>唐寅</td>-->
+<!--          <td>用户管理</td>-->
+<!--          <td>进行了添加用户xxx的操作</td>-->
+<!--          <td>2016-11-20 15:05:29</td>-->
+<!--          <td>-->
+<!--            <a href="logView.html" class="tablelink">查看日志信息</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>3</td>-->
+<!--          <td>9527</td>-->
+<!--          <td>唐寅</td>-->
+<!--          <td>用户管理</td>-->
+<!--          <td>进行了添加用户xxx的操作</td>-->
+<!--          <td>2016-11-20 15:05:29</td>-->
+<!--          <td>-->
+<!--            <a href="logView.html" class="tablelink">查看日志信息</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>4</td>-->
+<!--          <td>9527</td>-->
+<!--          <td>唐寅</td>-->
+<!--          <td>用户管理</td>-->
+<!--          <td>进行了添加用户xxx的操作</td>-->
+<!--          <td>2016-11-20 15:05:29</td>-->
+<!--          <td>-->
+<!--            <a href="logView.html" class="tablelink">查看日志信息</a>-->
+<!--          </td>-->
+<!--        </tr>-->
       </tbody>
     </table>
     <div class="pagin">
-      <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
-      <ul class="paginList">
-        <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
-        <li class="paginItem"><a href="javascript:;">1</a></li>
-        <li class="paginItem current"><a href="javascript:;">2</a></li>
-        <li class="paginItem"><a href="javascript:;">3</a></li>
-        <li class="paginItem"><a href="javascript:;">4</a></li>
-        <li class="paginItem"><a href="javascript:;">5</a></li>
-        <li class="paginItem more"><a href="javascript:;">...</a></li>
-        <li class="paginItem"><a href="javascript:;">10</a></li>
-        <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>
+      <div class="message" id="pag2">
+<!--        共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页-->
+      </div>
+      <ul class="paginList" id="pag">
+<!--        <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">1</a></li>-->
+<!--        <li class="paginItem current"><a href="javascript:;">2</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">3</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">4</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">5</a></li>-->
+<!--        <li class="paginItem more"><a href="javascript:;">...</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">10</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>-->
       </ul>
     </div>
   </form>
@@ -136,7 +241,7 @@ function tipClose() {
   </div>
 </div>
 <script type="text/javascript">
-	$('.tablelist tbody tr:odd').addClass('odd');
+
 
     var start = {
       elem: '#logStartTime',

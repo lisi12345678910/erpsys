@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zte.sys.dao.ISysJournalDao">
+    <cache>
+    </cache>
+    <!--uId uname jcontent moduleRname jdate(一个范围)-->
+    <select id="journallist" resultType="com.zte.sys.model.Journal">
+        select *
+        from journal,
+             module,
+             users where journal.MODULE_ID = module.MODULE_ID
+                     and journal.U_ID = users.U_ID
+
+        <if test="uId != null">
+            and journal.U_ID = #{uId}
+        </if>
+        <if test="uname != null and uname != ''">
+            <bind name="u" value="'%' + uname + '%'"/>
+            and users.UNAME like #{u}
+        </if>
+        <if test="jcontent != null and jcontent != ''">
+            <bind name="j" value="'%' + jcontent + '%'"/>
+            and journal.JCONTENT like #{j}
+        </if>
+        <if test="moduleRname != null and moduleRname != ''">
+            <bind name="m" value="'%' + moduleRname + '%'"/>
+            and module.MODULE_RNAME like #{m}
+        </if>
+        <if test="downjdate != null">
+            and journal.JDATE &gt; #{downjdate}
+        </if>
+        <if test="upjdate != null">
+            and journal.JDATE &lt; #{upjdate}
+        </if>
+    </select>
+</mapper>

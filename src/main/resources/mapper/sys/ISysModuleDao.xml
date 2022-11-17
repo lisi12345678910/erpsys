@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zte.sys.dao.ISysModuleDao">
+    <cache>
+    </cache>
+
+    <select id="modulelist" resultType="com.zte.sys.model.Module">
+        select * from module left join (select MODULE_ID pid,MODULE_RNAME pn from module where MODULE_PID = 0) p on module.MODULE_PID = p.pid
+        <where>
+            <if test="moduleRname != null and moduleRname != ''">
+                module.MODULE_RNAME = #{moduleRname}
+            </if>
+        </where>
+    </select>
+</mapper>

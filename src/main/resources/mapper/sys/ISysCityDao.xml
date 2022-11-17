@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zte.sys.dao.ISysCityDao">
+    <cache>
+    </cache>
+
+    <select id="arealist" resultType="com.zte.sys.model.City">
+        select * from city,province where city.P_ID = province.ID
+        <if test="pName != null and pName != ''">
+            <bind name="p" value="'%' + pName + '%'"/>
+            and province.P_NAME like #{p}
+        </if>
+        <if test="cName != null and cName != ''">
+            <bind name="c" value="'%' + cName + '%'"/>
+            and city.C_NAME like #{c}
+        </if>
+    </select>
+
+    <select id="deptProvincelist" resultType="com.zte.sys.model.Province">
+        select * from province
+    </select>
+
+    <select id="deptcitylist" resultType="com.zte.sys.model.City">
+        select * from city
+        <where>
+            <if test="pId != null">
+                city.P_ID = #{pId}
+            </if>
+        </where>
+    </select>
+</mapper>

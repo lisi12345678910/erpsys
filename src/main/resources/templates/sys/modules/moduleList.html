@@ -1,5 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml">-->
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>模块管理</title>
@@ -13,6 +14,87 @@ function tipOpen(content) {
 function tipClose() {
 	$("#tip").fadeOut(200);
 }
+
+let moduleRname = ""
+function query(pageNum){
+  $.ajax({
+    url:"/modulelist",
+    type:"post",
+    dataType:"json",
+    data:{pageNum:pageNum,moduleRname:moduleRname},
+    success:function (dat) {
+      let resultData = dat.resultData.data;
+      //------------------------------------------------------------------------------------------------------------------------
+      let totalPage = dat.resultData["totalPage"];//总页数
+      let totalCount = dat.resultData.totalCount;//总条数
+      let pageNum = dat.resultData.pageNum;//当前页0
+      //上一页
+      let pageBefore = pageNum-1;
+      //下一页
+      let pageNext;
+      if (pageNum + 1 > totalPage) {
+        pageNext = totalPage;
+      }else {
+        pageNext = pageNum+1;
+      }
+      //------------------------------------------------------------------
+      let str = ``
+      for (let i = 0; i < resultData.length; i++) {
+        let resultDatum = resultData[i];
+        if (resultDatum.moduleState == 1) {
+          resultDatum.moduleState = "正常"
+        } else {
+          resultDatum.moduleState = "禁用"
+        }
+        str += `<tr>
+          <td>${i + 1}</td>
+          <td>${resultDatum.moduleRname}</td>
+          <td>${resultDatum.pn}</td>
+          <td>${resultDatum.moduleMurl}</td>
+          <td>${resultDatum.moduleState}</td>
+          <td>
+            <a href="moduleUpdate.html" class="tablelink">修改</a>
+            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('是否确禁用此模块？')">禁用</a>
+          </td>
+        </tr>`
+
+
+      }
+      $("#modulelist").html(str)
+      $('.tablelist tbody tr:odd').addClass('odd');
+
+      //------------------------------------------------------------------------------------------------------------------------
+      //拼分页
+      let str1 = `<li class="paginItem"><a href="javascript:query(${pageBefore});"><span class="pagenxt"></span></a></li>`
+
+      for (let i = 0; i < totalPage; i++) {
+        let nowPage = i+1;
+        if (pageNum==i+1){
+          str1 += `<li class="paginItem current"><a href="javascript:query(${nowPage});">${nowPage}</a></li>`
+        }else {
+          str1 += `<li class="paginItem"><a href="javascript:query(${nowPage});">${nowPage}</a></li>`
+        }
+      }
+      str1 += ` <li class="paginItem"><a href="javascript:query(${pageNext});"><span class="pagenxt"></span></a></li>`
+
+      $("#pag").html(str1)
+
+      let str2 = `共<i class="blue">${totalCount}</i>条记录，当前显示第&nbsp;<i class="blue">${pageNum}&nbsp;</i>页`
+      $("#pag2").html(str2)
+      //------------------------------------------------------------------------------------------------------------------------
+    }
+  })
+}
+$(function () {
+  let pageNum = 1
+  query(pageNum)
+
+  $("#search").click(function () {
+    moduleRname = $("#moduleRname").val().trim();
+    query(pageNum)
+
+  })
+})
 </script>
 </head>
 
@@ -27,10 +109,10 @@ function tipClose() {
   <form action="" method="post">
     <ul class="tools">
       <li> <label>模块名称:</label>
-        <input type="text" />
+        <input type="text" id="moduleRname"/>
       </li>
 
-      <li class="subBut" onclick=""><img src="../../../static/images/t06.png" />查询</li>
+      <li class="subBut" onclick="" id="search"><img src="../../../static/images/t06.png" />查询</li>
       <li class="subBut" onclick="window.location.href='moduleAdd.html'"><img src="../../../static/images/t01.png" />添加</li>
     </ul>
     <table class="tablelist">
@@ -44,65 +126,69 @@ function tipClose() {
           <th>操作</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>系统管理</td>
-          <td>无</td>
-          <td>#</td>
-          <td>正常</td>
-          <td>
-            <a href="moduleUpdate.html" class="tablelink">修改</a>
-            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('是否确禁用此模块？')">禁用</a>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>用户管理</td>
-          <td>系统管理</td>
-          <td>sys/users/userList.html</td>
-          <td>正常</td>
-          <td>
-            <a href="moduleUpdate.html" class="tablelink">修改</a>
-            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('是否确禁用此模块？')">禁用</a>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>部门管理</td>
-          <td>系统管理</td>
-          <td>sys/dept/deptList.html</td>
-          <td>正常</td>
-          <td>
-            <a href="moduleUpdate.html" class="tablelink">修改</a>
-            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('是否确禁用此模块？')">禁用</a>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>测试管理</td>
-          <td>无</td>
-          <td>#</td>
-          <td>禁用</td>
-          <td>
-            <a href="moduleUpdate.html" class="tablelink">修改</a>
-            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('是否确启用此模块？')">启用</a>
-          </td>
-        </tr>
+      <tbody id="modulelist">
+
+<!--        <tr>-->
+<!--          <td>1</td>-->
+<!--          <td>系统管理</td>-->
+<!--          <td>无</td>-->
+<!--          <td>#</td>-->
+<!--          <td>正常</td>-->
+<!--          <td>-->
+<!--            <a href="moduleUpdate.html" class="tablelink">修改</a>-->
+<!--            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('是否确禁用此模块？')">禁用</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+
+<!--        <tr>-->
+<!--          <td>2</td>-->
+<!--          <td>用户管理</td>-->
+<!--          <td>系统管理</td>-->
+<!--          <td>sys/users/userList.html</td>-->
+<!--          <td>正常</td>-->
+<!--          <td>-->
+<!--            <a href="moduleUpdate.html" class="tablelink">修改</a>-->
+<!--            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('是否确禁用此模块？')">禁用</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>3</td>-->
+<!--          <td>部门管理</td>-->
+<!--          <td>系统管理</td>-->
+<!--          <td>sys/dept/deptList.html</td>-->
+<!--          <td>正常</td>-->
+<!--          <td>-->
+<!--            <a href="moduleUpdate.html" class="tablelink">修改</a>-->
+<!--            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('是否确禁用此模块？')">禁用</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>3</td>-->
+<!--          <td>测试管理</td>-->
+<!--          <td>无</td>-->
+<!--          <td>#</td>-->
+<!--          <td>禁用</td>-->
+<!--          <td>-->
+<!--            <a href="moduleUpdate.html" class="tablelink">修改</a>-->
+<!--            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('是否确启用此模块？')">启用</a>-->
+<!--          </td>-->
+<!--        </tr>-->
       </tbody>
     </table>
     <div class="pagin">
-      <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
-      <ul class="paginList">
-        <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
-        <li class="paginItem"><a href="javascript:;">1</a></li>
-        <li class="paginItem current"><a href="javascript:;">2</a></li>
-        <li class="paginItem"><a href="javascript:;">3</a></li>
-        <li class="paginItem"><a href="javascript:;">4</a></li>
-        <li class="paginItem"><a href="javascript:;">5</a></li>
-        <li class="paginItem more"><a href="javascript:;">...</a></li>
-        <li class="paginItem"><a href="javascript:;">10</a></li>
-        <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>
+      <div class="message" id="pag2">
+<!--        共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页-->
+      </div>
+      <ul class="paginList" id="pag">
+<!--        <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">1</a></li>-->
+<!--        <li class="paginItem current"><a href="javascript:;">2</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">3</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">4</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">5</a></li>-->
+<!--        <li class="paginItem more"><a href="javascript:;">...</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">10</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>-->
       </ul>
     </div>
   </form>
@@ -122,7 +208,7 @@ function tipClose() {
   </div>
 </div>
 <script type="text/javascript">
-	$('.tablelist tbody tr:odd').addClass('odd');
+
 </script>
 </body>
 </html>

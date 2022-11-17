@@ -1,5 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml">-->
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>职位管理</title>
@@ -13,6 +14,116 @@ function tipOpen(content) {
 function tipClose() {
 	$("#tip").fadeOut(200);
 }
+
+//查部门
+function querydepts(){
+  $.ajax({
+    url:"positionsdeptlist",
+    type:"post",
+    dataType:"json",
+    data:{},
+    success:function (dat) {
+      let resultData = dat.resultData;
+      let str = ``
+      for (let i = 0; i < resultData.length; i++) {
+        let resultDatum = resultData[i];
+        str += `<option value="${resultDatum.deptId}">${resultDatum.deptName}</option>`
+      }
+      str += `<option value="" selected>请选择</option>`
+      $("#jobDeptId").html(str)
+    }
+  })
+}
+
+
+
+let jobName = ""
+let jobDeptId = ""
+function query(pagenum){
+  $.ajax({
+    url:"positionlist",
+    type:"post",
+    dataType:"json",
+    data:{pageNum:pagenum,jobName:jobName,jobDeptId:jobDeptId},
+    success:function (dat) {
+      let resultData = dat.resultData.data;
+      //------------------------------------------------------------------------------------------------------------------------
+      let totalPage = dat.resultData["totalPage"];//总页数
+      let totalCount = dat.resultData.totalCount;//总条数
+      let pageNum = dat.resultData.pageNum;//当前页0
+      //上一页
+      let pageBefore = pageNum-1;
+      //下一页
+      let pageNext;
+      if (pageNum + 1 > totalPage) {
+        pageNext = totalPage;
+      }else {
+        pageNext = pageNum+1;
+      }
+      //------------------------------------------------------------------------------
+      let str = ``
+      for (let i = 0; i < resultData.length; i++) {
+        let resultDatum = resultData[i];
+
+
+        if (resultDatum.jobState==1) {
+          resultDatum.jobState="正常"
+        }else {
+          resultDatum.jobState="不正常"
+        }
+        str += `<tr>
+          <td>${i+1}</td>
+          <td>${resultDatum.jobName}</td>
+          <td>${resultDatum.deptName}</td>
+          <td>${resultDatum.jobState}</td>
+          <td>
+            <a href="positionUpdate.html" class="tablelink">修改</a>
+            <a href="positionGrant.html" class="tablelink">赋权</a>
+            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认注销此条信息？')">注销</a>
+          </td>
+        </tr>`
+      }
+
+      $("#positionlist").html(str)
+      $('.tablelist tbody tr:odd').addClass('odd');
+
+
+      //------------------------------------------------------------------------------------------------------------------------
+      //拼分页
+      let str1 = `<li class="paginItem"><a href="javascript:query(${pageBefore});"><span class="pagenxt"></span></a></li>`
+
+      for (let i = 0; i < totalPage; i++) {
+        let nowPage = i+1;
+        if (pageNum==i+1){
+          str1 += `<li class="paginItem current"><a href="javascript:query(${nowPage});">${nowPage}</a></li>`
+        }else {
+          str1 += `<li class="paginItem"><a href="javascript:query(${nowPage});">${nowPage}</a></li>`
+        }
+      }
+      str1 += ` <li class="paginItem"><a href="javascript:query(${pageNext});"><span class="pagenxt"></span></a></li>`
+
+      $("#pag").html(str1)
+
+      let str2 = `共<i class="blue">${totalCount}</i>条记录，当前显示第&nbsp;<i class="blue">${pageNum}&nbsp;</i>页`
+      $("#pag2").html(str2)
+      //------------------------------------------------------------------------------------------------------------------------
+    }
+  })
+}
+$(function () {
+
+  querydepts()
+
+  let pageNum = 1
+  query(pageNum)
+
+  $("#search").click(function () {
+    jobName = $("#jobName").val().trim();
+    jobDeptId = $("#jobDeptId").val().trim();
+    query(pageNum)
+
+  })
+})
 </script>
 </head>
 
@@ -27,17 +138,17 @@ function tipClose() {
   <form action="" method="post">
     <ul class="tools">
       <li> <label>职位名称:</label>
-        <input type="text" />
+        <input type="text" id="jobName"/>
       </li>
       <li> <label>所属部门：</label>
-        <select name="">
+        <select name="" id="jobDeptId">
           <option>请选择部门</option>
-          <option value="">研发</option>
-          <option value="">销售</option>
-          <option value="">财务</option>
+<!--          <option value="">研发</option>-->
+<!--          <option value="">销售</option>-->
+<!--          <option value="">财务</option>-->
         </select>
       </li>
-      <li class="subBut" onclick=""><img src="../../../static/images/t06.png" />查询</li>
+      <li class="subBut" onclick="" id="search"><img src="../../../static/images/t06.png" />查询</li>
       <li class="subBut" onclick="window.location.href='positionAdd.html'"><img src="../../../static/images/t01.png" />添加</li>
     </ul>
     <table class="tablelist">
@@ -50,54 +161,57 @@ function tipClose() {
           <th>操作</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>经理</td>
-          <td>研发部</td>
-          <td>正常</td>
-          <td>
-            <a href="positionUpdate.html" class="tablelink">修改</a>
-            <a href="positionGrant.html" class="tablelink">赋权</a>
-            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认注销此条信息？')">注销</a>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>副经理</td>
-          <td>研发部</td>
-          <td>已撤销</td>
-          <td>
-            <a href="positionUpdate.html" class="tablelink">修改</a>
-            <a href="positionGrant.html" class="tablelink">赋权</a>
-            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认恢复此条信息？')">恢复</a>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>高级工程师</td>
-          <td>研发部</td>
-          <td>正常</td>
-          <td>
-            <a href="positionUpdate.html" class="tablelink">修改</a>
-            <a href="positionGrant.html" class="tablelink">赋权</a>
-            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认注销此条信息？')">注销</a>
-          </td>
-        </tr>
+      <tbody id="positionlist">
+<!--        <tr>-->
+<!--          <td>1</td>-->
+<!--          <td>经理</td>-->
+<!--          <td>研发部</td>-->
+<!--          <td>正常</td>-->
+<!--          <td>-->
+<!--            <a href="positionUpdate.html" class="tablelink">修改</a>-->
+<!--            <a href="positionGrant.html" class="tablelink">赋权</a>-->
+<!--            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认注销此条信息？')">注销</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+
+<!--        <tr>-->
+<!--          <td>2</td>-->
+<!--          <td>副经理</td>-->
+<!--          <td>研发部</td>-->
+<!--          <td>已撤销</td>-->
+<!--          <td>-->
+<!--            <a href="positionUpdate.html" class="tablelink">修改</a>-->
+<!--            <a href="positionGrant.html" class="tablelink">赋权</a>-->
+<!--            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认恢复此条信息？')">恢复</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>3</td>-->
+<!--          <td>高级工程师</td>-->
+<!--          <td>研发部</td>-->
+<!--          <td>正常</td>-->
+<!--          <td>-->
+<!--            <a href="positionUpdate.html" class="tablelink">修改</a>-->
+<!--            <a href="positionGrant.html" class="tablelink">赋权</a>-->
+<!--            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认注销此条信息？')">注销</a>-->
+<!--          </td>-->
+<!--        </tr>-->
       </tbody>
     </table>
     <div class="pagin">
-      <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
-      <ul class="paginList">
-        <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
-        <li class="paginItem"><a href="javascript:;">1</a></li>
-        <li class="paginItem current"><a href="javascript:;">2</a></li>
-        <li class="paginItem"><a href="javascript:;">3</a></li>
-        <li class="paginItem"><a href="javascript:;">4</a></li>
-        <li class="paginItem"><a href="javascript:;">5</a></li>
-        <li class="paginItem more"><a href="javascript:;">...</a></li>
-        <li class="paginItem"><a href="javascript:;">10</a></li>
-        <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>
+      <div class="message" id="pag2">
+        共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页
+      </div>
+      <ul class="paginList" id="pag">
+<!--        <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">1</a></li>-->
+<!--        <li class="paginItem current"><a href="javascript:;">2</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">3</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">4</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">5</a></li>-->
+<!--        <li class="paginItem more"><a href="javascript:;">...</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;">10</a></li>-->
+<!--        <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>-->
       </ul>
     </div>
   </form>
@@ -117,7 +231,7 @@ function tipClose() {
   </div>
 </div>
 <script type="text/javascript">
-	$('.tablelist tbody tr:odd').addClass('odd');
+
 </script>
 </body>
 </html>

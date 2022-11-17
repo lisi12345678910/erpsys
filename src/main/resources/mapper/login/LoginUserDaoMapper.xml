@@ -14,7 +14,7 @@
     <cache eviction="LRU" flushInterval="60000"
            size="512" readOnly="true"/>
 
-    <select id="queryUserByCondition" resultType="loginUser" parameterType="loginUserCondition">
+    <select id="queryUserByCondition" resultType="com.zte.login.model.LoginUser" parameterType="com.zte.login.model.LoginUserCondition">
         <![CDATA[
             select
                 u.U_ID,
@@ -38,7 +38,7 @@
         </if>
     </select>
 
-    <select id="queryPermissionByJob" resultType="Integer" parameterType="loginUser">
+    <select id="queryPermissionByJob" resultType="Integer" parameterType="com.zte.login.model.LoginUser">
         <![CDATA[
             select
                 p.COMPID

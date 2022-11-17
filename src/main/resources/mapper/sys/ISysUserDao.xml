@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zte.sys.dao.ISysUserDao">
+    <cache>
+    </cache>
+    <select id="userlist" resultType="com.zte.sys.model.Users">
+        select * from users,job,dept where users.DEPT_ID = dept.DEPT_ID and users.JOB_ID = job.JOB_ID
+        <if test="uId != null">
+            and users.U_ID = #{uId}
+        </if>
+        <if test="uname != null and uname != ''">
+            and users.UNAME = #{uname}
+        </if>
+        <if test="deptId != null">
+            and users.DEPT_ID = #{deptId}
+        </if>
+        <if test="statusId != null">
+            and users.STATUS_ID = #{statusId}
+        </if>
+    </select>
+
+</mapper>
