@@ -56,7 +56,7 @@ public class SysUserAction {
      */
     @RequestMapping("/addusers")
     public String addusers(){
-        return "/sys/users/userAdd";
+        return "sys/users/userAdd";
     }
 
 

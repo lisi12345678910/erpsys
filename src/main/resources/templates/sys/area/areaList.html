@@ -92,7 +92,7 @@
     let cName = ""
     function query(pagenum){
       $.ajax({
-        url:"arealist",
+        url:"/arealist",
         type:"post",
         dataType:"json",
         data:{pageNum:pagenum,pName:pName,cName:cName},

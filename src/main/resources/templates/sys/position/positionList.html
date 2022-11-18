@@ -18,7 +18,7 @@ function tipClose() {
 //查部门
 function querydepts(){
   $.ajax({
-    url:"positionsdeptlist",
+    url:"/positionsdeptlist",
     type:"post",
     dataType:"json",
     data:{},
@@ -41,7 +41,7 @@ let jobName = ""
 let jobDeptId = ""
 function query(pagenum){
   $.ajax({
-    url:"positionlist",
+    url:"/positionlist",
     type:"post",
     dataType:"json",
     data:{pageNum:pagenum,jobName:jobName,jobDeptId:jobDeptId},

@@ -19,7 +19,7 @@ function tipClose() {
 //查省份
 function queryprovince(){
   $.ajax({
-    url:"deptProvincelist",
+    url:"/deptProvincelist",
     type:"post",
     dataType:"json",
     data:{},
@@ -40,7 +40,7 @@ function queryprovince(){
 let pid = ""
 function querycitys(){
   $.ajax({
-    url:"deptcitylist",
+    url:"/deptcitylist",
     type:"post",
     dataType:"json",
     data:{pId:pid},
@@ -64,7 +64,7 @@ let proid = ""
 let cid = ""
 function query(pagenum){
   $.ajax({
-    url:"deptlist",
+    url:"/deptlist",
     type:"post",
     dataType:"json",
     data:{pageNum:pagenum,deptName:deptname,pId:proid,cId:cid},

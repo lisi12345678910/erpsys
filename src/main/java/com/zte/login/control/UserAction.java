@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -70,7 +69,6 @@ public class UserAction {
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length > 0){
             for (Cookie cookie : cookies) {
-                System.out.println(cookie.getValue());
                 if ("username".equals(cookie.getName())){
                     condition.setUname(cookie.getValue());
                 }
@@ -99,9 +97,6 @@ public class UserAction {
     public List<Module> loginPermission() {
         LoginUser loginUser = (LoginUser) redisTemplate.opsForValue().get("loginUser");
         List<Module> modules = loginUser.getModules();
-        for (Module module : modules) {
-            System.out.println(module);
-        }
         return modules;
     }
 
