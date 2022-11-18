@@ -22,15 +22,7 @@ public class SysUserAction {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    /**
-     * userlist 页面请求
-     *
-     * @return
-     */
-    @RequestMapping("/sys/users/userall")
-    public String userlistView() {
-        return "sys/users/userList";
-    }
+
 
     /**
      * userlist ajx数据返回

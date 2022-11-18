@@ -26,15 +26,7 @@ public class SysDeptAction {
     private RedisTemplate redisTemplate;
 
 
-    /**
-     * deptlist 部门页面展示
-     *
-     * @return
-     */
-    @RequestMapping("/sys/dept/deptList")
-    public String userlistView() {
-        return "sys/dept/deptList";
-    }
+
 
 
     /**

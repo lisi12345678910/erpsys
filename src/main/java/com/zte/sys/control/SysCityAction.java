@@ -24,14 +24,7 @@ public class SysCityAction {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    /**
-     * 区域列表前端页面展示
-     * @return
-     */
-    @RequestMapping("/sys/area/areaList")
-    public String arealistView(){
-        return "sys/area/areaList";
-    }
+
 
     /**
      * 区域数据展示

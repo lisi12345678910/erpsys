@@ -24,14 +24,7 @@ public class SysPositionAction {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    /**
-     * 职位鼓励页面请求
-     * @return
-     */
-    @RequestMapping("/sys/position/positionList")
-    private String positionlistView(){
-        return "sys/position/positionList";
-    }
+
 
 
     @RequestMapping("/positionlist")

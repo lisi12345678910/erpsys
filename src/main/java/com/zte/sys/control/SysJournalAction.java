@@ -19,14 +19,7 @@ public class SysJournalAction {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    /**
-     *  日志页面请求
-     * @return
-     */
-    @RequestMapping("/sys/logs/logList")
-    private String loglistView(){
-        return "sys/logs/logList";
-    }
+
 
     /**
      *
