@@ -55,9 +55,6 @@ public class SysUserService  extends ServiceImpl<ISysUserDao,Users> implements I
         return deptList;
     }
 
-//    @RequestMapping("/addusers")
-//    public String addusers(){
-//        return "userAdd";
-//    }
+
 
 }

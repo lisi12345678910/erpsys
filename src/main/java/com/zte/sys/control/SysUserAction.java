@@ -58,6 +58,14 @@ public class SysUserAction {
         return resultMessage;
     }
 
+    /**
+     * 添加页面请求
+     * @return
+     */
+    @RequestMapping("/addusers")
+    public String addusers(){
+        return "/sys/users/userAdd";
+    }
 
 
 }
