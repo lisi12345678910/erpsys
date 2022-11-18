@@ -27,7 +27,7 @@ public class SysUserAction {
      *
      * @return
      */
-    @RequestMapping("/userlistView")
+    @RequestMapping("/sys/users/userall")
     public String userlistView() {
         return "sys/users/userList";
     }

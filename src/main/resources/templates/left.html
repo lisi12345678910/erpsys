@@ -1,113 +1,141 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>无标题文档</title>
-<link href="../static/css/style.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../static/js/jquery.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+    <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
+    <script language="JavaScript" src="../static/js/jquery.js"></script>
 
-<script type="text/javascript">
-$(function(){	
-	//导航切换
-	$(".menuson .header").click(function(){
-		var $parent = $(this).parent();
-		$(".menuson>li.active").not($parent).removeClass("active open").find('.sub-menus').hide();
-		
-		$parent.addClass("active");
-		if(!!$(this).next('.sub-menus').size()){
-			if($parent.hasClass("open")){
-				$parent.removeClass("open").find('.sub-menus').hide();
-			}else{
-				$parent.addClass("open").find('.sub-menus').show();	
-			}
-			
-			
-		}
-	});
-	
-	// 三级菜单点击
-	$('.sub-menus li').click(function(e) {
-        $(".sub-menus li.active").removeClass("active")
-		$(this).addClass("active");
-    });
-	
-	$('.title').click(function(){
-		var $ul = $(this).next('ul');
-		$('dd').find('.menuson').slideUp();
-		if($ul.is(':visible')){
-			$(this).next('.menuson').slideUp();
-		}else{
-			$(this).next('.menuson').slideDown();
-		}
-	});
-})	
-</script>
+    <script type="text/javascript">
+        $(function(){
+            $.ajax({
+                url:"/loginPermission",
+                method:"post",
+                data:{},
+                success:function (data){
+                    if (data!=null){
+                        var str = '';
+                        for (let i = 0; i < data.length; i++) {
+                            if (data[i].modulePid == 0){
+                                str += '        <dd>\n' +
+                                    '            <div class="title">' + data[i].moduleRname + '</div>\n' +
+                                    '            <ul class="menuson">';
+                                for (let j = 0; j < data.length; j++) {
+                                    if (data[j].modulePid == data[i].moduleId){
+                                        str += '                <li><cite></cite><a href="/' + data[j].moduleMurl + '" target="rightFrame">' + data[j].moduleRname + '</a><i></i></li>';
+                                    }
+                                }
+                                str += '            </ul>     \n' +
+                                    '        </dd> '
+                            }
+                        }
+                        $("#leftmenu").html(str);
+                    }else {
+                        $("#leftmenu").html('');
+                    }
+                    //导航切换
+                    $(".menuson .header").click(function(){
+                        var $parent = $(this).parent();
+                        $(".menuson>li.active").not($parent).removeClass("active open").find('.sub-menus').hide();
+
+                        $parent.addClass("active");
+                        if(!!$(this).next('.sub-menus').size()){
+                            if($parent.hasClass("open")){
+                                $parent.removeClass("open").find('.sub-menus').hide();
+                            }else{
+                                $parent.addClass("open").find('.sub-menus').show();
+                            }
+
+
+                        }
+                    });
+
+                    // 三级菜单点击
+                    $('.sub-menus li').click(function(e) {
+                        $(".sub-menus li.active").removeClass("active")
+                        $(this).addClass("active");
+                    });
+
+                    $('.title').click(function(){
+                        var $ul = $(this).next('ul');
+                        $('dd').find('.menuson').slideUp();
+                        if($ul.is(':visible')){
+                            $(this).next('.menuson').slideUp();
+                        }else{
+                            $(this).next('.menuson').slideDown();
+                        }
+                    });
+                }
+            })
+        })
+    </script>
 
 
 </head>
-
 <body style="background:#fff3e1;">
-	<div class="lefttop">
-    	<span></span><a href="index.html" target="rightFrame">首页</a>
-    </div>
-    <dl class="leftmenu">
-        <dd>
-            <div class="title">营销管理</div>
-            <ul class="menuson">
-                <li><cite></cite><a href="market/customer/customerList.html" target="rightFrame">客户管理</a><i></i></li>
-                <li><cite></cite><a href="market/customerBrowse/customerBrowse.html" target="rightFrame">客户浏览</a><i></i></li>
-                <li><cite></cite><a href="market/order/orderList.html" target="rightFrame">订购单管理</a><i></i></li>
-                <li><cite></cite><a href="market/orderExamine/orderExamineList.html" target="rightFrame">订购单审核</a><i></i></li>
-            </ul>     
-        </dd> 
-        
-        
-        <dd>
-        	<div class="title">仓库管理</div>
-            <ul class="menuson">
-                <li><cite></cite><a href="storage/storage/storageList.html" target="rightFrame">仓库管理</a><i></i></li>
-                <li><cite></cite><a href="storage/storageBrowse/storageBrowse.html" target="rightFrame">仓库浏览</a><i></i></li>
-                <li><cite></cite><a href="storage/delivery/deliveryList.html" target="rightFrame">出库管理</a><i></i></li>
-                <li><cite></cite><a href="storage/stock/stockList.html" target="rightFrame">入库管理</a><i></i></li>
-                <li><cite></cite><a href="storage/inventory/inventoryList.html" target="rightFrame">库存管理</a><i></i></li>
-            </ul>    
-        </dd>  
-        
-        
-        <dd>
-            <div class="title">采购管理</div>
-            <ul class="menuson">
-                <li><cite></cite><a href="purchase/purchase/purchaseList.html" target="rightFrame">采购单管理</a><i></i></li>
-                <li><cite></cite><a href="purchase/purchaseExamine/purchaseExamineList.html" target="rightFrame">采购单审核</a><i></i></li>
-                <li><cite></cite><a href="purchase/brand/brandList.html" target="rightFrame">品牌管理</a><i></i></li>
-                <li><cite></cite><a href="purchase/productType/productTypeList.html" target="rightFrame">商品类型管理</a><i></i></li>
-                <li><cite></cite><a href="purchase/product/productList.html" target="rightFrame">商品管理</a><i></i></li>
-                <li><cite></cite><a href="purchase/manufacturer/manufacturerList.html" target="rightFrame">厂商管理</a><i></i></li>
-            </ul>
-        </dd>   
-        
-        <dd>
-            <div class="title">数据统计</div>
-            <ul class="menuson">
-                <li><cite></cite><a href="statis/sales/salesStatis.html" target="rightFrame">客户销量统计</a><i></i></li>
-                <li><cite></cite><a href="statis/purchase/purchaseStatis.html" target="rightFrame">厂商采购统计</a><i></i></li>
-                <li><cite></cite><a href="statis/delivery/deliveryStatis.html" target="rightFrame">出库统计</a><i></i></li>
-                <li><cite></cite><a href="statis/stock/stockStatis.html" target="rightFrame">入库统计</a><i></i></li>
-            </ul>
-        </dd>    
-        <dd>
-            <div class="title">系统管理</div>
-            <ul class="menuson">
-                <li><cite></cite><a href="userlistView" target="rightFrame">用户管理</a><i></i></li>
-                <li><cite></cite><a href="deptlistView" target="rightFrame">部门管理</a><i></i></li>
-                <li><cite></cite><a href="positionlistView" target="rightFrame">职位管理</a><i></i></li>
-                <li><cite></cite><a href="modulelistView" target="rightFrame">模块管理</a><i></i></li>
-                <li><cite></cite><a href="loglistView" target="rightFrame">日志管理</a><i></i></li>
-                <li><cite></cite><a href="arealistView" target="rightFrame">区域管理</a><i></i></li>
-            </ul>
-        </dd>     
-    
-    </dl>
-    
+<div class="lefttop">
+    <span></span><a href="#" id="toMain">首页</a>
+    <span></span><a href="/main" id="toMain" target="_parent">首页</a>
+</div>
+<dl class="leftmenu" id="leftmenu">
+    <dd>
+        <div class="title">营销管理</div>
+        <ul class="menuson">
+            <li><cite></cite><a href="/customerList" target="rightFrame">客户管理</a><i></i></li>
+            <li><cite></cite><a href="/customerBrowse" target="rightFrame">客户浏览</a><i></i></li>
+            <li><cite></cite><a href="/orderList" target="rightFrame">订购单管理</a><i></i></li>
+            <li><cite></cite><a href="/orderExamineList" target="rightFrame">订购单审核</a><i></i></li>
+        </ul>
+    </dd>
+
+
+    <dd>
+        <div class="title">仓库管理</div>
+        <ul class="menuson">
+            <li><cite></cite><a href="/storageList" target="rightFrame">仓库管理</a><i></i></li>
+            <li><cite></cite><a href="/storageBrowse" target="rightFrame">仓库浏览</a><i></i></li>
+            <li><cite></cite><a href="/deliveryList" target="rightFrame">出库管理</a><i></i></li>
+            <li><cite></cite><a href="/stockList" target="rightFrame">入库管理</a><i></i></li>
+            <li><cite></cite><a href="/inventoryList" target="rightFrame">库存管理</a><i></i></li>
+        </ul>
+    </dd>
+
+
+    <dd>
+        <div class="title">采购管理</div>
+        <ul class="menuson">
+            <li><cite></cite><a href="/purchaseList" target="rightFrame">采购单管理</a><i></i></li>
+            <li><cite></cite><a href="/purchaseExamineList" target="rightFrame">采购单审核</a><i></i></li>
+            <li><cite></cite><a href="/brandList" target="rightFrame">品牌管理</a><i></i></li>
+            <li><cite></cite><a href="/productTypeList" target="rightFrame">商品类型管理</a><i></i></li>
+            <li><cite></cite><a href="/productList" target="rightFrame">商品管理</a><i></i></li>
+            <li><cite></cite><a href="/manufacturerList" target="rightFrame">厂商管理</a><i></i></li>
+        </ul>
+    </dd>
+
+    <dd>
+        <div class="title">数据统计</div>
+        <ul class="menuson">
+            <li><cite></cite><a href="/salesStatis" target="rightFrame">客户销量统计</a><i></i></li>
+            <li><cite></cite><a href="/purchaseStatis" target="rightFrame">厂商采购统计</a><i></i></li>
+            <li><cite></cite><a href="/deliveryStatis" target="rightFrame">出库统计</a><i></i></li>
+            <li><cite></cite><a href="/stockStatis" target="rightFrame">入库统计</a><i></i></li>
+        </ul>
+    </dd>
+    <dd>
+        <div class="title">系统管理</div>
+        <ul class="menuson">
+            <li><cite></cite><a href="/userList" target="rightFrame">用户管理</a><i></i></li>
+            <li><cite></cite><a href="/deptList" target="rightFrame">部门管理</a><i></i></li>
+            <li><cite></cite><a href="/positionList" target="rightFrame">职位管理</a><i></i></li>
+            <li><cite></cite><a href="/moduleList" target="rightFrame">模块管理</a><i></i></li>
+            <li><cite></cite><a href="/logList" target="rightFrame">日志管理</a><i></i></li>
+            <li><cite></cite><a href="/areaList" target="rightFrame">区域管理</a><i></i></li>
+        </ul>
+    </dd>
+
+</dl>
+
 </body>
 </html>
+

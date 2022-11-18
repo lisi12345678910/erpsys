@@ -31,7 +31,7 @@ public class SysDeptAction {
      *
      * @return
      */
-    @RequestMapping("/deptlistView")
+    @RequestMapping("/sys/dept/deptList")
     public String userlistView() {
         return "sys/dept/deptList";
     }

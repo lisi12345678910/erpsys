@@ -28,7 +28,7 @@ public class SysCityAction {
      * 区域列表前端页面展示
      * @return
      */
-    @RequestMapping("/arealistView")
+    @RequestMapping("/sys/area/areaList")
     public String arealistView(){
         return "sys/area/areaList";
     }

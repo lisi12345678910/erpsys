@@ -25,7 +25,7 @@ public class SysModuleAction {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @RequestMapping("/modulelistView")
+    @RequestMapping("/sys/modules/moduleList")
     public String modulelistView(){
         return "sys/modules/moduleList";
     }

@@ -28,7 +28,7 @@ public class SysPositionAction {
      * 职位鼓励页面请求
      * @return
      */
-    @RequestMapping("/positionlistView")
+    @RequestMapping("/sys/position/positionList")
     private String positionlistView(){
         return "sys/position/positionList";
     }
