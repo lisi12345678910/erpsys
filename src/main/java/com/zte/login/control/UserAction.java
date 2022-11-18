@@ -99,6 +99,9 @@ public class UserAction {
     public List<Module> loginPermission() {
         LoginUser loginUser = (LoginUser) redisTemplate.opsForValue().get("loginUser");
         List<Module> modules = loginUser.getModules();
+        for (Module module : modules) {
+            System.out.println(module);
+        }
         return modules;
     }
 

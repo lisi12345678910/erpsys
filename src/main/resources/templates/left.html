@@ -6,7 +6,7 @@
     <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
     <script language="JavaScript" src="../static/js/jquery.js"></script>
 
-    <script type="text/javascript">
+    <script>
         $(function(){
             $.ajax({
                 url:"/loginPermission",
@@ -45,8 +45,6 @@
                             }else{
                                 $parent.addClass("open").find('.sub-menus').show();
                             }
-
-
                         }
                     });
 
@@ -74,7 +72,6 @@
 </head>
 <body style="background:#fff3e1;">
 <div class="lefttop">
-    <span></span><a href="#" id="toMain">首页</a>
     <span></span><a href="/main" id="toMain" target="_parent">首页</a>
 </div>
 <dl class="leftmenu" id="leftmenu">

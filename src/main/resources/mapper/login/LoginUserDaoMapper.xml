@@ -38,11 +38,15 @@
         </if>
     </select>
 
-    <select id="queryPermissionByJob" resultType="com.zte.login.model.Module" parameterType="com.zte.login.model.LoginUser">
+    <select id="queryPermissionByJob" resultType="module" parameterType="loginUser">
         <![CDATA[
             select
                 p.COMPID
-            from permission p where 1=1
+            from module m left join permission p
+                on p.COMPID = m.MODULE_ID
+            where 1=1
+              and m.MODULE_STATE = 0
+              and p.COMSTATE = 0
         ]]>
         <if test="jobId!=null and jobId!=''">
             <![CDATA[ and COMRID = #{jobId} ]]>
