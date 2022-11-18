@@ -89,7 +89,7 @@ public class UserAction {
     }
 
     @RequestMapping("/loginExit")
-    public String loginExit(HttpServletRequest request) {
+    public String loginExit() {
         redisTemplate.delete("loginUser");
         return "login";
     }

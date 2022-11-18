@@ -17,4 +17,5 @@ public class Module {
   private String moduleMurl;
   private String moduleState;
 
+  private String pN;
 }

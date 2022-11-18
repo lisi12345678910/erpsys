@@ -2,7 +2,8 @@ package com.zte.sys.control;
 
 
 import com.zte.sys.model.Job;
-import com.zte.sys.model.Module;
+import com.zte.login.model.Module ;
+
 import com.zte.sys.model.Users;
 import com.zte.sys.service.ISysModuleService;
 import com.zte.sys.service.ISysUserService;

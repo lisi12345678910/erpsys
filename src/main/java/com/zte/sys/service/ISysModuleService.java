@@ -1,6 +1,6 @@
 package com.zte.sys.service;
 
-import com.zte.sys.model.Module;
+import com.zte.login.model.Module ;
 import com.zte.util.PageModel;
 
 import java.util.List;

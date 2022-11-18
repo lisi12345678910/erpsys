@@ -5,7 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zte.sys.dao.ISysModuleDao;
 import com.zte.sys.model.Job;
-import com.zte.sys.model.Module;
+import com.zte.login.model.Module ;
 import com.zte.sys.model.Users;
 import com.zte.sys.dao.ISysUserDao;
 

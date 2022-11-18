@@ -2,10 +2,7 @@ package com.zte.sys.control;
 
 
 import com.zte.sys.model.Journal;
-import com.zte.sys.model.Module;
-import com.zte.sys.model.Users;
 import com.zte.sys.service.ISysJournalService;
-import com.zte.sys.service.ISysUserService;
 import com.zte.util.PageModel;
 import com.zte.util.ResultMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +10,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.List;
 
 @Controller
 public class SysJournalAction {

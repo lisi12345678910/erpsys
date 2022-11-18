@@ -38,7 +38,7 @@
         </if>
     </select>
 
-    <select id="queryPermissionByJob" resultType="Integer" parameterType="com.zte.login.model.LoginUser">
+    <select id="queryPermissionByJob" resultType="com.zte.login.model.Module" parameterType="com.zte.login.model.LoginUser">
         <![CDATA[
             select
                 p.COMPID

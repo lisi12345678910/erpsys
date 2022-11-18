@@ -13,6 +13,7 @@ import com.zte.sys.service.ISysUserService;
 import com.zte.util.PageModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -53,5 +54,10 @@ public class SysUserService  extends ServiceImpl<ISysUserDao,Users> implements I
         List<Dept> deptList = deptDao.simpledeptlist();
         return deptList;
     }
+
+//    @RequestMapping("/addusers")
+//    public String addusers(){
+//        return "userAdd";
+//    }
 
 }

@@ -14,6 +14,18 @@ function tipOpen(content) {
 function tipClose() {
 	$("#tip").fadeOut(200);
 }
+//添加
+function add(){
+  $.ajax({
+    url:"addusers",
+    type:"post",
+    dataType:"json",
+    data:{},
+    success:function (dat) {
+
+    }
+  })
+}
 
 //查部门
 function querydepts(){
@@ -166,7 +178,7 @@ $(function () {
         </select>
       </li>
       <li class="subBut" id="search"><img src="../../../static/images/t06.png" />查询</li>
-      <li class="subBut" id="add" onclick="window.location.href='userAdd.html'"><img src="../../../static/images/t01.png" />添加</li>
+      <li class="subBut" id="add" onclick="add()"><img src="../../../static/images/t01.png" />添加</li>
     </ul>
     <table class="tablelist">
       <thead>

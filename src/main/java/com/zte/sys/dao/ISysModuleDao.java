@@ -1,6 +1,6 @@
 package com.zte.sys.dao;
 
-import com.zte.sys.model.Module;
+import com.zte.login.model.Module ;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
