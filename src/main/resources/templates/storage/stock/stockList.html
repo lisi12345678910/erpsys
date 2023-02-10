@@ -6,14 +6,145 @@
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
 <script type="text/javascript">
-function tipOpen(content) {
+function tipOpen(content,id,state) {
 	$(".tipright p").text(content);
 	$("#tip").fadeIn(200);
+    $.ajax({
+    url: "/rkWarehouseIdAndState",
+    method: "post",
+    data: {id:id,state:state},
+    dataType: "json",
+    success: function (rel) {
+
+    }
+  })
 }
 function tipClose() {
 	$("#tip").fadeOut(200);
 }
 </script>
+  <script>
+    $(function () {
+      var pageNumsss = "[[${pageNum}]]";
+      queryWarehouse(pageNumsss);
+    })
+
+    var pageNums;
+    function queryWarehouse(pageNum) {
+      /*用jQuery实现*/
+      var cname = $("#queryname").val();
+      var rkIndent = $("#queryname2").val();
+      var state = $("#rk").val();
+      if (state=="请选择"){
+        state="";
+      }
+      $.ajax({
+        url: "/PageRkWarehouse",
+        method: "post",
+        data: {pageNum: pageNum, pageSize: 5,cname:cname,rkIndent:rkIndent,state:state},
+        dataType: "json",
+        success: function (rel) {
+          pageNums=rel.pageNum;
+          let str = "<thead>\n" +
+                  "        <tr>\n" +
+                  "          <th>序号</th>\n" +
+                  "          <th>采购单编号</th>\n" +
+                  "          <th>金额</th>\n" +
+                  "          <th>仓库名称</th>\n" +
+                  "          <th>入库时间</th>\n" +
+                  "          <th>入库人</th>\n" +
+                  "          <th>状态</th>\n" +
+                  "          <th>操作</th>\n" +
+                  "        </tr>\n" +
+                  "      </thead>";
+          rel.data.forEach(function (warehouse, i) {
+            let state = warehouse.state;
+            if (warehouse.state == 1) {
+              state = "未入库";
+            } else if (warehouse.state == 2) {
+              state = "已入库";
+            }
+
+            let zx = warehouse.state;
+            if (warehouse.state == 1) {
+              zx = "入库";
+            } else if (warehouse.state == 2) {
+              zx = "取消入库";
+            }
+
+            str += "<tbody>\n" +
+                    "   <tr>\n" +
+                    "          <td>" + warehouse.id + "</td>\n" +
+                    "          <td>" + warehouse.rkIndent + "</td>\n" +
+                    "          <td>" + warehouse.money + "</td>\n" +
+                    "          <td>" + warehouse.cname + "</td>\n" +
+                    "          <td>" + warehouse.rkDate + "</td>\n" +
+                    "          <td>" + warehouse.username + "</td>\n"+
+                    "          <td>"+state+"</td>\n" +
+                    "          <td>\n" +
+                    "          \t<a href=\"/stockView?pageNum="+rel.pageNum+"&rkIndentString="+warehouse.rkIndent+"&index=1\" class=\"tablelink\">查看详情</a>\n" +
+                    "            <a href=\"javascript:void(0)\" class=\"tablelink\" onclick=\"tipOpen('确定修改此采购单入库情况吗？',"+warehouse.id+","+warehouse.state+")\">"+zx+"</a>\n" +
+                    "          </td>\n" +
+                    "        </tr>"+
+                    "</tbody>\n";
+
+          })
+          $(".tablelist").html(str);
+
+          var index = " <div class=\"message\">共<i class=\"blue\">" + rel.totalCount + "</i>条记录，当前显示第&nbsp;<i class=\"blue\">" + rel.pageNum + "&nbsp;</i>页</div>";
+          index += "<ul class=\"paginList\">"
+          var before = rel.pageNum - 1;
+          if (before <= 1) {
+            before = 1;
+          }
+          index += " <li class=\"paginItem\"><a onclick=\"queryWarehouse(" + before + ")\" href=\"javascript:;\"><span class=\"pagepre\"></span></a></li>";
+
+          var begin = rel.pageNum - 5;
+          var end = rel.pageNum + 4;
+          if (begin < 1) {
+            begin = 1;
+            end = 10;
+          }
+          if (end > rel.totalPage) {
+            end = rel.totalPage;
+            begin = end - 9;
+          }
+          if (rel.totalPage < 10) {
+            begin = 1;
+            end = rel.totalPage;
+          }
+
+          for (let i = begin; i <= end; i++) {
+            var li;
+            if (rel.pageNum === i) {
+              li = "<li class=\"paginItem\"><a onclick=\"queryWarehouse(" + i + ")\" href=\"javascript:;\">" + i + "</a></li>"
+            }
+            index += "<li class=\"paginItem\"><a onclick=\"queryWarehouse(" + i + ")\" href=\"javascript:;\">" + i + "</a></li>";
+          }
+          var afterNum = rel.pageNum + 1;
+          if (afterNum >= rel.totalPage) {
+            afterNum = rel.totalPage;
+          }
+          index += "<li class=\"paginItem\"><a onclick=\"queryWarehouse(" + afterNum + ")\" href=\"javascript:;\"><span class=\"pagenxt\"></span></a></li>";
+          index += "</ul>"
+          $(".pagin").html(index);
+        }
+      })
+    }
+
+    function ztxg() {
+      $.ajax({
+        url: "/UpdateRkWarehouseIdAndState",
+        method: "post",
+        data: {},
+        dataType: "json",
+        success: function (rel) {
+          tipClose();
+          queryWarehouse(pageNums);
+        }
+      })
+    }
+    </script>
 </head>
 
 <body>
@@ -28,20 +159,20 @@ function tipClose() {
   <form action="" method="post">
     <ul class="tools">
       <li>仓库名称:
-        <input type="text" />
+        <input id="queryname" type="text" />
       </li>
       <li>采购单编号:
-        <input type="text" />
+        <input id="queryname2" type="text" />
       </li>
       <li>状态:
-        <select>
+        <select id="rk">
         	<option>请选择</option>
             <option value="1">未入库</option>
             <option value="2">已入库</option>
         </select>
       </li>
-      <li class="subBut" onclick="window.location.href='stockList.html'"><img src="../../../static/images/t06.png" />查询</li>
-      <li class="subBut" onclick="window.location.href='stockAdd.html'"><img src="../../../static/images/t01.png" />添加入库</li>
+      <li class="subBut" onclick="queryWarehouse()"><img src="../../../static/images/t06.png" />查询</li>
+      <li class="subBut" onclick="window.location.href='/stockAdd'"><img src="../../../static/images/t01.png" />添加入库</li>
     </ul>
     <table class="tablelist">
       <thead>
@@ -66,8 +197,7 @@ function tipClose() {
           <td>朱元璋</td>
           <td>未入库</td>
           <td>
-          	<a href="stockView.html" class="tablelink">查看详情</a>
-            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('确定此采购单入库吗？')">入库</a>
+
           </td>
         </tr>
         <tr>
@@ -79,8 +209,7 @@ function tipClose() {
           <td>周瑜</td>
           <td>已入库</td>
           <td>
-          	<a href="stockView.html" class="tablelink">查看详情</a> 
-            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('确定取消此采购单入库吗？')">取消入库</a>
+
           </td>
         </tr>
       </tbody>
@@ -103,13 +232,13 @@ function tipClose() {
   <!-- 提示框 -->
   <div id="tip" class="tip">
     <div class="tiptop"><span>提示信息</span><a onclick="tipClose()"></a></div>
-    <div class="tipinfo"> <span><img src="../../images/ticon.png" /></span>
+    <div class="tipinfo"> <span><img src="../../../static/images/ticon.png" /></span>
       <div class="tipright">
         <p></p>
         <cite>如果是请点击确定按钮 ，否则请点取消。</cite> </div>
     </div>
     <div class="tipbtn">
-      <input name="" type="button"  class="sure" value="确定" onclick="tipClose()" />
+      <input name="" type="button"  class="sure" value="确定" onclick="ztxg()" />
       &nbsp;
       <input name="" type="button"  class="cancel" value="取消" onclick="tipClose()" />
     </div>

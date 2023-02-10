@@ -1,8 +1,12 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml">-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
+  <script type="text/javascript" src="../../../static/js/jquery.js"></script>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/laydate/laydate.js"></script>
 <style type="text/css">
@@ -12,6 +16,69 @@
     line-height: 32px;
   }
 </style>
+  <script>
+    function update(){
+      $.ajax({
+        url:"/updateuser",
+        type:"post",
+        dataType:"json",
+        data:$("#form1").serializeArray(),
+        success:function (dat) {
+          window.location.href="/sys/users/userall"
+        }
+      })
+    }
+
+    //查该部门下的所有职业
+    function queryjobs(){
+      let deptid = $("#sel").val();
+      $.ajax({
+        url:"/queryjobs",
+        type:"post",
+        dataType:"json",
+        data:{deptId:deptid},
+        success:function (dat) {
+          let resultData = dat.resultData;
+          let str = ``
+          for (let i = 0; i < resultData.length; i++) {
+            let resultDatum = resultData[i];
+
+            str += `<option value="${resultDatum.jobId}">${resultDatum.jobName}</option>`
+          }
+          str += `<option value="" selected>请选择</option>`
+          $("#cid").html(str)
+        }
+      })
+    }
+    //查该部门下的所有职业
+    function queryjobs1(){
+      let deptid1 = $("#sel").val();
+      let jobid = $("#id1").val();
+      $.ajax({
+        url:"/queryjobs",
+        type:"post",
+        dataType:"json",
+        data:{deptId:deptid1},
+        success:function (dat) {
+          let resultData = dat.resultData;
+          let str = ``
+          for (let i = 0; i < resultData.length; i++) {
+            let resultDatum = resultData[i];
+
+            str += `<option value="${resultDatum.jobId}" selected="${resultDatum.jobId==jobid}">${resultDatum.jobName}</option>`
+          }
+          $("#cid").html(str)
+        }
+      })
+    }
+
+    $(function () {
+      queryjobs1()
+      $("#sel").change(function () {
+        queryjobs()
+      })
+    })
+  </script>
 </head>
 
 <body>
@@ -25,65 +92,69 @@
 <div class="formbody">
   <div class="formtitle"><span>员工信息</span></div>
   <ul class="forminfo">
+    <form id="form1">
     <li>
       <label>员工编号</label>
-      <input name="" type="text" value="9527" class="dfinput" />
+      <input name="uId" type="text" th:value="${userview.getUId()}" class="dfinput" readonly/>
       <i>必填，不能超过30个字符</i>
     </li>
     <li>
       <label>员工姓名</label>
-      <input name="" type="text" value="唐寅" class="dfinput" />
+      <input name="uname" type="text" th:value="${userview.getUname()}" class="dfinput" />
       <i>必填，不能超过30个字符</i>
     </li>
     <li>
       <label>密码</label>
-      <input name="" type="password" value="123456" class="dfinput" />
+      <input name="upassword" type="password" th:value="${userview.getUpassword()}" class="dfinput" />
       <i>必填，不能超过30个字符</i>
     </li>
     <li>
       <label>性别</label>
       <cite>
-          <input name="gender" type="radio" value="1" checked="checked" />男
-          &nbsp;&nbsp;&nbsp;&nbsp;
-          <input name="gender" type="radio" value="2" />女
+        <span th:if="${userview.getSex()==1}">
+          <input name="sex" type="radio" value="1" checked="checked" />男
+          <input name="sex" type="radio" value="2" />女
+        </span>  &nbsp;
+        <span th:if="${userview.getSex()==2}">
+          <input name="sex" type="radio" value="1"  />男
+          <input name="sex" type="radio" value="2" checked="checked" />女
+        </span>
       </cite>
     </li>
     <li>
       <label>联系方式</label>
-      <input name="" type="text" value="17370899727" class="dfinput" />
+      <input name="utelephone" type="text" th:value="${userview.getUtelephone()}" class="dfinput" />
       <i>必填，不能超过30个字符</i>
     </li>
     <li>
       <label>出生年月</label>
-      <input name="" class="dfinput laydate-icon" id="birthday" value="2014-6-25">
+<!--      <input name="birthday" class="dfinput laydate-icon" id="birthday" th:value="${userview.getBirthday()}">-->
+      <input name="birthday" class="dfinput laydate-icon" id="birthday" th:value="${#dates.format(userview.getBirthday(), 'yyyy-MM-dd')}">
     </li>
     <li>
       <label>所属部门</label>
-      <select name="" class="dfselect">
-        <option value="" selected="selected">研发</option>
-        <option value="">销售</option>
-        <option value="">财务</option>
+      <select name="deptId" class="dfselect" id="sel">
+        <option th:each="d:${deptlist}" th:value="${d.getDeptId()}" th:text="${d.getDeptName()}" th:selected="${userview.getDeptId() eq d.getDeptId()}"></option>
       </select>
     </li>
     <li>
       <label>职位</label>
-      <select name="" class="dfselect">
-        <option value="" selected="selected">经理</option>
-        <option value="">高级工程师</option>
-        <option value="">中级工程师</option>
-        <option value="">初级工程师</option>
+      <select name="jobId" class="dfselect" id="cid">
+        <inpute style="display: none" th:id="id1" th:value="${userview.getJobId()}"></inpute>
+        <option th:each="e:${joblist}" th:value="${e.getJobId()}" th:text="${e.getJobName()}" th:selected="${userview.getJobId() eq e.getJobId()}"></option>
       </select>
     </li>
     <li>
       <label>状态</label>
-      <select name="" class="dfselect">
-        <option value="" selected="selected">在职</option>
-        <option value="">离职</option>
+      <select name="statusId" class="dfselect">
+        <option value="1" th:selected="${userview.getStatusId() eq 1}">在职</option>
+        <option value="0" th:selected="${userview.getStatusId() eq 0}">离职</option>
       </select>
     </li>
+    </form>
     <li>
       <label>&nbsp;</label>
-      <input name="" type="button" class="btn" value="确认保存"/>
+      <input name="" onclick="update()" type="button" class="btn" value="确认保存"/>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       <input name="" type="button" class="btn" value="返回"  onclick="window.history.go(-1);"/>
     </li>

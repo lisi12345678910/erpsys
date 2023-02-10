@@ -1,16 +1,11 @@
 package com.zte.sys.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zte.common.model.City;
 import com.zte.sys.dao.ISysCityDao;
-import com.zte.sys.model.City;
-import com.zte.sys.model.Job;
-import com.zte.sys.model.Users;
-import com.zte.sys.dao.ISysUserDao;
 
 import com.zte.sys.service.ISysCityService;
-import com.zte.sys.service.ISysUserService;
 import com.zte.util.PageModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

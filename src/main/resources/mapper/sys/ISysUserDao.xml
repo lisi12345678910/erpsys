@@ -5,7 +5,7 @@
 <mapper namespace="com.zte.sys.dao.ISysUserDao">
     <cache>
     </cache>
-    <select id="userlist" resultType="com.zte.sys.model.Users">
+    <select id="userlist" resultType="Users">
         select * from users,job,dept where users.DEPT_ID = dept.DEPT_ID and users.JOB_ID = job.JOB_ID
         <if test="uId != null">
             and users.U_ID = #{uId}
@@ -21,4 +21,27 @@
         </if>
     </select>
 
+    <select id="finduser" resultType="Users">
+        select * from users,job,dept where users.DEPT_ID = dept.DEPT_ID and users.JOB_ID = job.JOB_ID
+        <if test="uId != null">
+            and users.U_ID = #{uId}
+        </if>
+    </select>
+
+    <insert id="usersadd">
+        insert into users values (#{uId},#{uname},#{upassword},#{utelephone},#{jobId},#{sex},#{statusId},#{hiredate},#{leavedate},#{birthday},#{deptId})
+    </insert>
+
+    <update id="updatestatus">
+        update users set users.STATUS_ID = !users.STATUS_ID where U_ID = #{uId}
+    </update>
+
+    <insert id="insertleavedate">
+        update users set users.LEAVEDATE =#{date} where users.U_ID = #{uIde}
+    </insert>
+
+
+    <update id="updateuser">
+        update users set users.U_ID = #{uId},users.UNAME = #{uname},users.UPASSWORD = #{upassword},users.SEX = #{sex},users.UTELEPHONE = #{utelephone},users.BIRTHDAY = #{birthday},users.DEPT_ID = #{deptId},users.JOB_ID = #{jobId},users.STATUS_ID = #{statusId} where U_ID = #{uId}
+    </update>
 </mapper>

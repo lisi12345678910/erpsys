@@ -6,12 +6,57 @@
     <cache>
     </cache>
 
-    <select id="modulelist" resultType="com.zte.login.model.Module">
+    <select id="modulelist" resultType="Module">
         select * from module left join (select MODULE_ID pid,MODULE_RNAME pn from module where MODULE_PID = 0) p on module.MODULE_PID = p.pid
         <where>
             <if test="moduleRname != null and moduleRname != ''">
                 module.MODULE_RNAME = #{moduleRname}
             </if>
         </where>
+    </select>
+
+    <select id="simplefathermodulelist" resultType="Module">
+        select * from module where module.MODULE_PID = 0
+    </select>
+
+    <insert id="moduleadd">
+        insert into module values (#{moduleId},#{moduleRname},#{modulePid},#{moduleMurl},#{moduleState})
+    </insert>
+
+    <select id="findmodule" resultType="Module">
+        select * from module left join (select MODULE_ID pid,MODULE_RNAME pn from module where MODULE_PID = 0) p on module.MODULE_PID = p.pid
+        where module.MODULE_ID = #{moduleId}
+    </select>
+
+    <update id="updatemodule">
+        update module set module.MODULE_RNAME = #{moduleRname},module.MODULE_PID = #{modulePid},module.MODULE_MURL = #{moduleMurl} where module.MODULE_ID = #{moduleId}
+    </update>
+
+    <select id="simplemodulelist" resultType="Module">
+        select * from module where module.MODULE_PID = 0
+    </select>
+
+    <select id="sonmodule" resultType="Module">
+        select * from module where module.MODULE_PID = #{moduleId}
+    </select>
+
+    <update id="updatemodulestatus">
+        update module set MODULE_STATE = !MODULE_STATE where MODULE_ID = #{uId}
+    </update>
+
+    <select id="sonmoudlelist" resultType="java.lang.Integer">
+        select MODULE_ID from module where MODULE_PID
+    </select>
+
+    <select id="isfather" resultType="java.lang.Integer">
+        select MODULE_PID from module where MODULE_ID = #{mId}
+    </select>
+
+    <update id="updatesonmodulestatus">
+        update module set MODULE_STATE = !MODULE_STATE where MODULE_PID = #{integer}
+    </update>
+
+    <select id="haveornomodule" resultType="com.zte.login.model.Module">
+        select * from module where MODULE_RNAME = #{moduleRname}
     </select>
 </mapper>

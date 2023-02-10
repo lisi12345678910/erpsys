@@ -1,9 +1,12 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml">-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
-<link href="../../../staticcss/style.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+  <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -19,23 +22,25 @@
   <ul class="forminfo">
     <li>
       <label>员工编号</label>
-      <cite>9527</cite>
+      <cite th:text="${journalview.getUId()}">9527</cite>
     </li>
     <li>
       <label>员工姓名</label>
-      <cite>唐寅</cite>
+      <cite th:text="${journalview.getUname()}">唐寅</cite>
     </li>
     <li>
       <label>操作模块</label>
-      <cite>用户管理</cite>
+      <cite th:text="${journalview.getModuleRname()}">用户管理</cite>
     </li>
     <li>
       <label>日志内容</label>
-      <cite>进行了添加用户xxx的操作</cite>
+      <cite th:text="${journalview.getJcontent()}">进行了添加用户xxx的操作</cite>
     </li>
     <li>
       <label>记录时间</label>
-      <cite>2016-11-20 15:05:29</cite>
+<!--      <cite th:text="${journalview.getJdate()}">2016-11-20 15:05:29</cite>-->
+<!--      <cite th:text="${#calendars.format(journalview.getJdate())}">2016-11-20 15:05:29</cite>-->
+      <cite th:text="${#dates.format(journalview.getJdate())}">2016-11-20 15:05:29</cite>
     </li>
 
     <li>

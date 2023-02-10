@@ -1,9 +1,172 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../../static/js/jquery.js"></script>
+<script type="text/javascript">
+  var bcustomname = false;
+  var bcompany = false;
+  var btelephone = false;
+  var bhomeaddress = false;
+  //查询所有的省和对应的市
+  function queryProvinceAndCity(){
+    $.ajax({
+      url:"/market/province",
+      method:"post",
+      data:{},
+      success:function (result) {
+        var province = result.resultData;
+        var str = '<option>请选择</option>';
+        for (let i = 0; i < province.length; i++) {
+          str += '<option value="' + province[i].id + '">' + province[i].pname + '</option>';
+        }
+        $("#p1").html(str);
+        var p1 = document.getElementById("p1");
+        p1.onchange = function () { //当选项改变时触发
+          pid = this.options[this.selectedIndex].value; //获取option的value
+          pname = this.options[this.selectedIndex].innerHTML; //获取option中间的文本
+          $.ajax({
+            url:"/market/city",
+            method:"post",
+            data:{pid:pid},
+            success:function (result) {
+              var city = result.resultData
+              var str1 = '<option>请选择</option>'
+              for (let i = 0; i < city.length; i++) {
+                str1 += '<option value="' + city[i].id + '">' + city[i].cname + '</option>';
+              }
+              $("#c1").html(str1);
+            }
+          })
+        }
+      }
+    })
+  }
+  //获取创建人的名字和id和创建时间
+  function getNameAndTime(){
+    $.ajax({
+      url:"/market/getNameAndTime",
+      method:"post",
+      data:{},
+      success:function (result) {
+        var date = result.resultData;
+        $("#creatid").val(date.createid);
+        $("#creatname").val(date.createname);
+        $("#creattime").val(date.createtime);
+      }
+    })
+  }
+  //保存数据
+  function add(){
+    customname = $("#customname").val();
+    company = $("#company").val();
+    telephone = $("#telephone").val();
+    homeaddress = $("#homeaddress").val();
+
+    c = $("#c1").val();
+    var sex = $("input[name='sex']:checked").val();
+    var distract = $("#distract").val();
+    var status = $("#status").val();
+    var createid = $("#creatid").val();
+    var creattime = $("#creattime").val();
+
+    if (bcustomname === true && bcompany === true && btelephone === true && bhomeaddress === true && c != "请选择"){
+      $.ajax({
+        url:"/market/addCustom",
+        method:"post",
+        data:{customname:customname,sex:sex,telephone:telephone,company:company,address:c,status:status,createtime:creattime,createid:createid,distract:distract,homeaddress:homeaddress},
+        success:function (result) {
+          alert(result.msg);
+          location.href = "window.location.href='/market/customer/ulist";
+          //location.reload();
+        }
+      })
+    }else {
+      if (bcustomname === false){
+        $("#tip1").css({"color":"red"})
+      }
+      if (bcompany === false){
+        $("#tip2").css({"color":"red"})
+      }
+      if (btelephone === false){
+        $("#tip3").css({"color":"red"})
+      }
+      if (bhomeaddress === false){
+        $("#tip4").css({"color":"red"})
+      }
+      if (c == "请选择"){
+        $("#tip5").css({"color":"red"})
+      }
+      alert("添加失败，请填写正确的信息！");
+    }
+  }
+
+  $(function () {
+    queryProvinceAndCity();
+    getNameAndTime();
+    $("#customname").blur(function () {
+      customname = $("#customname").val();
+      if (customname != null && customname != '' && customname.length < 30){
+        bcustomname = true;
+        $("#customname").css({"borderColor":"black"});
+        $("#tip1").css({"color":"black"})
+      }else {
+        bcustomname = false;
+        $("#customname").css({"borderColor":"red"});
+        $("#tip1").css({"color":"red"})
+      }
+    })
+    $("#company").blur(function () {
+      company = $("#company").val();
+      if (company != null && company != '' && company.length < 30){
+        bcompany = true;
+        $("#tip2").css({"color":"black"})
+        $("#company").css({"borderColor":"black"});
+      }else {
+        bcompany = false;
+        $("#tip2").css({"color":"red"})
+        $("#company").css({"borderColor":"red"});
+      }
+    })
+    $("#telephone").blur(function () {
+      var regex = /^1\d{10}$/;
+      telephone = $("#telephone").val();
+      var flag = regex.test(telephone);
+      if (flag){
+        btelephone = true;
+        $("#tip3").css({"color":"black"})
+        $("#telephone").css({"borderColor":"black"});
+      }else {
+        btelephone = false;
+        $("#tip3").css({"color":"red"})
+        $("#telephone").css({"borderColor":"red"});
+      }
+    })
+    $("#homeaddress").blur(function () {
+      homeaddress = $("#homeaddress").val();
+      if (homeaddress != null && homeaddress != '' && homeaddress.length < 30){
+        bhomeaddress = true;
+        $("#tip4").css({"color":"black"})
+        $("#homeaddress").css({"borderColor":"black"});
+      }else {
+        bhomeaddress = false;
+        $("#tip4").css({"color":"red"})
+        $("#homeaddress").css({"borderColor":"red"});
+      }
+    })
+    $("#c1").blur(function () {
+      c = $("#c1").val();
+      if (c != "请选择"){
+        $("#tip5").css({"color":"black"})
+      }else {
+        $("#tip5").css({"color":"red"})
+      }
+    })
+  })
+
+</script>
 </head>
 
 <body>
@@ -19,78 +182,75 @@
   <ul class="forminfo">
     <li>
       <label>姓名</label>
-      <input name="" type="text" class="dfinput" />
-      <i>必填，不能超过30个字符</i>
+      <input id="customname" name="" type="text" class="dfinput" />
+      <i id="tip1" >必填，不能超过30个字符</i>
     </li>
     <li>
       <label>性别</label>
       <cite>
-          <input name="" type="radio" value="1" checked="checked" />男
+          <input name="sex" type="radio" value="1" checked="checked" />男
           &nbsp;&nbsp;&nbsp;&nbsp;
-          <input name="" type="radio" value="2" />女
+          <input name="sex" type="radio" value="2" />女
       </cite>
     </li>
     <li>
       <label>所属公司名称</label>
-      <input name="" type="text" class="dfinput" />
-       <i>必填，不能超过30个字符</i>
+      <input id="company" name="" type="text" class="dfinput" />
+       <i id="tip2">必填，不能超过30个字符</i>
     </li>
     <li>
       <label>联系方式</label>
-      <input name="" type="text" class="dfinput" />
-       <i>必填，不能超过30个字符</i>
+      <input id="telephone" name="" type="text" class="dfinput" />
+       <i id="tip3">必填，不能超过30个字符</i>
     </li>
     <li>
       <label>联系地址</label>
-      <input name="" type="text" class="dfinput" />
-       <i>必填，不能超过130个字符</i>
+      <input id="homeaddress" name="" type="text" class="dfinput" />
+       <i id="tip4">必填，不能超过130个字符</i>
     </li>
     <li>
       <label>所属区域</label>
-      <select class="dfselect">
+      <select class="dfselect" id="p1">
           <option>请选择</option>
-          <option>北京</option>
-          <option>江苏</option>
-          <option>天津</option>
+
       </select>
       省
-      <select class="dfselect">
+      <select class="dfselect" id="c1">
           <option>请选择</option>
-          <option>北京</option>
-          <option>南京</option>
-          <option>天津</option>
+
       </select>
       市
-      <i>必选</i>
+      <i id="tip5">必选</i>
     </li>
     <li>
       <label>描述</label>
-      <textarea class="textinput"></textarea>
+      <textarea id="distract" class="textinput"></textarea>
       <i>可选</i>
     </li>
     <li>
       <label>状态</label>
-      <select class="dfselect">
+      <select class="dfselect" id="status">
           <option value="1">可用</option>
-          <option value="0">不可用</option>
+          <option value="2">不可用</option>
         </select>
       <i>必选</i>
     </li>
     <li>
       <label>创建人</label>
-      <input name="" type="text" value="马云" readonly="readonly" class="roinput" />
+      <input id="creatid" name="" type="hidden" value="马云" readonly="readonly" class="roinput" />
+      <input id="creatname" name="" type="text" value="马云" readonly="readonly" class="roinput" />
       <i>不能编辑</i>
     </li>
     <li>
       <label>创建时间</label>
-      <input name="" type="text" value="2017-11-18 15:36:10" readonly="readonly" class="roinput" />
+      <input id="creattime" name="" type="text" value="2017-11-18 15:36:10" readonly="readonly" class="roinput" />
       <i>不能编辑</i>
     </li>
     <li>
       <label>&nbsp;</label>
-      <input name="" type="button" class="btn" value="确定"/>
+      <input name="" type="button" onclick="add()" class="btn" value="确定"/>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='customerList.html'"/>
+      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='/market/customer/ulist'"/>
     </li>
   </ul>
 </div>

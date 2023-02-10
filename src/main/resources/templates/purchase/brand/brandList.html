@@ -1,19 +1,146 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
 <script type="text/javascript">
-function tipOpen(content) {
+function tipOpen(content,brandId,status) {
+    $("#brandId").val(brandId)
+    $("#status").val(status)
 	$(".tipright p").text(content);
 	$("#tip").fadeIn(200);
 }
 function tipClose() {
 	$("#tip").fadeOut(200);
 }
+function updateBrandStatus() {
+  var val = $("#brandId").val();
+  var val1 = $("#status").val();
+  if (val1 == "1"){
+    val1 = 0;
+  }else {
+    val1 = 1;
+  }
+  $.ajax({
+    url:"/purchase/updateBrandStatus",
+    method:"post",
+    data:{brandStatus:val1,brandId:val},
+    success:function () {
+      var pageNum = $("#pageNum").val();
+      var pageSize = $("#pageSize").val();
+      findPurchaseList(pageNum,pageSize);
+    }
+  })
+  tipClose()
+}
 </script>
+  <script>
+    function findPurchaseList(pageNum,pageSize) {
+      $("#pageNum").val(pageNum);
+      $("#pageSize").val(pageSize);
+      $.ajax({
+        type:"post",
+        url:"/purchase/pageAllBrand",
+        data: $("#searchForm").serializeArray(),
+        success:function (rel) {
+          var totalCount = rel.resultData.totalCount;
+          var pageNum = rel.resultData.pageNum;
+          var totalPage = rel.resultData.totalPage;
+          var pageSize = rel.resultData.pageSize;
+          var beforpageNum = pageNum - 1;
+          if (beforpageNum <= 0){
+            beforpageNum = 1;
+          }
+          var afterpageNum = pageNum + 1;
+          if (afterpageNum >= totalPage){
+            afterpageNum = totalPage;
+          }
+          let begin;
+          let end;
+          if (totalPage < 10){
+            begin = 1;
+            end = totalPage;
+          }else{
+            begin = pageNum - 5;
+            end = pageNum + 4;
+
+            if (begin < 1){
+              begin = 1;
+              end = 10;
+            }
+            if (end > totalPage){
+              end = totalPage;
+              begin = end - 9;
+            }
+          }
+          var str = '      <thead>\n' +
+                  '        <tr>\n' +
+                  '          <th>序号</th>\n' +
+                  '          <th>品牌名称</th>\n' +
+                  '          <th>状态</th>\n' +
+                  '          <th>创建时间</th>\n' +
+                  '          <th>创建人</th>\n' +
+                  '          <th>操作</th>\n' +
+                  '        </tr>\n' +
+                  '      </thead>\n' +
+                  '      <tbody>';
+          var a = 0 ;
+          var s = '';
+          var checkStatus = '';
+          for (var i = 0; i < rel.resultData.data.length ; i++) {
+            a++;
+            var status = rel.resultData.data[i].brandStatus;
+            if (status === '1') {
+              s = "可用";
+              checkStatus = "注销";
+            } else {
+              s = "不可用";
+              checkStatus = "恢复";
+            }
+            var brandName = rel.resultData.data[i].brandName;
+            str += '        <tr>\n' +
+                    '          <td>' + a + '</td>\n' +
+                    '          <td>' + brandName + '</td>\n' +
+                    '          <td>' + s + '</td>\n' +
+                    '          <td>' + rel.resultData.data[i].createTime + '</td>\n' +
+                    '          <td>' + rel.resultData.data[i].createName + '</td>\n' +
+                    '          <td>\n' +
+                    '            <a href="/purchase/brandUpdateView?brandId=' + rel.resultData.data[i].brandId + '" class="tablelink">修改</a>' +
+                    '            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen(\'是否确认' + checkStatus + '此条信息？\',' + rel.resultData.data[i].brandId + ',' + status + ')">' + checkStatus + '</a>' +
+                    '            </td>\n' +
+                    '        </tr>';
+          }
+          str += '      </tbody>'
+          $("#tablelist").html(str);
+          var str2 = '<div class="message">共<i class="blue">'+totalCount+'</i>条记录，当前显示第&nbsp;<i class="blue">'+pageNum+'&nbsp;</i>页</div>\n' +
+                  '      <ul class="paginList">\n' +
+                  '        <li class="paginItem"><a href="javascript:;" onclick="findPurchaseList('+beforpageNum+','+pageSize+')"><span class="pagepre"></span></a></li>'
+
+          for (let i = begin; i <= end; i++) {
+            if (i == pageNum){
+              str2 += '<li class="paginItem current"><a href="javascript:;" onclick="findPurchaseList('+ i +','+pageSize+')">'+ i +'</a></li>';
+            }else {
+              str2 += '<li class="paginItem"><a href="javascript:;" onclick="findPurchaseList('+ i +','+pageSize+')">'+ i +'</a></li>';
+            }
+          }
+          str2 += '<li class="paginItem"><a href="javascript:;" onclick="findPurchaseList('+afterpageNum+','+pageSize+')"><span class="pagenxt"></span></a></li>\n' +
+                  '      </ul>';
+          $(".pagin").html(str2);
+        }
+      })
+    }
+    $(function () {
+      var pageNum = 1;
+      var pageSize = 5;
+      findPurchaseList(pageNum,pageSize);
+    })
+    function searchBrand() {
+      var pageNum = 1;
+      var pageSize = 5;
+      findPurchaseList(pageNum,pageSize)
+    }
+  </script>
 </head>
 
 <body>
@@ -25,22 +152,24 @@ function tipClose() {
   </ul>
 </div>
 <div class="rightinfo">
-  <form action="" method="post">
+  <form action="" method="post" id="searchForm">
     <ul class="tools">
       <li> 品牌名称:
-        <input type="text" />
+        <input name="brandName" type="text" />
+        <input id="pageNum" name="pageNum" type="hidden" value="1"/>
+        <input id="pageSize" name="pageSize" type="hidden" value="5"/>
       </li>
       <li> 状态：
-        <select>
-          <option>请选择</option>
+        <select name="brandStatus" >
+          <option value="2">请选择</option>
           <option value="1">可用</option>
           <option value="0">不可用</option>
         </select>
       </li>
-      <li class="subBut" onclick="window.location.href='brandList.html'"><img src="../../../static/images/t06.png" />查询</li>
-      <li class="subBut" onclick="window.location.href='brandAdd.html'"><img src="../../../static/images/t01.png" />添加</li>
+      <li class="subBut" onclick="searchBrand()"><img src="../../../static/images/t06.png" />查询</li>
+      <li class="subBut" onclick="window.location.href='/purchase/brandAddView'"><img src="../../../static/images/t01.png" />添加</li>
     </ul>
-    <table class="tablelist">
+    <table class="tablelist" id="tablelist">
       <thead>
         <tr>
           <th>序号</th>
@@ -94,13 +223,15 @@ function tipClose() {
   <!-- 提示框 -->
   <div id="tip" class="tip">
     <div class="tiptop"><span>提示信息</span><a onclick="tipClose()"></a></div>
-    <div class="tipinfo"> <span><img src="../../images/ticon.png" /></span>
+    <div class="tipinfo"> <span><img src="../../../static/images/ticon.png" /></span>
       <div class="tipright">
         <p></p>
         <cite>如果是请点击确定按钮 ，否则请点取消。</cite> </div>
     </div>
     <div class="tipbtn">
-      <input name="" type="button"  class="sure" value="确定" onclick="tipClose()" />
+      <input id="brandId" name="brandId" type="hidden"/>
+      <input id="status" name="status" type="hidden"/>
+      <input name="" type="button"  class="sure" value="确定" onclick="updateBrandStatus()" />
       &nbsp;
       <input name="" type="button"  class="cancel" value="取消" onclick="tipClose()" />
     </div>

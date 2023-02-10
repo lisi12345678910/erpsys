@@ -1,9 +1,83 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+  <script>
+    $(function () {
+      $.ajax({
+        url:"/purchase/newProductView",
+        method:"post",
+        data:{},
+        success:function (rel) {
+          $("#createName").val(rel.resultData.createName)
+          $("#createTime").val(rel.resultData.createTime)
+        }
+      })
+      $.ajax({
+        url:"/purchase/findBrand",
+        method:"post",
+        data:{},
+        success:function (rel) {
+          var str = '                  <option value="0">请选择</option>\n';
+          for (let i = 0; i < rel.resultData.length; i++) {
+            str += '                  <option value="' + rel.resultData[i].brandId + '">' + rel.resultData[i].brandName + '</option>'
+          }
+          $("#brandId").html(str);
+          findCBrandValue()
+        }
+      })
+    })
+    function findCBrandValue() {
+      /*JavaScript实现*/
+      var element = document.getElementById("brandId");
+        element.onchange = function () {
+          valOption = this.options[this.selectedIndex].value; //获取option的value
+          findCType(valOption);
+        }
+    }
+    function findCType(valOption) {
+      $.ajax({
+        url:"/purchase/findType",
+        method:"post",
+        data:{brandId:valOption},
+        success:function (rel) {
+          var str = '                  <option value="0">请选择</option>\n';
+          for (let i = 0; i < rel.resultData.length; i++) {
+            str += '                  <option value="' + rel.resultData[i].typeId + '">' + rel.resultData[i].typeName + '</option>'
+          }
+          $("#typeId").html(str);
+        }
+      })
+    }
+    function saveProduct() {
+      var val = $("#createTime").val();
+      var val1 = $("#productModel").val();
+      var val2 = $("#productStatus").val();
+      var val3 = $("#brandId").val();
+      var val4 = $("#productUnit").val();
+      var val5 = $("#typeId").val();
+      if (val3 == "0"){
+        alert("品牌不能为空！");
+      }else if (val5 == "0"){
+        alert("商品类型不能为空！");
+      }else if (val1 == ""){
+        alert("商品型号不能为空！");
+      }else if (val4 == ""){
+        alert("单位不能为空！");
+      } else {
+        $.ajax({
+          url:"/purchase/saveProduct",
+          method:"post",
+          data:{createTime:val,productModel:val1,productStatus:val2,brandId:val3,productUnit:val4,typeId:val5},
+          success:function () {
+            location.href = "/purchase/product/cplist";
+          }
+        })
+      }
+    }
+  </script>
 </head>
 
 <body>
@@ -19,55 +93,53 @@
   <ul class="forminfo">
     <li>
       <label>品牌名称</label>
-      <select class="dfselect">
-      	  <option>请选择</option>
-          <option>联想</option>
-          <option>海尔</option>
-        </select>
+      <select id="brandId" name="brandId" class="dfselect">
+        <option>请选择</option>
+        <option>联想</option>
+        <option>海尔</option>
+      </select>
       <i>必选</i>
     </li>
     <li>
       <label>商品类型</label>
-      <select class="dfselect">
-      	  <option>请选择</option>
-          <option>笔记本</option>
-          <option>电视机</option>
+      <select id="typeId" name="typeId" class="dfselect">
+      	  <option value="0">请选择</option>
         </select>
       <i>必选</i>
     </li>
     <li>
       <label>商品型号</label>
-      <input name="" type="text" class="dfinput" />
+      <input id="productModel" name="productModel" type="text" class="dfinput" />
       <i>必填，不能超过50个字符</i>
     </li>
     <li>
       <label>单位</label>
-      <input name="" type="text" class="dfinput" />
+      <input id="productUnit" name="productUnit" type="text" class="dfinput" />
       <i>必填，不能超过10个字符</i>
     </li>
     <li>
       <label>状态</label>
-      <select class="dfselect">
-          <option value="1">可用</option>
-          <option value="0">不可用</option>
-        </select>
+      <select id="productStatus" name="productStatus" class="dfselect">
+        <option value="1">可用</option>
+        <option value="0">不可用</option>
+      </select>
       <i>必选</i>
     </li>
     <li>
       <label>创建人</label>
-      <input name="" type="text" value="马云" readonly="readonly" class="roinput" />
+      <input id="createName" name="createName" type="text" value="马云" readonly="readonly" class="roinput" />
       <i>不能编辑</i>
     </li>
     <li>
       <label>创建时间</label>
-      <input name="" type="text" value="2017-11-18 15:36:10" readonly="readonly" class="roinput" />
+      <input id="createTime" name="createTime" type="text" value="2017-11-18 15:36:10" readonly="readonly" class="roinput" />
       <i>不能编辑</i>
     </li>
     <li>
       <label>&nbsp;</label>
-      <input name="" type="button" class="btn" value="确定"/>
+      <input name="" type="button" class="btn" value="确定" onclick="saveProduct()"/>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='productList.html'"/>
+      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='/purchase/product/cplist'"/>
     </li>
   </ul>
 </div>

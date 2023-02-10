@@ -1,10 +1,133 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+<script type="text/javascript">
+
+  //金额格式化
+  function format_with_regex(number) {
+    return !(number + '').includes('.')
+            ? // 就是说1-3位后面一定要匹配3位
+            (number + '').replace(/\d{1,3}(?=(\d{3})+$)/g, (match) => {
+              return match + ',';
+            })
+            : (number + '').replace(/\d{1,3}(?=(\d{3})+(\.))/g, (match) => {
+              return match + ',';
+            });
+  }
+  //order数据回显
+  function orderBack(){
+    $.ajax({
+      url:"/market/OrderBack",
+      method:"post",
+      data:{},
+      success:function (result) {
+        let orders = result.resultData;
+        let status = orders.status;
+        if (orders.status==0){
+          status = "未审核";
+        }else if (orders.status==1){
+          status = "审核中";
+        }else if (orders.status==2){
+          status = "审核通过";
+        }else if (orders.status==3){
+          status = "审核不通过";
+        }
+        let ordermoney = format_with_regex(orders.ordermoney);
+        let str = '    <li>\n' +
+                '      <label>订单编号</label>\n' +
+                '      <cite>'+orders.orderid+'</cite>\n' +
+                '    </li>\n' +
+                '    <li>\n' +
+                '      <label>客户姓名</label>\n' +
+                '      <cite><a href="/market/customerView?id='+orders.customid+'" title="点击查看客户详细信息" class="tablelink">'+orders.customname+'</a></cite>\n' +
+                '    </li>\n' +
+                '    <li>\n' +
+                '      <label>联系电话</label>\n' +
+                '      <cite>'+orders.telephone+'</cite>\n' +
+                '    </li>\n' +
+                '    <li>\n' +
+                '      <label>订购时间</label>\n' +
+                '      <cite>'+orders.ordertime+'</cite>\n' +
+                '    </li>\n' +
+                '    <li>\n' +
+                '      <label>总金额</label>\n' +
+                '       <cite>￥'+ordermoney+'</cite>\n' +
+                '    </li>\n' +
+                '    <li>\n' +
+                '      <label>操作人</label>\n' +
+                '      <cite>'+orders.operator+'</cite>\n' +
+                '    </li>\n' +
+                '    <li>\n' +
+                '      <label>审核状态</label>\n' +
+                '      <cite>'+status+'</cite>\n' +
+                '    </li>\n' +
+                '    <li>\n' +
+                '      <label>审核意见</label>\n' +
+                '      <cite>'+orders.opinion+'</cite>\n' +
+                '    </li>\n' +
+                '    <li>\n' +
+                '      <label>审核人</label>\n' +
+                '      <cite>'+orders.checker+'</cite>\n' +
+                '    </li>\n' +
+                '    <li>\n' +
+                '      <label>审核时间</label>\n' +
+                '      <cite>'+orders.chectime+'</cite>\n' +
+                '    </li>';
+        $(".forminfo").html(str);
+
+        let str1 = '<input name="" type="button" class="btn" value="返回" onclick="window.location.href=\'/market/orders/ordersAll?pageNum='+orders.pageNum+'\'"/>';
+        $("#re").html(str1);
+      }
+    })
+  }
+  //orderDetail数据回显
+  function orderDetailBack(){
+    $.ajax({
+      url:"/market/orderDetailBack",
+      method:"post",
+      data:{},
+      success:function (result) {
+        let orderdetails = result.resultData;
+        console.log(orderdetails);
+        let str = '<thead>\n' +
+                '        <tr>\n' +
+                '          <th>序号</th>\n' +
+                '          <th>品牌</th>\n' +
+                '          <th>类型</th>\n' +
+                '          <th>型号</th>\n' +
+                '          <th>数量</th>\n' +
+                '          <th>单位</th>\n' +
+                '          <th>单价</th>\n' +
+                '          <th>金额</th>\n' +
+                '        </tr>\n' +
+                '      </thead>\n' +
+                '      <tbody>';
+        for (let i = 0; i < orderdetails.length; i++) {
+          str += '<tr>\n' +
+                  '          <td>'+(i+1)+'</td>\n' +
+                  '          <td>'+orderdetails[i].btand+'</td>\n' +
+                  '          <td>'+orderdetails[i].type+'</td>\n' +
+                  '          <td>'+orderdetails[i].product+'</td>\n' +
+                  '          <td>'+orderdetails[i].purchaseNum+'</td>\n' +
+                  '          <td>'+orderdetails[i].productUtil+'</td>\n' +
+                  '          <td>'+orderdetails[i].proprice+'</td>\n' +
+                  '          <td>'+orderdetails[i].prototal+'</td>\n' +
+                  '        </tr>';
+        }
+        str += '</tbody>';
+        $(".tablelist").html(str)
+      }
+    })
+  }
+  $(function () {
+    orderBack();
+    orderDetailBack();
+  })
+</script>
 </head>
 
 <body>
@@ -18,85 +141,13 @@
 <div class="formbody">
   <div class="formtitle"><span>订购单信息</span></div>
   <ul class="forminfo">
-    <li>
-      <label>订单编号</label>
-      <cite>DJ201711180001</cite>
-    </li>
-    <li>
-      <label>客户姓名</label>
-      <cite><a href="../../market/customer/customerView.html" title="点击查看客户详细信息" class="tablelink">王金平</a></cite>
-    </li>
-    <li>
-      <label>联系电话</label>
-      <cite>17370899727</cite>
-    </li>
-    <li>
-      <label>订购时间</label>
-      <cite>2017-11-18 15:36:10</cite>
-    </li>
-    <li>
-      <label>总金额</label>
-       <cite>￥9,876,582</cite>
-    </li>
-    <li>
-      <label>操作人</label>
-      <cite>关羽</cite>
-    </li>
-    <li>
-      <label>审核状态</label>
-      <cite>已审核通过</cite>
-    </li>
-    <li>
-      <label>审核意见</label>
-      <cite>做的很详细，同意通过</cite>
-    </li>
-    <li>
-      <label>审核人</label>
-      <cite>曹操</cite>
-    </li>
-    <li>
-      <label>审核时间</label>
-      <cite>2017-01-30 12:05:05</cite>
-    </li>
+
   </ul>
   <table class="tablelist">
-      <thead>
-        <tr>
-          <th>序号</th>
-          <th>品牌</th>
-          <th>类型</th>
-          <th>型号</th>
-          <th>数量</th>
-          <th>单位</th>
-          <th>单价</th>
-          <th>金额</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>联想</td>
-          <td>笔记本电脑</td>
-          <td>T470</td>
-          <td>10</td>
-          <td>台</td>
-          <td>9998</td>
-          <td>99980</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>联想</td>
-          <td>笔记本电脑</td>
-          <td>X260</td>
-          <td>5</td>
-          <td>台</td>
-          <td>5500</td>
-          <td>27500</td>
-        </tr>
-      </tbody>
+
   </table>
-  <div style="margin-top:20px; margin-left:20px;">
-  <input name="" type="button" class="btn" value="返回" onclick="window.history.go(-1);"/>
+  <div id="re" style="margin-top:20px; margin-left:20px;">
+
   </div>
 </div>
 <script type="text/javascript">

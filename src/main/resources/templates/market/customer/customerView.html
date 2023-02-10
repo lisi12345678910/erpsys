@@ -1,9 +1,99 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+  <script type="text/javascript">
+    function customDetail() {
+      $.ajax({
+        url:"/market/customerDetail",
+        method:"post",
+        data:{},
+        success:function (result) {
+          var customer = result.resultData;
+          let gender = customer.sex;
+          if(customer.sex==1){
+            gender = "男";
+          }else if(customer.sex==2){
+            gender = "女";
+          }
+          let province = customer.province;
+          let city = customer.city;
+          let address = province+city;
+          let status = customer.status;
+          if(customer.status==1){
+            status = "可用";
+          }else if(customer.status==2){
+            status = "不可用";
+          }
+          var str = '<div class="formtitle"><span>客户信息</span></div>\n' +
+                  '  <ul class="forminfo">\n' +
+                  '    <li>\n' +
+                  '      <label>姓名</label>\n' +
+                  '      <cite>'+customer.customname+'</cite>\n' +
+                  '    </li>\n' +
+                  '    <li>\n' +
+                  '      <label>性别</label>\n' +
+                  '      <cite>'+gender+'</cite>\n' +
+                  '    </li>\n' +
+                  '    <li>\n' +
+                  '      <label>所属公司名称</label>\n' +
+                  '      <cite>'+customer.company+'</cite>\n' +
+                  '    </li>\n' +
+                  '    <li>\n' +
+                  '      <label>联系方式</label>\n' +
+                  '      <cite>'+customer.telephone+'</cite>\n' +
+                  '    </li>\n' +
+                  '    <li>\n' +
+                  '      <label>联系地址</label>\n' +
+                  '      <cite>'+customer.homeaddress+'</cite>\n' +
+                  '    </li>\n' +
+                  '    <li>\n' +
+                  '      <label>所属区域</label>\n' +
+                  '      <cite>'+address+'</cite>\n' +
+                  '    </li>\n' +
+                  '    <li>\n' +
+                  '      <label>描述</label>\n' +
+                  '      <cite>'+customer.distract+'</cite>\n' +
+                  '    </li>\n' +
+                  '    <li>\n' +
+                  '      <label>状态</label>\n' +
+                  '      <cite>'+status+'</cite>\n' +
+                  '    </li>\n' +
+                  '    <li>\n' +
+                  '      <label>创建人</label>\n' +
+                  '      <cite>'+customer.createname+'</cite>\n' +
+                  '    </li>\n' +
+                  '    <li>\n' +
+                  '      <label>创建时间</label>\n' +
+                  '      <cite>'+customer.createtime+'</cite>\n' +
+                  '    </li>';
+          if (customer.panduan == 1){
+            str +='   <li>\n' +
+            '      <label>&nbsp;</label>\n' +
+            '      <input name="" type="button" class="btn" value="返回" onclick="window.location.href=\'/market/customer/ulist?pageNum='+customer.pageNum+'\'"/>\n' +
+            '    </li>\n' +
+            '  </ul>';
+          }else if (customer.panduan == 2){
+            str += '   <li>\n' +
+                    '      <label>&nbsp;</label>\n' +
+                    '      <input name="" type="button" class="btn" value="返回" onclick="window.location.href=\'/market/customerBrowse/ulist?pageNum='+customer.pageNum+'\'"/>\n' +
+                    '    </li>\n' +
+                    '  </ul>';
+          }
+
+          $(".formbody").html(str);
+        }
+      })
+    }
+
+    $(function () {
+      customDetail();
+    })
+  </script>
+
 </head>
 
 <body>
@@ -15,53 +105,7 @@
   </ul>
 </div>
 <div class="formbody">
-  <div class="formtitle"><span>客户信息</span></div>
-  <ul class="forminfo">
-    <li>
-      <label>姓名</label>
-      <cite>王金平</cite>
-    </li>
-    <li>
-      <label>性别</label>
-      <cite>男</cite>
-    </li>
-    <li>
-      <label>所属公司名称</label>
-      <cite>阿里巴巴</cite>
-    </li>
-    <li>
-      <label>联系方式</label>
-      <cite>17370899727</cite>
-    </li>
-    <li>
-      <label>联系地址</label>
-      <cite>江苏南京苏铺路180号泸州花园7栋3单元1801室</cite>
-    </li>
-    <li>
-      <label>所属区域</label>
-      <cite>江苏省南京市</cite>
-    </li>
-    <li>
-      <label>描述</label>
-      <cite>阿里巴巴上市公司</cite>
-    </li>
-    <li>
-      <label>状态</label>
-      <cite>可用</cite>
-    </li>
-    <li>
-      <label>创建人</label>
-      <cite>马云</cite>
-    </li>
-    <li>
-      <label>创建时间</label>
-      <cite>2017-11-18 15:36:10</cite>
-    </li>
-    <li>
-      <label>&nbsp;</label>
-      <input name="" type="button" class="btn" value="返回" onclick="window.history.go(-1);"/>
-    </li>
-  </ul>
+
 </div>
 </body>
 </html>

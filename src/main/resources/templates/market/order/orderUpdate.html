@@ -1,10 +1,486 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+<script type="text/javascript">
+    var a = 1
+    var bcustomname = true;
+    //金额格式化
+    function format_with_regex(number) {
+        return !(number + '').includes('.')
+            ? // 就是说1-3位后面一定要匹配3位
+            (number + '').replace(/\d{1,3}(?=(\d{3})+$)/g, (match) => {
+                return match + ',';
+            })
+            : (number + '').replace(/\d{1,3}(?=(\d{3})+(\.))/g, (match) => {
+                return match + ',';
+            });
+    }
+    //删除重置序号
+    function reNum(){
+      var elements = document.getElementsByClassName("number");
+      var length = document.getElementsByClassName("number").length;
+      for (let index = 0; index < length; index++) {
+        var str = '<input type="checkbox" name="checkbox" value="' + a + '">';
+        elements[index].innerHTML = (index + 1) + str;
+      }
+    }
+
+
+    //查询出所有的品牌
+    function findCBrand(index) {
+        $.ajax({
+            url:"/market/findAllBrand",
+            method:"post",
+            data:{},
+            success:function (rel) {
+                let brands = rel.resultData;
+                let str = '<option count="" productUnit="" productPrice="" totalPrice="">请选择</option>';
+                for (let i = 0; i < brands.length; i++) {
+                    str += '                  <option value="' + brands[i].brandId + '" count="" productUnit="" productPrice="" totalPrice="">' + brands[i].brandName + '</option>'
+                }
+                let element = document.getElementsByClassName("cbrand")[index];
+                element.innerHTML = str;
+            }
+        })
+    }
+    function findCBrandValue() {
+        /*JavaScript实现*/
+        let elements = document.getElementsByClassName("cbrand");
+        let length = document.getElementsByClassName("cbrand").length;
+        for (let index = 0; index < length; index++) {
+            elements[index].onchange = function () {
+                valOption = this.options[this.selectedIndex].value; //获取option的value
+                txtOption = this.options[this.selectedIndex].innerHTML; //获取option中间的文本
+                countOption = this.options[this.selectedIndex].getAttribute("count"); //获取option的value
+                unitOption = this.options[this.selectedIndex].getAttribute("productUnit"); //获取option的value
+                priceOption = this.options[this.selectedIndex].getAttribute("productPrice"); //获取option的value
+                moneyOption = this.options[this.selectedIndex].getAttribute("totalPrice"); //获取option的value
+                txtOption = this.options[this.selectedIndex].innerHTML; //获取option中间的文本
+                var element = document.getElementsByClassName("productUnit")[index];
+                element.innerHTML = unitOption;
+                let element1 = document.getElementsByClassName("productPrice")[index];
+                element1.value = priceOption;
+                let element2 = document.getElementsByClassName("totalPrice")[index];
+                element2.value = moneyOption;
+                let element3 = document.getElementsByClassName("count")[index];
+                element3.value = countOption;
+                findCType(valOption,index);
+                valOption = 0;
+                findCProduct(valOption,index);
+                sumAllPrice();
+            }
+        }
+        sumAllPrice();
+    }
+
+    //查询对应品牌的类型
+    function findCType(valOption,index) {
+        $.ajax({
+            url:"/market/findType",
+            method:"post",
+            data:{brandId:valOption},
+            success:function (rel) {
+                let type = rel.resultData
+                let str = '                  <option count="" productUnit="" productPrice="" totalPrice="">请选择</option>\n';
+                for (let i = 0; i < type.length; i++) {
+                    str += '                  <option value="' + type[i].typeId + '" count="" productUnit="" productPrice="" totalPrice="">' + type[i].typeName + '</option>'
+                }
+                let element = document.getElementsByClassName("cType")[index];
+                element.innerHTML = str;
+                findCTypeValue();
+            }
+        })
+    }
+    function findCTypeValue() {
+        /*JavaScript实现*/
+        let elements = document.getElementsByClassName("cType");
+        let length = document.getElementsByClassName("cType").length;
+        for (let index = 0; index < length; index++) {
+            elements[index].onchange = function () {
+                valOption = this.options[this.selectedIndex].value; //获取option的value
+                txtOption = this.options[this.selectedIndex].innerHTML; //获取option中间的文本
+                countOption = this.options[this.selectedIndex].getAttribute("count"); //获取option的value
+                unitOption = this.options[this.selectedIndex].getAttribute("productUnit"); //获取option的value
+                priceOption = this.options[this.selectedIndex].getAttribute("productPrice"); //获取option的value
+                moneyOption = this.options[this.selectedIndex].getAttribute("totalPrice"); //获取option的value
+                txtOption = this.options[this.selectedIndex].innerHTML; //获取option中间的文本
+                var element = document.getElementsByClassName("productUnit")[index];
+                element.innerHTML = unitOption;
+                let element1 = document.getElementsByClassName("productPrice")[index];
+                element1.value = priceOption;
+                let element2 = document.getElementsByClassName("totalPrice")[index];
+                element2.value = moneyOption;
+                let element3 = document.getElementsByClassName("count")[index];
+                element3.value = countOption;
+                findCProduct(valOption,index);
+                sumAllPrice();
+            }
+        }
+        sumAllPrice();
+    }
+
+    //查询对应的产品
+    function findCProduct(valOption,index) {
+        $.ajax({
+            url:"/market/findProducts",
+            method:"post",
+            data:{typeId:valOption},
+            success:function (rel) {
+                let products = rel.resultData;
+                let str = '                  <option count="" productUnit="" productPrice="" totalPrice="">请选择</option>\n';
+                for (let i = 0; i < products.length; i++) {
+                    str += '                  <option value="'+products[i].productId+'" count="" productUnit="'+products[i].productUnit+'" productPrice="'+products[i].productPrice+'" totalPrice="">'+products[i].productModel+'</option>'
+                }
+                let element = document.getElementsByClassName("cProduct")[index];
+                element.innerHTML = str;
+                findCProductValue();
+            }
+        })
+    }
+    function findCProductValue() {
+        /*JavaScript实现*/
+        let elements = document.getElementsByClassName("cProduct");
+        let length = document.getElementsByClassName("cProduct").length;
+        for (let index = 0; index < length; index++) {
+            elements[index].onchange = function () {
+                valOption = this.options[this.selectedIndex].value; //获取option的value
+                countOption = this.options[this.selectedIndex].getAttribute("count"); //获取option的value
+                unitOption = this.options[this.selectedIndex].getAttribute("productUnit"); //获取option的value
+                priceOption = this.options[this.selectedIndex].getAttribute("productPrice"); //获取option的value
+                moneyOption = this.options[this.selectedIndex].getAttribute("totalPrice"); //获取option的value
+                txtOption = this.options[this.selectedIndex].innerHTML; //获取option中间的文本
+                var element = document.getElementsByClassName("productUnit")[index];
+                element.innerHTML = unitOption;
+                let element1 = document.getElementsByClassName("productPrice")[index];
+                element1.value = priceOption;
+                let element2 = document.getElementsByClassName("totalPrice")[index];
+                element2.value = moneyOption;
+                let element3 = document.getElementsByClassName("count")[index];
+                element3.value = countOption;
+                sumAllPrice();
+            }
+        }
+        sumAllPrice();
+
+    }
+
+
+    //计算每一条订购的价格
+    function sumPrice() {
+        var elements = document.getElementsByClassName("count");
+        var length = document.getElementsByClassName("count").length;
+        for (let index = 0; index < length; index++) {
+            elements[index].onblur = function () {
+                var count = this.value;
+                var regex = /^[0-9]*$/;
+                var flag = regex.test(count);
+                if (flag){
+                    var element = document.getElementsByClassName("productPrice")[index];
+                    var priceVal = element.value;
+                    var total = count * priceVal;
+                    var element1 = document.getElementsByClassName("totalPrice")[index];
+                    element1.value = total;
+                    sumAllPrice();
+                }else {
+                    alert("输入必须为数字！")
+                }
+
+            }
+        }
+    }
+
+    //计算总价
+    function sumAllPrice() {
+        var elements = document.getElementsByClassName("totalPrice");
+        var length = document.getElementsByClassName("totalPrice").length;
+        var sum = 0;
+        for (let index = 0; index < length; index++) {
+            var value = elements[index].value;
+            sum += Number(value);
+        }
+        $("#ordermoney").val(sum);
+    }
+
+    //新增订购信息
+    function addOrder() {
+        a++;
+        var str = '      <tr class="newRow">\n' +
+            '          <td class="number">' + a + '<input type="checkbox" name="checkbox" value="' + a + '"></td>\n' +
+            '          <td>\n' +
+            '              <select class="cbrand">\n' +
+            '                  <option value="0">请选择</option>\n' +
+            '              </select>\n' +
+            '          </td>\n' +
+            '          <td>\n' +
+            '              <select class="cType">\n' +
+            '                  <option value="0">请选择</option>\n' +
+            '              </select>\n' +
+            '          </td>\n' +
+            '          <td>\n' +
+            '              <select class="cProduct">\n' +
+            '                  <option value="0">请选择</option>\n' +
+            '              </select>\n' +
+            '          </td>\n' +
+            '          <td><input class="count" name="count" type="text" value="0" /></td>\n' +
+            '          <td class="productUnit">台</td>\n' +
+            '          <td><input class="productPrice" type="text" value="0" readonly="readonly" /></td>\n' +
+            '          <td><input class="totalPrice" type="text" value="0" readonly="readonly" /></td>\n' +
+            '      </tr>'
+        $("#order").append(str)
+        findCBrand(a-1);
+        findCBrandValue();
+        sumPrice();
+    }
+    function fOrder() {
+        a++;
+        var str = '      <tr class="newRow" style="display:none">\n' +
+            '          <td>' + (a-1) + '<input type="checkbox" name="checkbox" value="' + a + '"></td>\n' +
+            '          <td>\n' +
+            '              <select class="cbrand">\n' +
+            '                  <option>请选择</option>\n' +
+            '              </select>\n' +
+            '          </td>\n' +
+            '          <td>\n' +
+            '              <select class="cType">\n' +
+            '                  <option>请选择</option>\n' +
+            '              </select>\n' +
+            '          </td>\n' +
+            '          <td>\n' +
+            '              <select class="cProduct">\n' +
+            '                  <option>请选择</option>\n' +
+            '              </select>\n' +
+            '          </td>\n' +
+            '          <td><input class="count" name="count" type="text" value="" /></td>\n' +
+            '          <td class="productUnit">台</td>\n' +
+            '          <td><input class="productPrice" type="text" value="" readonly="readonly" /></td>\n' +
+            '          <td><input class="totalPrice" type="text" value="" readonly="readonly" /></td>\n' +
+            '      </tr>'
+        $("#order").append(str)
+        findCBrand(a-1);
+        findCBrandValue();
+        sumPrice();
+        a--;
+    }
+    //删除订购信息
+    function delOrder() {
+        //判断至少写了一项
+        var checkedNum = $("input[name='checkbox']:checked").length;
+        if (checkedNum == 0) {
+            alert("请至少选择一项!");
+            return false;
+        }
+        //创建数组,存储选择的id
+        var checkedList = new Array();
+        $("input[name='checkbox']:checked").each(function () {
+            //把当前选中的复选框的id存入数组中
+            checkedList.push($(this).val());
+        });
+        a -= checkedList.length;
+        //提示删除
+        var flag=confirm("确认要删除这"+checkedList.length+"条数据吗?")
+        if(flag){
+            $("input[name='checkbox']:checked").each(function() { // 遍历选中的checkbox
+                n = $(this).parents("tr").index();  // 获取checkbox所在行的顺序
+                $("tbody#order").find("tr:eq("+n+")").remove();
+            });
+
+        }
+        reNum();
+        sumPrice();
+        sumAllPrice();
+    }
+
+    //order数据回显
+    function orderBack(){
+        $.ajax({
+            url:"/market/OrderBack",
+            method:"post",
+            data:{},
+            success:function (result) {
+                let orders = result.resultData;
+                console.log(orders);
+                let status = orders.status;
+                if (orders.status==0){
+                    status = "未审核";
+                }else if (orders.status==3){
+                    status = "审核不通过";
+                }
+                $("#orderid").val(orders.orderid);
+                $("#customid").val(orders.customid);
+                $("#customname").val(orders.customname);
+                $("#ordertime").val(orders.ordertime);
+                $("#operatorid").val(orders.operatorid);
+                $("#operator").val(orders.operator);
+                $("#isCheck").val(status);
+                $("#status").val(orders.status);
+                $("#ordermoney").val(orders.ordermoney);
+                $("#pageNum").val(orders.pageNum);
+            }
+        })
+    }
+    //orderDetail数据回显
+    function orderDetailBack(){
+        $.ajax({
+            url:"/market/orderDetailBack",
+            method:"post",
+            data:{},
+            success:function (result) {
+                let orderdetails = result.resultData;
+                let str = '<thead>\n' +
+                    '        <tr>\n' +
+                    '          <th>序号</th>\n' +
+                    '          <th>品牌</th>\n' +
+                    '          <th>类型</th>\n' +
+                    '          <th>型号</th>\n' +
+                    '          <th>数量</th>\n' +
+                    '          <th>单位</th>\n' +
+                    '          <th>单价</th>\n' +
+                    '          <th>金额</th>\n' +
+                    '        </tr>\n' +
+                    '      </thead>\n' +
+                    '      <tbody id="order">';
+                for (let i = 0; i < orderdetails.length; i++) {
+                    str +=  '      <tr class="newRow">\n' +
+                        '          <td class="number">' + (i+1) + '<input type="checkbox" name="checkbox" value="' + (i+1) + '"></td>\n' +
+                        '          <td>\n' +
+                        '          \t<select class="cbrand">\n' +
+                        '            \t<option value="'+orderdetails[i].brandId+'">'+orderdetails[i].btand+'</option>\n' +
+                        '            </select>\n' +
+                        '          </td>\n' +
+                        '          <td>\n' +
+                        '          \t<select class="cType">\n' +
+                        '            \t<option value="'+orderdetails[i].typeId+'">'+orderdetails[i].type+'</option>\n' +
+                        '            </select>\n' +
+                        '          </td>\n' +
+                        '          <td>\n' +
+                        '          \t<select class="cProduct">\n' +
+                        '            \t<option value="'+orderdetails[i].productId+'">'+orderdetails[i].product+'</option>\n' +
+                        '            </select>\n' +
+                        '          </td>\n' +
+                        '          <td><input class="count" type="text" value="'+orderdetails[i].purchaseNum+'" /></td>\n' +
+                        '          <td class="productUnit">台</td>\n' +
+                        '          <td><input class="productPrice" type="text" value="'+orderdetails[i].proprice+'" /></td>\n' +
+                        '          <td><input class="totalPrice" type="text" value="'+orderdetails[i].prototal+'" /></td>\n' +
+                        '        </tr>';
+                    $.ajax({
+                        url:"/market/findAllBrand",
+                        method:"post",
+                        data:{},
+                        success:function (rel) {
+                            let brands = rel.resultData;
+                            let str = '<option value="'+orderdetails[i].brandId+'">'+orderdetails[i].btand+'</option>';
+                            str += '<option count="" productUnit="" productPrice="" totalPrice="">请选择</option>';
+                            for (let j = 0; j < brands.length; j++) {
+                                str += '                  <option value="' + brands[j].brandId + '">' + brands[j].brandName + '</option>'
+                            }
+                            let element = document.getElementsByClassName("cbrand")[i];
+                            element.innerHTML = str;
+                        }
+                    })
+                }
+                str += '</tbody>';
+                $(".tablelist").html(str)
+                findCBrandValue();
+                sumPrice();
+                // a = orderdetails.length;
+                // fOrder();
+            }
+        })
+    }
+
+    //提交数据
+    function saveOrder() {
+        if (bcustomname){
+            var orderid = $("#orderid").val();
+            var customid = $("#customid").val();
+            var ordertime = $("#ordertime").val();
+            var operatorid = $("#operatorid").val();
+            var status = $("#status").val();
+            var ordermoney = $("#ordermoney").val();
+            if (ordermoney == 0){
+                $.ajax({
+                    url:"/market/deleteOrder",
+                    method:"post",
+                    data:{},
+                    success:function (result) {
+                        re()
+                    }
+                })
+            }else {
+                $.ajax({
+                    url:"/market/updateOrders",
+                    method:"post",
+                    data:{orderid:orderid,customid:customid,ordertime:ordertime,operatorid:operatorid,status:status,ordermoney:ordermoney},
+                    success:function (rel) {
+                        var length = document.getElementsByClassName("cProduct").length;
+                        for (let i = 0; i < length; i++) {
+                            var productId = document.getElementsByClassName("cProduct")[i].value;
+                            var purchaseNum = document.getElementsByClassName("count")[i].value;
+                            var proprice = document.getElementsByClassName("productPrice")[i].value;
+                            var prototal = document.getElementsByClassName("totalPrice")[i].value;
+                            $.ajax({
+                                url:"/market/saveDetail",
+                                method:"post",
+                                data:{productId:productId,purchaseNum:purchaseNum,proprice:proprice,prototal:prototal,orderId:orderid},
+                                success:function (rel) {
+                                }
+                            })
+                        }
+                        // location.href = "/market/orderListView";
+                        // location.reload();
+                      re();
+                    }
+                })
+            }
+
+        }else {
+            $("#tip").css({"color":"red"})
+            $("#customname").css({"borderColor":"red"});
+        }
+    }
+
+    //返回
+    function re(){
+        let pageNum = $("#pageNum").val();
+        location.href = "/market/orders/ordersAll?pageNum="+pageNum;
+    }
+
+    $(function () {
+        orderBack();
+        orderDetailBack();
+        $("#customname").blur(function () {
+            customname = $("#customname").val();
+            $.ajax({
+                url:"/market/checkCustom",
+                method:"post",
+                data:{customname:customname},
+                success:function (result) {
+                    console.log(result);
+                    var date = result.resultData;
+                    if (result.flag){
+                        $("#customid").val(date.customid);
+                        bcustomname = true;
+                        $("#tip").html("不能为空");
+                        $("#tip").css({"color":"grey"})
+                        $("#customname").css({"borderColor":"black"});
+                        $("#customid").val(date.customid);
+                    }else {
+                        bcustomname = false;
+                        $("#tip").html(result.msg);
+                        $("#tip").css({"color":"red"})
+                        $("#customname").css({"borderColor":"red"});
+                    }
+                }
+            })
+        })
+        findCBrandValue();
+        sumPrice();
+    })
+</script>
 </head>
 
 <body>
@@ -20,122 +496,50 @@
   <ul class="forminfo">
     <li>
       <label>订单编号</label>
-      <input name="" type="text" value="DJ201711180001" readonly="readonly" class="roinput" />
+      <input id="orderid" name="" type="text" value="DJ201711180001" readonly="readonly" class="roinput" />
       <i>自动生成不能编辑</i>
     </li>
     <li>
       <label>客户姓名</label>
-      <input name="" type="text" value="王金平"  class="dfinput" />
-      <i>不能为空</i>
+      <input id="customid" name="" type="hidden" value="王金平"  class="dfinput" />
+      <input id="customname" name="" type="text" value="王金平"  class="dfinput" />
+      <i id="tip">不能为空</i>
     </li>
     <li>
       <label>订购时间</label>
-      <input name="" type="text" value="2017-11-18 15:36:10" readonly="readonly" class="roinput" />
+      <input id="ordertime" name="" type="text" value="2017-11-18 15:36:10" readonly="readonly" class="roinput" />
       <i>不能编辑</i>
     </li>
     <li>
       <label>创建人</label>
-      <input name="" type="text" value="马云" readonly="readonly" class="roinput" />
+      <input id="operatorid" name="" type="hidden" value="马云" readonly="readonly" class="roinput" />
+      <input id="operator" name="" type="text" value="马云" readonly="readonly" class="roinput" />
       <i>不能编辑</i>
     </li>
     <li>
       <label>审核状态</label>
-      <input type="text" value="未审核" readonly="readonly" class="roinput" />
-      <input name="" type="hidden" value="1" />
+      <input id="isCheck" type="text" value="未审核" readonly="readonly" class="roinput" />
+      <input id="status" name="" type="hidden" value="1" />
       <i>初始状态，不能编辑</i>
     </li>
     <li>
       <label>总金额</label>
-      <input name="" type="text" value="9876582" readonly="readonly" class="roinput" />
+      <input id="ordermoney" name="" type="text" value="9876582" readonly="readonly" class="roinput" />
+        <input id="pageNum" name="" type="hidden" value=""  class="dfinput" />
        <i>自动运算，不能编辑</i>
     </li>
     <li>
-      <input type="button" value="新增" class="smallbtn" />
+      <input type="button" value="新增" class="smallbtn" onclick="addOrder()"/>
       &nbsp;&nbsp;&nbsp;&nbsp;
-      <input type="button" value="删除" class="smallbtn" />
+      <input type="button" value="删除" class="smallbtn" onclick="delOrder()"/>
        &nbsp;&nbsp;&nbsp;&nbsp;
-      <input type="button" value="保存" class="smallbtn" />
+      <input type="button" value="保存" class="smallbtn" onclick="saveOrder()" />
        &nbsp;&nbsp;&nbsp;&nbsp;
-      <input type="button" value="返回" class="smallbtn" onclick="window.location.href='orderList.html'"/>
+      <input type="button" value="返回" class="smallbtn" onclick="re()"/>
     </li>
   </ul>
   <table class="tablelist">
-      <thead>
-        <tr>
-          <th>序号</th>
-          <th>品牌</th>
-          <th>类型</th>
-          <th>型号</th>
-          <th>数量</th>
-          <th>单位</th>
-          <th>单价</th>
-          <th>金额</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>
-          	<select>
-            	<option>请选择</option>
-                <option selected="selected">联想</option>
-                <option>海尔</option>
-                <option>小米</option>
-            </select>
-          </td>
-          <td>
-          	<select>
-            	<option>请选择</option>
-                <option selected="selected">笔记本电脑</option>
-                <option>台式电脑</option>
-                <option>手机</option>
-            </select>
-          </td>
-          <td>
-          	<select>
-            	<option>请选择</option>
-                <option>X260</option>
-                <option>E470</option>
-                <option selected="selected">T470</option>
-            </select>
-          </td>
-          <td><input type="text" value="10" /></td>
-          <td>台</td>
-          <td><input type="text" value="9998" /></td>
-          <td><input type="text" value="99980" /></td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>
-          	<select>
-            	<option>请选择</option>
-                <option selected="selected">联想</option>
-                <option>海尔</option>
-                <option>小米</option>
-            </select>
-          </td>
-          <td>
-          	<select>
-            	<option>请选择</option>
-                <option selected="selected">笔记本电脑</option>
-                <option>台式电脑</option>
-                <option>手机</option>
-            </select>
-          </td>
-          <td>
-          	<select>
-            	<option>请选择</option>
-                <option selected="selected">X260</option>
-                <option>E470</option>
-                <option>T470</option>
-            </select>
-          </td>
-          <td><input type="text" value="5" /></td>
-          <td>台</td>
-          <td><input type="text" value="5500" /></td>
-          <td><input type="text" value="27500" /></td>
-        </tr>
-      </tbody>
+
   </table>
 </div>
 <script type="text/javascript">

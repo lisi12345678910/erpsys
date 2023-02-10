@@ -6,7 +6,7 @@
     <cache>
     </cache>
     <!--uId uname jcontent moduleRname jdate(一个范围)-->
-    <select id="journallist" resultType="com.zte.sys.model.Journal">
+    <select id="journallist" resultType="Journal">
         select *
         from journal,
              module,
@@ -28,11 +28,20 @@
             <bind name="m" value="'%' + moduleRname + '%'"/>
             and module.MODULE_RNAME like #{m}
         </if>
-        <if test="downjdate != null">
-            and journal.JDATE &gt; #{downjdate}
+        <if test="logStartTime != null and logStartTime != ''">
+            and journal.JDATE &gt;= #{logStartTime}
         </if>
-        <if test="upjdate != null">
-            and journal.JDATE &lt; #{upjdate}
+        <if test="logEndTime != null and logEndTime != ''">
+            and journal.JDATE &lt;= #{logEndTime}
         </if>
     </select>
+
+    <select id="findjournal" resultType="Journal">
+        select * from journal,module,users where journal.MODULE_ID = module.MODULE_ID and journal.U_ID = users.U_ID and journal.J_ID = #{jId}
+
+    </select>
+
+    <insert id="creatjournal">
+        insert into journal(MODULE_ID,U_ID,JCONTENT,JDATE) value (#{moduleId},#{uId},#{jcontent},#{jdate})
+    </insert>
 </mapper>

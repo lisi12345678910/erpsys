@@ -5,6 +5,7 @@
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+
 </head>
 
 <body>
@@ -19,85 +20,82 @@
   <form action="" method="post">
     <ul class="tools">
       <li> 所属区域：
-        <select>
-          <option>请选择省份</option>
+        <select id="province">
+          <option value="0">请选择省份</option>
           <option>北京</option>
           <option>江苏</option>
           <option>天津</option>
         </select>
-        <select>
-          <option>请选择城市</option>
-          <option>北京</option>
-          <option>南京</option>
-          <option>天津</option>
+        <select id="city">
+          <option value="0">请先选择省</option>
         </select>
       </li>
       <li> 客户姓名:
-        <input type="text" />
+        <input type="text" id="name"/>
       </li>
       <li> 时间:
-        <input type="text" />-<input type="text" />
+        <input type="date" id="begin" />-<input type="date" id="end" />
       </li>
 
-      <li class="subBut" onclick="window.location.href='salesStatis.html'"><img src="../../../static/images/t06.png" />查询</li>
+      <li class="subBut" onclick="query()"><img src="../../../static/images/t06.png" />查询</li>
     </ul>
-    <table class="tablelist">
-      <thead>
-        <tr>
-          <th>序号</th>
-          <th>客户姓名</th>
-          <th>所属区域</th>
-          <th>订购单数量</th>
-          <th>金额</th>
-          <th>订购单明细</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>王金平</td>
-          <td>江苏南京</td>
-          <td>5</td>
-          <td>￥9,876,582</td>
-          <td>
-          	<a href="salesView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>张永祥</td>
-          <td>江苏南京</td>
-          <td>8</td>
-          <td>￥9,876,582</td>
-          <td>
-          	<a href="salesView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>王金平</td>
-          <td>江苏南京</td>
-          <td>5</td>
-          <td>￥9,876,582</td>
-          <td>
-          	<a href="salesView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>张永祥</td>
-          <td>江苏南京</td>
-          <td>8</td>
-          <td>￥9,876,582</td>
-          <td>
-          	<a href="salesView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
+    <table class="tablelist" id="tablelist">
+<!--      <thead>-->
+<!--        <tr>-->
+<!--          <th>序号</th>-->
+<!--          <th>客户姓名</th>-->
+<!--          <th>所属区域</th>-->
+<!--          <th>订购单数量</th>-->
+<!--          <th>金额</th>-->
+<!--          <th>订购单明细</th>-->
+<!--        </tr>-->
+<!--      </thead>-->
+<!--      <tbody>-->
+<!--        <tr>-->
+<!--          <td>1</td>-->
+<!--          <td>王金平</td>-->
+<!--          <td>江苏南京</td>-->
+<!--          <td>5</td>-->
+<!--          <td>￥9,876,582</td>-->
+<!--          <td>-->
+<!--          	<a href="salesView.html" class="tablelink">查看详情</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>2</td>-->
+<!--          <td>张永祥</td>-->
+<!--          <td>江苏南京</td>-->
+<!--          <td>8</td>-->
+<!--          <td>￥9,876,582</td>-->
+<!--          <td>-->
+<!--          	<a href="salesView.html" class="tablelink">查看详情</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>3</td>-->
+<!--          <td>王金平</td>-->
+<!--          <td>江苏南京</td>-->
+<!--          <td>5</td>-->
+<!--          <td>￥9,876,582</td>-->
+<!--          <td>-->
+<!--          	<a href="salesView.html" class="tablelink">查看详情</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>4</td>-->
+<!--          <td>张永祥</td>-->
+<!--          <td>江苏南京</td>-->
+<!--          <td>8</td>-->
+<!--          <td>￥9,876,582</td>-->
+<!--          <td>-->
+<!--          	<a href="salesView.html" class="tablelink">查看详情</a>-->
+<!--          </td>-->
+<!--        </tr>-->
       </tbody>
     </table>
-    <div class="pagin">
-      <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
-      <ul class="paginList">
+    <div class="pagin" >
+      <div class="message">共<i class="blue" id="totalCount">1256</i>条记录，当前显示第&nbsp;<i class="blue" id="pageNum">2&nbsp;</i>页</div>
+      <ul class="paginList"  id="pagin">
         <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
         <li class="paginItem"><a href="javascript:;">1</a></li>
         <li class="paginItem current"><a href="javascript:;">2</a></li>
@@ -116,3 +114,165 @@
 </script>
 </body>
 </html>
+<script >
+
+
+  $(function () {
+
+    $.ajax({
+      url:"/statis/province",
+      method: "POST",
+      data: {},
+      success:function (pro) {
+
+        console.log(pro);
+        var pstr = '  <option value="0">请选择省份</option>\n';
+
+        for (let i = 0; i <pro.length ; i++) {
+            pstr+='<option value="'+pro[i].id+'">'+pro[i].pname+'</option>';
+        }
+        $("#province").html(pstr)
+      }
+    })
+    $("#province").blur(queryCity)
+
+    query(1);
+  })
+
+  function queryCity() {
+    var pid = $("#province").val();
+if (pid != 0) {
+  $.ajax({
+    url: "/statis/city",
+    method: "POST",
+    data: {pid: pid},
+    success: function (city) {
+
+      // console.log(city);
+      var cstr = '  <option value="0">请选择城市</option>\n';
+
+      for (let i = 0; i < city.length; i++) {
+        cstr += '<option value="' + city[i].id + '">' + city[i].cname + '</option>';
+      }
+      $("#city").html(cstr)
+    }
+  })
+}else{
+  $.ajax({
+    url: "/statis/city",
+    method: "POST",
+    data: {pid: pid},
+    success: function (city) {
+
+      // console.log(city);
+      var cstr = ' <option value="0">请先选择省</option>';
+
+
+      $("#city").html(cstr)
+    }
+  })
+}
+
+  }
+  function query(pageNum) {
+    var customname = $("#name").val();
+    var pid = $("#province").val();
+    var cid = $("#city").val();
+    var begin =$("#begin").val();
+    var end = $("#end").val();
+    $.ajax({
+      url:"/statis/statisPage",
+      method:"POST",
+      data:{pageNum:pageNum,customname:customname,pid:pid,cid:cid,begin:begin,end:end},
+      success:function (rel) {
+        console.log(rel)
+        let str='';
+        str +='<thead>\n' +
+                '        <tr>\n' +
+                '          <th>序号</th>\n' +
+                '          <th>客户姓名</th>\n' +
+                '          <th>所属区域</th>\n' +
+                '          <th>订购单数量</th>\n' +
+                '          <th>金额</th>\n' +
+                '          <th>订购单明细</th>\n' +
+                '        </tr>\n' +
+                '      </thead>\n' +
+                '      <tbody>';
+        console.log(rel.resultData)
+        for (let i = 0; i < rel.resultData.data.length ; i++) {
+          var custom = rel.resultData.data[i]
+          var sum = 0;
+          for (let j = 0; j < custom.ordersList.length ; j++) {
+            sum += custom.ordersList[j].ordermoney;
+          }
+
+          str += '  <tr>\n' +
+                  '          <td>'+custom.customid+'</td>\n' +
+                  '          <td>'+custom.customname+'</td>\n' +
+                  '          <td>'+custom.province.pname+custom.city.cname+'</td>\n' +
+                  '          <td>'+custom.ordersList.length+'</td>\n' +
+                  '          <td>￥'+sum+'</td>\n' +
+                  '          <td>\n' +
+                  '          \t<a href="/statis/salesView?id='+custom.customid+'" class="tablelink">查看详情</a>\n' +
+                  '          </td>\n' +
+                  '        </tr>';
+
+        }
+        str +='</tbody>'
+
+
+        $("#tablelist").html(str)
+
+
+        $("#totalCount").html(rel.resultData.totalCount);
+        $("#pageNum").html(rel.resultData.pageNum);
+        var begin = rel.resultData.pageNum - 5;
+        var end = rel.resultData.pageNum + 4;
+        if (begin < 1) {
+          begin = 1;
+          if (rel.resultData.totalPage < 10) {
+            end = rel.resultData.totalPage;
+          } else {
+            end = 10;
+          }
+        }
+        if (end > rel.resultData.totalPage) {
+          end = rel.resultData.totalPage;
+          if (begin <= 0) {
+            begin = 1;
+          } else {
+            begin = rel.resultData.totalPage - 9;
+          }
+        }
+        console.log(begin);
+        console.log(end);
+        var page = '';
+        page += '<li class="paginItem" id="up"><a onclick="query(' + (rel.resultData.pageNum - 1) + ')"><span class="pagepre"></span></ a></li>';
+        for (var i = begin; i <= end; i++) {
+          if (i == rel.resultData.pageNum) {
+            page += '<li class="paginItem current"><a onclick="query(' + i + ')">' + i + '</ a></li>';
+          } else {
+            page += '<li class="paginItem"><a onclick="query(' + i + ')">' + i + '</ a></li>';
+          }
+        }
+        page += '<li class="paginItem" id="down"><a onclick="query(' + (rel.resultData.pageNum + 1) + ')"><span class="pagenxt"></span></ a></li>';
+        $("#pagin").html(page);
+        if (rel.resultData.pageNum == 1) {
+          // $("#up").removeAttr("onclick");
+          $("#up").attr("disabled", true).css("pointer-events", "none")
+        }
+        if (rel.resultData.pageNum == rel.resultData.totalPage) {
+          // $("#down").removeAttr("onclick");
+          $("#down").attr("disabled", true).css("pointer-events", "none")
+        }
+       
+      }
+    });
+
+
+
+
+  }
+
+
+</script>

@@ -1,10 +1,56 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+  <script>
+    $(function () {
+      cgmx()
+    })
+
+    function cgmx() {
+      $.ajax({
+        url: "/cDetails",
+        method: "post",
+        data: {},
+        dataType: "json",
+        success: function (rel) {
+          let str = "<thead>\n" +
+                  "        <tr>\n" +
+                  "          <th>序号</th>\n" +
+                  "          <th>品牌</th>\n" +
+                  "          <th>类型</th>\n" +
+                  "          <th>型号</th>\n" +
+                  "          <th>厂商</th>\n" +
+                  "          <th>数量</th>\n" +
+                  "          <th>单位</th>\n" +
+                  "          <th>单价</th>\n" +
+                  "          <th>金额</th>\n" +
+                  "        </tr>\n" +
+                  "      </thead>";
+          str+=" <tbody>";
+          rel.resultData.forEach(function (warehouse, i) {
+           str+=" <tr>\n" +
+                   "          <td>"+warehouse.detailsId+"</td>\n" +
+                   "          <td>"+warehouse.sppm+"</td>\n" +
+                   "          <td>"+warehouse.splx+"</td>\n" +
+                   "          <td>"+warehouse.spxh+"</td>\n" +
+                   "          <td>"+warehouse.csmc+"</td>\t\n" +
+                   "          <td>"+warehouse.count+"</td>\n" +
+                   "          <td>台</td>\n" +
+                   "          <td>"+warehouse.purchasePrice+"</td>\n" +
+                   "          <td>"+warehouse.totalMoney+"</td>\n" +
+                   "        </tr>"
+          })
+          str+=" </tbody>";
+          $(".tablelist").html(str);
+        }
+      })
+    }
+
+  </script>
 </head>
 
 <body>
@@ -20,51 +66,51 @@
   <ul class="forminfo">
     <li>
       <label>采单编号</label>
-      <cite>CG201711180001</cite>
+      <cite>[[${rkWarehouse.rkIndent}]]</cite>
     </li>
     <li>
       <label>采购时间</label>
-      <cite>2017-11-18 15:36:10</cite>
+      <cite>[[${#dates.format(rkWarehouse.cgsj,'yyyy-MM-dd HH:mm:ss')}]]</cite>
     </li>
     <li>
       <label>总金额</label>
-       <cite>￥9,876,582</cite>
+       <cite>￥[[${rkWarehouse.money}]]</cite>
     </li>
     <li>
       <label>操作人</label>
-      <cite>关羽</cite>
+      <cite>[[${rkWarehouse.czrname}]]</cite>
     </li>
     <li>
       <label>审核状态</label>
-      <cite>已审核通过</cite>
+      <cite >[[${rkWarehouse.Statuss}]]</cite>
     </li>
     <li>
       <label>审核意见</label>
-      <cite>做的很详细，同意通过</cite>
+      <cite>[[${rkWarehouse.opinion}]]</cite>
     </li>
     <li>
       <label>审核人</label>
-      <cite>曹操</cite>
+      <cite>[[${rkWarehouse.shrname}]]</cite>
     </li>
     <li>
       <label>审核时间</label>
-      <cite>2017-01-30 12:05:05</cite>
+      <cite>[[${#dates.format(rkWarehouse.shsj,'yyyy-MM-dd HH:mm:ss')}]]</cite>
     </li>
     <li>
       <label>入货仓库</label>
-      <cite><a href="../storage/storageView.html" title="点击查看客户详细信息" class="tablelink">南京21号仓库</a></cite>
+      <cite>[[${rkWarehouse.cname}]]</cite>
     </li>
     <li>
       <label>入库时间</label>
-      <cite>2013-09-09 15:05:05</cite>
+      <cite>[[${#dates.format(rkWarehouse.rkDate,'yyyy-MM-dd HH:mm:ss')}]]</cite>
     </li>
     <li>
       <label>入库人</label>
-      <cite>朱元璋</cite>
+      <cite>[[${rkWarehouse.czrname}]]</cite>
     </li>
     <li>
       <label>入库状态</label>
-      <cite>已入库</cite>
+      <cite th:text="${rkWarehouse.state}==1?'未入库':'已入库'"></cite>
     </li>
   </ul>
   <table class="tablelist">
@@ -107,7 +153,7 @@
       </tbody>
   </table>
   <div style="margin-top:20px; margin-left:20px;">
-  <input name="" type="button" class="btn" value="返回" onclick="window.history.go(-1);"/>
+  <input name="" type="button" class="btn" value="返回" th:onclick="window.location.href='/rep/rkware/allrkware?pageNum=[[${pageNum}]]&&index=[[${index}]]&&wid=[[${wid}]]'"/>
   </div>
 </div>
 <script type="text/javascript">

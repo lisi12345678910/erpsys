@@ -1,10 +1,26 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml">-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>模块管理</title>
+  <script type="text/javascript" src="../../../static/js/jquery.js"></script>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/laydate/laydate.js"></script>
+  <script>
+    function update(){
+      $.ajax({
+        url:"/updatemodule",
+        type:"post",
+        dataType:"json",
+        data:$("#form1").serializeArray(),
+        success:function (dat) {
+          window.location.href="/sys/modules/moduleList"
+        }
+      })
+    }
+  </script>
 </head>
 
 <body>
@@ -18,27 +34,31 @@
 <div class="formbody">
   <div class="formtitle"><span>模块信息</span></div>
   <ul class="forminfo">
+    <form id="form1">
+      <input name="moduleId" th:value="${moduleview.getModuleId()}" type="hidden">
     <li>
       <label>模块名称</label>
-      <input name="" type="text" value="用户管理" class="dfinput"/>
+      <input name="moduleRname" type="text" th:value="${moduleview.getModuleRname()}" class="dfinput"/>
       <i>必填，不能超过30个字符</i>
     </li>
     <li>
       <label>父模块</label>
-      <select name="" class="dfselect">
-        <option value="" selected="selected">系统管理</option>
-        <option value="">营销管理</option>
-        <option value="">采购管理</option>
+      <select name="modulePid" class="dfselect">
+<!--        <option th:value="${moduleview.getModulePid()}" th:text="${moduleview.getPN()}" selected="selected" ></option>-->
+        <option th:each="d:${fathermodeule}" th:value="${d.getModuleId()}" th:text="${d.getModuleRname()}" th:selected="${moduleview.getModulePid() eq d.getModuleId()}"></option>
+<!--        <option value="">营销管理</option>-->
+<!--        <option value="">采购管理</option>-->
       </select>
     </li>
     <li>
       <label>URL</label>
-      <input name="" type="text" value="sys/users/userList.html" class="dfinput"/>
+      <input name="moduleMurl" type="text" th:value="${moduleview.getModuleMurl()}" class="dfinput"/>
       <i>必填，不能超过30个字符</i>
     </li>
+    </form>
     <li>
       <label>&nbsp;</label>
-      <input name="" type="button" class="btn" value="确认保存"/>
+      <input name="" onclick="update()" type="button" class="btn" value="确认保存"/>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       <input name="" type="button" class="btn" value="返回"  onclick="window.history.go(-1);"/>
     </li>

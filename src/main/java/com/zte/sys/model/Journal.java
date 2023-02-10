@@ -21,7 +21,7 @@ public class Journal implements Serializable {
   private String moduleRname;
   private String uname;
 
-  private Date upjdate;
-  private Date downjdate;
+  private String logStartTime;
+  private String logEndTime;
 
 }

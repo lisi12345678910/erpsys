@@ -1,10 +1,67 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+  <script>
+    function getParameter(name) {
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+      var r = location.search.substr(1).match(reg);
+      if (r != null) {
+        return (r[2]);
+      }
+      return null;
+    }
+    $(function (){
+      var a = 0;
+      var parameter = getParameter("purchaseId");
+      $("#thisId").val(parameter);
+      $.ajax({
+        url: "/purchase/purchaseUpdateBack",
+        method: "post",
+        data: {purchaseId: parameter},
+        success: function (rel) {
+          $("#purchaseId").html(rel.resultData.purchaseId);
+          $("#purchaseTime").html(rel.resultData.purchaseTime);
+          $("#creatName").html(rel.resultData.creatName);
+          var details = rel.resultData.details;
+          var sum = 0;
+          for (let index = 0; index < details.length; index++) {
+            sum += details[index].totalMoney;
+            a++;
+            var str = '      <tr class="newRow">\n' +
+                    '          <td>' + a + '</td>\n' +
+                    '          <td>' + details[index].brandName + '</td>\n' +
+                    '          <td>' + details[index].typeName + '</td>\n' +
+                    '          <td>' + details[index].productName + '</td>\n' +
+                    '          <td>' + details[index].firmName + '</td>' +
+                    '          <td class="count">' + details[index].count + '</td>\n' +
+                    '          <td class="proUnit">' + details[index].proUnit + '</td>\n' +
+                    '          <td class="price">' + details[index].purchasePrice + '</td>\n' +
+                    '          <td class="totalPrice">' + details[index].totalMoney + '</td>\n' +
+                    '      </tr>'
+            $("#purchases").html(str);
+          }
+          $("#totalMoney").html("￥" + sum);
+        }
+      })
+
+    })
+    function check() {
+      var val = $("#check_opinion").val();
+      var val2 = $("#check_status").val();
+      var thisId = $("#thisId").val();
+      $.ajax({
+        url: "/purchase/purchaseCheck",
+        method: "post",
+        data: {purchaseId: thisId,checkOpinion:val,checkStatus:val2},
+        success: function () {
+          location.href = "/purchase/purchaseExamine/dlist";
+        }
+      })
+    }
+  </script>
 </head>
 
 <body>
@@ -20,22 +77,22 @@
   <ul class="forminfo">
     <li>
       <label>采购单编号</label>
-      <cite>CG201711180001</cite>
+      <cite id="purchaseId">CG201711180001</cite>
     </li>
     <li>
       <label>采购购时间</label>
-      <cite>2017-11-18 15:36:10</cite>
+      <cite id="purchaseTime">2017-11-18 15:36:10</cite>
     </li>
     <li>
       <label>总金额</label>
-       <cite>￥9,876,582</cite>
+       <cite id="totalMoney">￥9,876,582</cite>
     </li>
     <li>
       <label>操作人</label>
-      <cite>关羽</cite>
+      <cite id="creatName">关羽</cite>
     </li>
   </ul>
-  <table class="tablelist">
+  <table class="tablelist" id="tablelist">
       <thead>
         <tr>
           <th>序号</th>
@@ -49,7 +106,7 @@
           <th>金额</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="purchases">
         <tr>
           <td>1</td>
           <td>联想</td>
@@ -77,21 +134,22 @@
   <ul class="forminfo">
     <li>
       <label>审核意见</label>
-      <textarea class="textinput"></textarea>
+      <input id="thisId" name="purchaseId" type="hidden"/>
+      <textarea id="check_opinion" class="textinput"></textarea>
     </li>
     <li>
       <label>审核状态</label>
-      <select class="dfselect">
-          <option>请选择</option>
+      <select id="check_status" class="dfselect">
+          <option value="0">请选择</option>
           <option value="3">通过</option>
           <option value="4">不通过</option>
       </select>
     </li>
     <li>
       <label>&nbsp;</label>
-      <input name="" type="button" class="btn" value="审核"/>
+      <input name="" type="button" class="btn" value="审核" onclick="check()"/>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='purchaseExamineList.html'"/>
+      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='/purchase/purchaseExamine/dlist'"/>
     </li>
   </ul>
 <script type="text/javascript">

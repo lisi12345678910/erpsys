@@ -214,7 +214,7 @@ margin-left: 20px; margin-top: 6px;}
 .btn{width:137px;height:35px; background:url(../images/btnbg.png) no-repeat; font-size:14px;font-weight:bold;color:#fff; cursor:pointer; border:0;}
 .smallbtn{width:50px; height:30px; background:#ED560B; font-size:12px;font-weight:bold;color:#fff; cursor:pointer; border:0;}
 .dfselect{ padding-right:80px; height:32px; line-height:32px; border-top:solid 1px #c3ab7d; border-left:solid 1px #c3ab7d; border-right:solid 1px #e7d5ba; border-bottom:solid 1px #e7d5ba; background:url(../images/inputbg.gif) repeat-x;}
-
+.btn_add_no{ background:#cccccc;  color:#333; }
 /*tip*/
 .tip{width:485px; height:260px; position:absolute;top:10%; left:30%;background:#fcfdfd;box-shadow:1px 8px 10px 1px #9b9b9b;border-radius:1px;behavior:url(static/js/pie.htc); display:none; z-index:111111;}
 .tiptop{height:40px; line-height:40px; background:url(../images/tcbg.gif)  repeat-x; cursor:pointer;}

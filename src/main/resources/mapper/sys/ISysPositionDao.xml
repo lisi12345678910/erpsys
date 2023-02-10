@@ -6,13 +6,76 @@
     <cache>
     </cache>
 
-    <select id="positionlist" resultType="com.zte.sys.model.Job">
-        select * from job,dept where job.JOB_DEPT_ID = dept.DEPT_ID
+    <select id="positionlist" resultType="Job">
+        select *
+        from job,
+             dept where job.JOB_DEPT_ID = dept.DEPT_ID
         <if test="jobName != null and jobName != ''">
             and job.JOB_NAME = #{jobName}
         </if>
         <if test="jobDeptId != null">
             and job.JOB_DEPT_ID = #{jobDeptId}
         </if>
+    </select>
+
+    <select id="simplejobslist" resultType="Job">
+        select *
+        from job
+        <where>
+            <if test="jobDeptId != null">
+                job.JOB_DEPT_ID = #{jobDeptId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="positionadd">
+        insert into job
+        values (#{jobId}, #{jobName}, #{jobState}, #{jobDeptId})
+    </insert>
+
+
+    <select id="findjob" resultType="Job">
+        select *
+        from job,
+             dept
+        where job.JOB_DEPT_ID = dept.DEPT_ID
+          and job.JOB_ID = #{jobId}
+    </select>
+
+    <update id="updateposition">
+        update job
+        set job.JOB_NAME    = #{jobName},
+            job.JOB_DEPT_ID = #{jobDeptId}
+        where job.JOB_ID = #{jobId}
+    </update>
+
+    <select id="getCompidList" resultType="java.lang.Integer">
+        select COMPID
+        from permission
+        where COMRID = #{jobId}
+    </select>
+
+    <delete id="updategrant1">
+        delete
+        from permission
+        where COMRID = #{jobid}
+    </delete>
+
+    <insert id="updategrant2">
+        insert into permission(COMRID, COMPID,COMSTATE) value (#{jobid}, #{grant},0)
+    </insert>
+
+    <update id="updatepositionstatus">
+        update job
+        set JOB_STATE = !JOB_STATE
+        where JOB_ID = #{uId}
+    </update>
+
+    <select id="queryjobs" resultType="Job">
+        select * from job where JOB_DEPT_ID = #{deptId}
+    </select>
+
+    <select id="haveornoposition" resultType="com.zte.common.model.Job">
+        select * from job where JOB_NAME = #{jobName}
     </select>
 </mapper>

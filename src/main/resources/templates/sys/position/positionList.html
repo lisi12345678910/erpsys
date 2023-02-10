@@ -15,6 +15,22 @@ function tipClose() {
 	$("#tip").fadeOut(200);
 }
 
+//职位注销
+function disuse(uid,pageNum){
+
+  $.ajax({
+    url:"/updatepositionstatus",
+    type:"post",
+    dataType:"json",
+    data:{uId:uid},
+    success:function (dat) {
+      query(pageNum)
+    },
+
+  })
+
+}
+
 //查部门
 function querydepts(){
   $.ajax({
@@ -65,11 +81,13 @@ function query(pagenum){
       for (let i = 0; i < resultData.length; i++) {
         let resultDatum = resultData[i];
 
-
+        let state;
         if (resultDatum.jobState==1) {
           resultDatum.jobState="正常"
+          state="注销"
         }else {
-          resultDatum.jobState="不正常"
+          resultDatum.jobState="注销"
+          state="恢复"
         }
         str += `<tr>
           <td>${i+1}</td>
@@ -77,9 +95,9 @@ function query(pagenum){
           <td>${resultDatum.deptName}</td>
           <td>${resultDatum.jobState}</td>
           <td>
-            <a href="positionUpdate.html" class="tablelink">修改</a>
-            <a href="positionGrant.html" class="tablelink">赋权</a>
-            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认注销此条信息？')">注销</a>
+            <a href="/positionUpdate/${resultDatum.jobId}" class="tablelink">修改</a>
+            <a href="/positionGrant/${resultDatum.jobId}" class="tablelink">赋权</a>
+            <a href="javascript:void(0)" class="tablelink" onclick="disuse(${resultDatum.jobId},${pageNum})">${state}</a>
           </td>
         </tr>`
       }
@@ -149,7 +167,7 @@ $(function () {
         </select>
       </li>
       <li class="subBut" onclick="" id="search"><img src="../../../static/images/t06.png" />查询</li>
-      <li class="subBut" onclick="window.location.href='positionAdd.html'"><img src="../../../static/images/t01.png" />添加</li>
+      <li class="subBut" ><a href="/addposition"><img src="../../../static/images/t01.png" />添加</a></li>
     </ul>
     <table class="tablelist">
       <thead>

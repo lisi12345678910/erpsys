@@ -15,8 +15,24 @@ function tipClose() {
 	$("#tip").fadeOut(200);
 }
 
-let moduleRname = ""
+//模块禁用
+function disuse(uid,pageNum){
+
+  $.ajax({
+    url:"/updatemodulestatus",
+    type:"post",
+    dataType:"json",
+    data:{uId:uid},
+    success:function (dat) {
+      query(pageNum)
+    },
+
+  })
+
+}
+
 function query(pageNum){
+  let moduleRname = $("#moduleRname").val().trim();
   $.ajax({
     url:"/modulelist",
     type:"post",
@@ -41,10 +57,14 @@ function query(pageNum){
       let str = ``
       for (let i = 0; i < resultData.length; i++) {
         let resultDatum = resultData[i];
+
+        let state;
         if (resultDatum.moduleState == 1) {
-          resultDatum.moduleState = "正常"
-        } else {
           resultDatum.moduleState = "禁用"
+          state="恢复"
+        } else {
+          resultDatum.moduleState = "启用"
+          state="禁用"
         }
         str += `<tr>
           <td>${i + 1}</td>
@@ -53,8 +73,9 @@ function query(pageNum){
           <td>${resultDatum.moduleMurl}</td>
           <td>${resultDatum.moduleState}</td>
           <td>
-            <a href="moduleUpdate.html" class="tablelink">修改</a>
-            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('是否确禁用此模块？')">禁用</a>
+            <a href="/moduleView/${resultDatum.moduleId}" class="tablelink">查看详情</a>
+            <a href="/moduleUpdate/${resultDatum.moduleId}" class="tablelink">修改</a>
+            <a href="javascript:void(0);" class="tablelink" onclick="disuse(${resultDatum.moduleId},${pageNum})">${state}</a>
           </td>
         </tr>`
 
@@ -90,7 +111,7 @@ $(function () {
   query(pageNum)
 
   $("#search").click(function () {
-    moduleRname = $("#moduleRname").val().trim();
+
     query(pageNum)
 
   })
@@ -113,7 +134,7 @@ $(function () {
       </li>
 
       <li class="subBut" onclick="" id="search"><img src="../../../static/images/t06.png" />查询</li>
-      <li class="subBut" onclick="window.location.href='moduleAdd.html'"><img src="../../../static/images/t01.png" />添加</li>
+      <li class="subBut" ><a href="/addmodule"><img src="../../../static/images/t01.png" />添加</a></li>
     </ul>
     <table class="tablelist">
       <thead>

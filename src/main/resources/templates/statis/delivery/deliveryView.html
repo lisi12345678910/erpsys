@@ -30,7 +30,7 @@
           <th>订购单详情</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="datalist">
         <tr>
           <td>1</td>
           <td>南京21号仓库</td>
@@ -40,7 +40,7 @@
           <td>2017-01-25 15:05:05</td>
           <td>马云</td>
           <td>
-          	<a href="../../storage/delivery/deliveryView.html" class="tablelink">查看详情</a>
+          	<a href="/deliveryDetailStatisView" class="tablelink">查看详情</a>
           </td>
         </tr>
         <tr>
@@ -82,8 +82,8 @@
       </tbody>
     </table>
     <div class="pagin">
-      <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
-      <ul class="paginList">
+      <div class="message">共<i class="blue" id="totalCount">1256</i>条记录，当前显示第&nbsp;<i class="blue" id="pageNum">2&nbsp;</i>页</div>
+      <ul class="paginList" id="pagin">
         <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
         <li class="paginItem"><a href="javascript:;">1</a></li>
         <li class="paginItem current"><a href="javascript:;">2</a></li>
@@ -102,3 +102,103 @@
 </script>
 </body>
 </html>
+<script>
+
+  function getParameter(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    var r = location.search.substr(1).match(reg);
+    if (r != null) {
+      return (r[2]);
+    }
+    return null;
+  }
+
+  $(function () {
+    var pageNum = 1;
+    var pageNumsss = "[[${pageNum}]]"
+    if (pageNumsss != ''){
+      pageNum = pageNumsss;
+    }
+    query(pageNum);
+  })
+
+  function query(pageNum) {
+    var wid = getParameter("wid");
+    $.ajax({
+      url: "/CkWareStatisPage",
+      method: "POST",
+      data: {wid:wid,pageNum:pageNum},
+      success: function (rel) {
+        console.log(rel)
+        var str = '';
+
+        for (let i = 0; i <rel.resultData.data.length ; i++) {
+          var sum = 0 ;
+          var dd = rel.resultData.data[i];
+          for (let j = 0; j <dd.statisCDetails.length ; j++) {
+            sum += dd.statisCDetails[j].prototal;
+          }
+
+          str += '     <tr>\n' +
+                  '          <td>'+(i+1+(pageNum-1)*rel.resultData.pageSize)+'</td>\n' +
+                  '          <td>'+dd.warehousename+'</td>\n' +
+                  '          <td>'+dd.indent+'</td>\n' +
+                  '          <td>'+dd.statisCDetails.length+'</td>\n' +
+                  '          <td>￥'+sum+'</td>\n' +
+                  '          <td>'+dd.cdate+'</td>\n' +
+                  '          <td>'+dd.users.uname+'</td>\n' +
+                  '          <td>\n' +
+                  '          \t<a href="/deliveryView?pageNum='+rel.resultData.pageNum+'&&indent='+dd.indent+'&&index=2" class="tablelink">查看详情</a>\n' +
+                  '          </td>\n' +
+                  '        </tr>';
+
+        }
+        $("#datalist").html(str);
+
+
+
+        $("#totalCount").html(rel.resultData.totalCount);
+        $("#pageNum").html(rel.resultData.pageNum);
+        var begin = rel.resultData.pageNum - 5;
+        var end = rel.resultData.pageNum + 4;
+        if (begin < 1) {
+          begin = 1;
+          if (rel.resultData.totalPage < 10) {
+            end = rel.resultData.totalPage;
+          } else {
+            end = 10;
+          }
+        }
+        if (end > rel.resultData.totalPage) {
+          end = rel.resultData.totalPage;
+          if (begin <= 0) {
+            begin = 1;
+          } else {
+            begin = rel.resultData.totalPage - 9;
+          }
+        }
+        var page = '';
+        page += '<li class="paginItem" id="up"><a onclick="query(' + (rel.resultData.pageNum - 1) + ')"><span class="pagepre"></span></ a></li>';
+        for (var i = begin; i <= end; i++) {
+          if (i == rel.resultData.pageNum) {
+            page += '<li class="paginItem current"><a onclick="query(' + i + ')">' + i + '</ a></li>';
+          } else {
+            page += '<li class="paginItem"><a onclick="query(' + i + ')">' + i + '</ a></li>';
+          }
+        }
+        page += '<li class="paginItem" id="down"><a onclick="query(' + (rel.resultData.pageNum + 1) + ')"><span class="pagenxt"></span></ a></li>';
+        $("#pagin").html(page);
+        if (rel.resultData.pageNum == 1) {
+          // $("#up").removeAttr("onclick");
+          $("#up").attr("disabled", true).css("pointer-events", "none")
+        }
+        if (rel.resultData.pageNum == rel.resultData.totalPage) {
+          // $("#down").removeAttr("onclick");
+          $("#down").attr("disabled", true).css("pointer-events", "none")
+        }
+
+      }
+    })
+
+  }
+</script>

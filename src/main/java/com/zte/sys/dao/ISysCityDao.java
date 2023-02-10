@@ -1,9 +1,8 @@
 package com.zte.sys.dao;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.zte.sys.model.City;
-import com.zte.sys.model.Province;
-import com.zte.sys.model.Users;
+import com.zte.common.model.City;
+import com.zte.common.model.Province;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

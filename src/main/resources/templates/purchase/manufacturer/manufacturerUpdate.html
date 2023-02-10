@@ -1,17 +1,145 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+  <script>
+    $(function () {
+      function getParameter(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = location.search.substr(1).match(reg);
+        if (r != null) {
+          return (r[2]);
+        }
+        return null;
+      }
+      var parameter = getParameter("firmId");
+      $("#firmId").val(parameter);
+      $.ajax({
+        url:"/purchase/findFirm",
+        method:"post",
+        data:{firmId:parameter},
+        success:function (rel) {
+          var firmName = rel.resultData[0].firmName;
+          var firmFounder = rel.resultData[0].firmFounder;
+          var firmTel = rel.resultData[0].firmTel;
+          var firmAddress = rel.resultData[0].firmAddress;
+          var firmCity = rel.resultData[0].firmCity;
+          var firmContent = rel.resultData[0].firmContent;
+          var name = rel.resultData[0].createName;
+          var time = rel.resultData[0].createTime;
+          var provinceId = rel.resultData[0].firmProvince;
+          if (rel.resultData[0].status == "1"){
+            var element = document.getElementById("used");
+            element.selected = "selected";
+          }else {
+            var element = document.getElementById("unUsed");
+            element.selected = "selected";
+          }
+          $("#firmName").val(firmName)
+          $("#firmFounder").val(firmFounder)
+          $("#firmTel").val(firmTel)
+          $("#firmAddress").val(firmAddress)
+          $("#firmContent").val(firmContent)
+          $("#createName").val(name)
+          $("#createTime").val(time)
+          $.ajax({
+            url:"/purchase/queryCity",
+            method:"post",
+            data:{id:provinceId},
+            success:function (rel) {
+              var str = '                  <option value="0">请选择</option>\n';
+              for (let i = 0; i < rel.resultData.length; i++) {
+                if (rel.resultData[i].id == firmCity){
+                  str += '                  <option value="' + rel.resultData[i].id + '" selected="selected">' + rel.resultData[i].cname + '</option>'
+                }else {
+                  str += '                  <option value="' + rel.resultData[i].id + '">' + rel.resultData[i].cname + '</option>'
+                }
+              }
+              $("#firmCity").html(str);
+            }
+          })
+          $.ajax({
+            url: "/purchase/queryProvince",
+            method: "post",
+            data: {},
+            success: function (rel) {
+              var str = '                  <option value="0">请选择</option>\n';
+              for (let i = 0; i < rel.resultData.length; i++) {
+                if (rel.resultData[i].id == provinceId){
+                  str += '                  <option value="' + rel.resultData[i].id + '" selected="selected">' + rel.resultData[i].pname + '</option>'
+                }else {
+                  str += '                  <option value="' + rel.resultData[i].id + '">' + rel.resultData[i].pname + '</option>'
+                }
+              }
+              $("#firmProvince").html(str);
+              findProvinceValue();
+            }
+          })
+        }
+      })
+    })
+    function findProvinceValue() {
+      var element = document.getElementById("firmProvince");
+      element.onchange = function () {
+        valOption = this.options[this.selectedIndex].value; //获取option的value
+        $.ajax({
+          url:"/purchase/queryCity",
+          method:"post",
+          data:{id:valOption},
+          success:function (rel) {
+            var str = '                  <option value="0">请选择</option>\n';
+            for (let i = 0; i < rel.resultData.length; i++) {
+              str += '                  <option value="' + rel.resultData[i].id + '">' + rel.resultData[i].cname + '</option>'
+            }
+            $("#firmCity").html(str);
+          }
+        })
+      }
+    }
+
+    function updateFirm() {
+      var val = $("#createTime").val();
+      var val1 = $("#firmName").val();
+      var val2 = $("#firmFounder").val();
+      var val3 = $("#firmTel").val();
+      var val4 = $("#firmAddress").val();
+      var val5 = $("#firmCity").val();
+      var val6 = $("#firmContent").val();
+      var val7 = $("#status").val();
+      var val8 = $("#firmId").val();
+      if (val1 == ""){
+        alert("厂商名称不能为空！");
+      }else if (val2 == ""){
+        alert("负责人不能为空！");
+      } else if (val3 == ""){
+        alert("联系电话不能为空！");
+      } else if (val4 == ""){
+        alert("联系地址不能为空！");
+      } else if (val5 == "0"){
+        alert("市不能为空！");
+      } else {
+        $.ajax({
+          url:"/purchase/updateFirm",
+          method:"post",
+          data:{createTime:val,firmName:val1,firmFounder:val2,firmTel:val3,firmAddress:val4,firmCity:val5,firmContent:val6,status:val7,firmId:val8},
+          success:function () {
+            location.href = "/purchase/manufacturer/flist";
+          }
+        })
+      }
+    }
+  </script>
 </head>
+
 
 <body>
 <div class="place"> <span>位置：</span>
   <ul class="placeul">
     <li>采购管理</li>
     <li>厂商管理</li>
-    <li>修改</li>
+    <li>添加</li>
   </ul>
 </div>
 <div class="formbody">
@@ -19,70 +147,65 @@
   <ul class="forminfo">
     <li>
       <label>厂商名称</label>
-      <input name="" type="text" value="阿里巴巴" class="dfinput" />
+      <input id="firmId" name="firmId" type="hidden"/>
+      <input id="firmName" name="firmName" type="text" class="dfinput" />
       <i>必填，不能超过50个字符</i>
     </li>
     <li>
       <label>负责人</label>
-      <input name="" type="text" value="马云" class="dfinput" />
-       <i>必填，不能超过30个字符</i>
+      <input id="firmFounder" name="firmFounder" type="text" class="dfinput" />
+      <i>必填，不能超过30个字符</i>
     </li>
     <li>
       <label>联系方式</label>
-      <input name="" type="text" value="17370899727" class="dfinput" />
-       <i>必填，不能超过30个字符</i>
+      <input id="firmTel" name="firmTel" type="text" class="dfinput" />
+      <i>必填，不能超过30个字符</i>
     </li>
     <li>
       <label>联系地址</label>
-      <input name="" type="text" value="江苏南京苏铺路180号泸州花园7栋3单元1801室" class="dfinput" />
-       <i>必填，不能超过130个字符</i>
+      <input id="firmAddress" name="firmAddress" type="text" class="dfinput" />
+      <i>必填，不能超过130个字符</i>
     </li>
     <li>
       <label>所属区域</label>
-      <select class="dfselect">
-          <option>请选择</option>
-          <option>北京</option>
-          <option selected="selected">江苏</option>
-          <option>天津</option>
+      <select id="firmProvince" class="dfselect">
+        <option value="0">请选择</option>
       </select>
       省
-      <select class="dfselect">
-          <option>请选择</option>
-          <option>北京</option>
-          <option selected="selected">南京</option>
-          <option>天津</option>
+      <select id="firmCity" name="firmCity" class="dfselect">
+        <option value="0">请选择</option>
       </select>
       市
       <i>必选</i>
     </li>
     <li>
       <label>描述</label>
-      <textarea class="textinput">阿里巴巴上市公司</textarea>
+      <textarea id="firmContent" name="firmContent" class="textinput"></textarea>
       <i>可选</i>
     </li>
     <li>
       <label>状态</label>
-      <select class="dfselect">
-          <option value="1">可用</option>
-          <option value="0">不可用</option>
-        </select>
+      <select id="status" name="status" class="dfselect">
+        <option id="used" value="1">可用</option>
+        <option id="unUsed" value="0">不可用</option>
+      </select>
       <i>必选</i>
     </li>
     <li>
       <label>创建人</label>
-      <input name="" type="text" value="曹操" readonly="readonly" class="roinput" />
+      <input id="createName" name="createName" type="text" value="马云" readonly="readonly" class="roinput" />
       <i>不能编辑</i>
     </li>
     <li>
       <label>创建时间</label>
-      <input name="" type="text" value="2017-11-18 15:36:10" readonly="readonly" class="roinput" />
+      <input id="createTime" name="createTime" type="text" value="2017-11-18 15:36:10" readonly="readonly" class="roinput" />
       <i>不能编辑</i>
     </li>
     <li>
       <label>&nbsp;</label>
-      <input name="" type="button" class="btn" value="确定"/>
+      <input name="" type="button" class="btn" value="确定" onclick="updateFirm()"/>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='manufacturerList.html'"/>
+      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='/purchase/manufacturer/flist'"/>
     </li>
   </ul>
 </div>

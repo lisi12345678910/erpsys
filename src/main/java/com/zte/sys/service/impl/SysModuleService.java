@@ -3,14 +3,9 @@ package com.zte.sys.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zte.login.model.Module;
 import com.zte.sys.dao.ISysModuleDao;
-import com.zte.sys.model.Job;
-import com.zte.login.model.Module ;
-import com.zte.sys.model.Users;
-import com.zte.sys.dao.ISysUserDao;
-
 import com.zte.sys.service.ISysModuleService;
-import com.zte.sys.service.ISysUserService;
 import com.zte.util.PageModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SysModuleService implements ISysModuleService {
+public class SysModuleService extends ServiceImpl<ISysModuleDao, Module> implements ISysModuleService {
     @Autowired
     private ISysModuleDao iSysModuleDao;
 
@@ -43,6 +38,53 @@ public class SysModuleService implements ISysModuleService {
         //---------------------------------------
 
         return pageModel;
+    }
+
+    @Override
+    public List<Module> simplefathermodulelist() {
+        List<Module> moduleList = iSysModuleDao.simplefathermodulelist();
+        return moduleList;
+    }
+
+    @Override
+    public Boolean moduleadd(Module module) {
+        Boolean b = iSysModuleDao.moduleadd(module);
+        return b;
+    }
+
+    @Override
+    public Module findmodule(Integer moduleId) {
+        Module module = iSysModuleDao.findmodule(moduleId);
+        return module;
+    }
+
+    @Override
+    public Boolean updatemodule(Module module) {
+        Boolean b = iSysModuleDao.updatemodule(module);
+        return b;
+    }
+
+    @Override
+    public Boolean updatemodulestatus(Integer mId) {
+
+
+
+        Integer integer = iSysModuleDao.isfather(mId);
+        if (integer.equals(0)) {
+            //是父模块
+            iSysModuleDao.updatesonmodulestatus(mId);
+            iSysModuleDao.updatemodulestatus(mId);
+        }else {
+            //mid不是父模块
+            iSysModuleDao.updatesonmodulestatus(mId);
+        }
+        return true;
+    }
+
+    @Override
+    public Module haveornomodule(String moduleRname) {
+        Module module = iSysModuleDao.haveornomodule(moduleRname);
+        return module;
     }
 
 }

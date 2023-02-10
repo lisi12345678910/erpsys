@@ -2,13 +2,13 @@ package com.zte.sys.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zte.common.model.City;
+import com.zte.common.model.Province;
 import com.zte.sys.dao.ISysCityDao;
 import com.zte.sys.dao.ISysDeptDao;
 
-import com.zte.sys.model.City;
 import com.zte.sys.model.Dept;
-import com.zte.sys.model.Province;
-import com.zte.sys.model.Users;
+
 import com.zte.sys.service.ISysDeptService;
 import com.zte.util.PageModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,5 +55,35 @@ public class SysDeptService implements ISysDeptService {
     public List<City> deptcitylist(City city) {
        List<City> cityList = cityDao.deptcitylist(city);
        return cityList;
+    }
+
+    @Override
+    public Boolean deptadd(Dept dept) {
+        Boolean b = iSysDeptDao.deptadd(dept);
+        return b;
+    }
+
+    @Override
+    public Dept finddept(Integer deptId) {
+        Dept dept = iSysDeptDao.finddept(deptId);
+        return dept;
+    }
+
+    @Override
+    public Boolean updatedept(Dept dept) {
+        Boolean b = iSysDeptDao.updatedept(dept);
+        return b;
+    }
+
+    @Override
+    public Boolean updatedeptstatus(Integer uId) {
+       Boolean b = iSysDeptDao.updatedeptstatus(uId);
+       return b;
+    }
+
+    @Override
+    public Dept haveornodept(String deptName) {
+        Dept dept = iSysDeptDao.haveornodept(deptName);
+        return dept;
     }
 }

@@ -1,8 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml">-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
+  <script type="text/javascript" src="../../../static/js/jquery.js"></script>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
 </head>
@@ -20,19 +23,24 @@
   <ul class="forminfo">
     <li>
       <label>员工编号</label>
-      <cite>9527</cite>
+      <cite th:text="${userview.getUId()}">9527</cite>
     </li>
     <li>
       <label>员工姓名</label>
-      <cite>唐寅</cite>
+      <cite th:text="${userview.getUname()}">唐寅</cite>
     </li>
     <li>
       <label>联系电话</label>
-      <cite>17370899727</cite>
+      <cite th:text="${userview.getUtelephone()}">17370899727</cite>
     </li>
     <li>
       <label>性别</label>
-      <cite>男</cite>
+      <span th:if="${userview.getSex()==1}">
+        <cite>男</cite>
+      </span>
+      <span th:if="${userview.getSex()==2}">
+        <cite>女</cite>
+      </span>
     </li>
     <li>
       <label>年龄</label>
@@ -40,19 +48,26 @@
     </li>
     <li>
       <label>部门</label>
-      <cite>研发部</cite>
+      <cite th:text="${userview.getDeptName()}">研发部</cite>
     </li>
     <li>
       <label>职位</label>
-      <cite>经理</cite>
+      <cite th:text="${userview.getJobName()}">经理</cite>
     </li>
     <li>
       <label>状态</label>
+      <span th:if="${userview.getStatusId()==1}">
       <cite>在职</cite>
+      </span>
+      <span th:if="${userview.getStatusId()==0}">
+      <cite>离职</cite>
+      </span>
     </li>
     <li>
       <label>入职时间</label>
-      <cite>2017-01-30 12:05:05</cite>
+<!--      <cite th:text="${userview.getHiredate()}">2017-01-30 12:05:05</cite>-->
+      <cite th:text="${#dates.format(userview.getHiredate(), 'yyyy-MM-dd HH:mm:ss')}">2017-01-30 12:05:05</cite>
+<!--      <cite th:text="${#dates.format(userview.getHiredate())}">2017-01-30 12:05:05</cite>-->
     </li>
   </ul>
   <div style="margin-top:20px; margin-left:20px;">

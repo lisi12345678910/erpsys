@@ -6,7 +6,7 @@
     <cache>
     </cache>
 
-    <select id="arealist" resultType="com.zte.sys.model.City">
+    <select id="arealist" resultType="City">
         select * from city,province where city.P_ID = province.ID
         <if test="pName != null and pName != ''">
             <bind name="p" value="'%' + pName + '%'"/>
@@ -18,11 +18,25 @@
         </if>
     </select>
 
-    <select id="deptProvincelist" resultType="com.zte.sys.model.Province">
-        select * from province
+
+
+    <select id="getcitys" resultType="City">
+        select * from city,province where city.P_ID = #{i}
+    </select>
+    <resultMap id="deptProvincelistmap" type="Province">
+        <id property="id" column="ID"></id>
+        <collection property="cityList" ofType="City" select="getcitys" column="ID">
+        </collection>
+    </resultMap>
+
+    <select id="deptProvincelist" resultMap="deptProvincelistmap">
+        select * from province , city where province.ID = city.P_ID group by province.ID
     </select>
 
-    <select id="deptcitylist" resultType="com.zte.sys.model.City">
+
+
+
+    <select id="deptcitylist" resultType="City">
         select * from city
         <where>
             <if test="pId != null">

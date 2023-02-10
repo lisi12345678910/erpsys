@@ -1,8 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml">-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
+  <script type="text/javascript" src="../../../static/js/jquery.js"></script>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
 </head>
@@ -20,19 +23,24 @@
   <ul class="forminfo">
     <li>
       <label>模块名称</label>
-      <cite>用户管理</cite>
+      <cite th:text="${moduleview.getModuleRname()}">用户管理</cite>
     </li>
     <li>
       <label>父模块</label>
-      <cite>系统管理</cite>
+      <cite th:text="${moduleview.getPN()}">系统管理</cite>
     </li>
     <li>
       <label>URL</label>
-      <cite>sys/users/userList.html</cite>
+      <cite th:text="${moduleview.getModuleMurl()}">sys/users/userList.html</cite>
     </li>
     <li>
       <label>状态</label>
+      <span th:if="${moduleview.getModuleState()=='0'}">
       <cite>正常</cite>
+      </span>
+      <span th:if="${moduleview.getModuleState()=='1'}">
+      <cite>禁用</cite>
+      </span>
     </li>
   </ul>
   <div style="margin-top:20px; margin-left:20px;">

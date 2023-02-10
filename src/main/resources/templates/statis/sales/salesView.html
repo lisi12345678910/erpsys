@@ -1,4 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -17,79 +20,79 @@
 </div>
 <div class="rightinfo">
   <form action="" method="post">
-    <table class="tablelist">
-      <thead>
-        <tr>
-          <th>序号</th>
-          <th>客户姓名</th>
-          <th>订购单编号</th>
-          <th>商品数量</th>
-          <th>金额</th>
-          <th>订购时间</th>
-          <th>操作人</th>
-          <th>订购单详情</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>王金平</td>
-          <td>DJ201701270001</td>
-          <td>5</td>
-          <td>￥76,582</td>
-          <td>2017-01-25 15:05:05</td>
-          <td>马云</td>
-          <td>
-          	<a href="../../market/order/orderView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>王金平</td>
-          <td>DJ201701270002</td>
-          <td>5</td>
-          <td>￥76,582</td>
-          <td>2017-01-25 15:05:05</td>
-          <td>马云</td>
-          <td>
-          	<a href="../../market/order/orderView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>王金平</td>
-          <td>DJ201701270003</td>
-          <td>5</td>
-          <td>￥76,582</td>
-          <td>2017-01-25 15:05:05</td>
-          <td>马云</td>
-          <td>
-          	<a href="../../market/order/orderView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>王金平</td>
-          <td>DJ201701270004</td>
-          <td>5</td>
-          <td>￥76,582</td>
-          <td>2017-01-25 15:05:05</td>
-          <td>马云</td>
-          <td>
-          	<a href="../../market/order/orderView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-      </tbody>
+    <table class="tablelist" id="tablelist">
+<!--      <thead>-->
+<!--        <tr>-->
+<!--          <th>序号</th>-->
+<!--          <th>客户姓名</th>-->
+<!--          <th>订购单编号</th>-->
+<!--          <th>商品数量</th>-->
+<!--          <th>金额</th>-->
+<!--          <th>订购时间</th>-->
+<!--          <th>操作人</th>-->
+<!--          <th>订购单详情</th>-->
+<!--        </tr>-->
+<!--      </thead>-->
+<!--      <tbody>-->
+<!--        <tr>-->
+<!--          <td>1</td>-->
+<!--          <td>王金平</td>-->
+<!--          <td>DJ201701270001</td>-->
+<!--          <td>5</td>-->
+<!--          <td>￥76,582</td>-->
+<!--          <td>2017-01-25 15:05:05</td>-->
+<!--          <td>马云</td>-->
+<!--          <td>-->
+<!--          	<a href="orders/orderView" class="tablelink">查看详情</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>2</td>-->
+<!--          <td>王金平</td>-->
+<!--          <td>DJ201701270002</td>-->
+<!--          <td>5</td>-->
+<!--          <td>￥76,582</td>-->
+<!--          <td>2017-01-25 15:05:05</td>-->
+<!--          <td>马云</td>-->
+<!--          <td>-->
+<!--          	<a href="../../market/order/orderView.html" class="tablelink">查看详情</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>3</td>-->
+<!--          <td>王金平</td>-->
+<!--          <td>DJ201701270003</td>-->
+<!--          <td>5</td>-->
+<!--          <td>￥76,582</td>-->
+<!--          <td>2017-01-25 15:05:05</td>-->
+<!--          <td>马云</td>-->
+<!--          <td>-->
+<!--          	<a href="../../market/order/orderView.html" class="tablelink">查看详情</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <td>4</td>-->
+<!--          <td>王金平</td>-->
+<!--          <td>DJ201701270004</td>-->
+<!--          <td>5</td>-->
+<!--          <td>￥76,582</td>-->
+<!--          <td>2017-01-25 15:05:05</td>-->
+<!--          <td>马云</td>-->
+<!--          <td>-->
+<!--          	<a href="../../market/order/orderView.html" class="tablelink">查看详情</a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--      </tbody>-->
     </table>
     <div class="pagin">
-      <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
-      <ul class="paginList">
+      <div class="message">共<i class="blue" id="totalCount">1256</i>条记录，当前显示第&nbsp;<i class="blue" id="pageNum">2&nbsp;</i>页</div>
+      <ul class="paginList" id="pagin">
         <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
         <li class="paginItem"><a href="javascript:;">1</a></li>
         <li class="paginItem current"><a href="javascript:;">2</a></li>
         <li class="paginItem"><a href="javascript:;">3</a></li>
         <li class="paginItem"><a href="javascript:;">4</a></li>
-        <li class="paginItem"><a href="javascript:;">5</a></li>
+        <li class="painItem"><a href="javascript:;">5</a></li>
         <li class="paginItem more"><a href="javascript:;">...</a></li>
         <li class="paginItem"><a href="javascript:;">10</a></li>
         <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>
@@ -102,3 +105,122 @@
 </script>
 </body>
 </html>
+<script>
+  function getParameter(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    var r = location.search.substr(1).match(reg);
+    if (r != null) {
+      return (r[2]);
+    }
+    return null;
+  }
+  $(function () {
+    query(1)
+  })
+
+
+
+  function query(pageNum) {
+    var id = getParameter("id");
+    var name = getParameter("name")
+    var phone = getParameter("phone")
+    if (name){
+      name = window.decodeURIComponent(name)
+    }
+
+    console.log(id);
+    console.log(name)
+    $.ajax({
+      url:"/ordersDetail3/"+id,
+      method:"POST",
+      data:{},
+      success:function (rel) {
+        console.log(rel)
+        var str = '   <thead>\n' +
+                '        <tr>\n' +
+                '          <th>序号</th>\n' +
+                '          <th>客户姓名</th>\n' +
+                '          <th>订购单编号</th>\n' +
+                '          <th>商品数量</th>\n' +
+                '          <th>金额</th>\n' +
+                '          <th>订购时间</th>\n' +
+                '          <th>操作人</th>\n' +
+                '          <th>订购单详情</th>\n' +
+                '        </tr>\n' +
+                '      </thead>\n' +
+                '      <tbody>';
+
+        for (let i = 0; i < rel.resultData.data.length; i++) {
+          var custom = rel.resultData.data[i]
+          var sumproprice = 0 ;
+          for (let j = 0; j <custom.orderdetails.length; j++) {
+            sumproprice +=  custom.orderdetails[j].proprice
+
+          }
+
+          str+=' <tr>\n' +
+                  '          <td>'+(i+1)+'</td>\n' +
+                  '          <td>'+custom.costomname+'</td>\n' +
+                  '          <td>'+custom.orderid+'</td>\n' +
+                  '          <td>'+custom.orderdetails.length+'</td>\n' +
+                  '          <td>￥'+custom.ordermoney+'</td>\n' +
+                  '          <td>'+custom.ordertime+'</td>\n' +
+                  '          <td>'+custom.users.uname+'</td>\n' +
+                  '          <td>\n' +
+                  '          \t<a href="/market/salesOrderView?id='+custom.orderid+'&pageNum='+pageNum+'" class="tablelink">查看详情</a>\n' +
+                  '          </td>\n' +
+                  '        </tr>';
+
+        }
+        str += '</tbody>';
+
+        $("#tablelist").html(str);
+
+
+        $("#totalCount").html(rel.resultData.totalCount);
+        $("#pageNum").html(rel.resultData.pageNum);
+        var begin = rel.resultData.pageNum - 5;
+        var end = rel.resultData.pageNum + 4;
+        if (begin < 1) {
+          begin = 1;
+          if (rel.resultData.totalPage < 10) {
+            end = rel.resultData.totalPage;
+          } else {
+            end = 10;
+          }
+        }
+        if (end > rel.resultData.totalPage) {
+          end = rel.resultData.totalPage;
+          if (begin <= 0) {
+            begin = 1;
+          } else {
+            begin = rel.resultData.totalPage - 9;
+          }
+        }
+        console.log(begin);
+        console.log(end);
+        var page = '';
+        page += '<li class="paginItem" id="up"><a onclick="query(' + (rel.resultData.pageNum - 1) + ')"><span class="pagepre"></span></ a></li>';
+        for (var i = begin; i <= end; i++) {
+          if (i == rel.resultData.pageNum) {
+            page += '<li class="paginItem current"><a onclick="query(' + i + ')">' + i + '</ a></li>';
+          } else {
+            page += '<li class="paginItem"><a onclick="query(' + i + ')">' + i + '</ a></li>';
+          }
+        }
+        page += '<li class="paginItem" id="down"><a onclick="query(' + (rel.resultData.pageNum + 1) + ')"><span class="pagenxt"></span></ a></li>';
+        $("#pagin").html(page);
+        if (rel.resultData.pageNum == 1) {
+          // $("#up").removeAttr("onclick");
+          $("#up").attr("disabled", true).css("pointer-events", "none")
+        }
+        if (rel.resultData.pageNum == rel.resultData.totalPage) {
+          // $("#down").removeAttr("onclick");
+          $("#down").attr("disabled", true).css("pointer-events", "none")
+        }
+
+      }
+
+    });
+  }
+</script>

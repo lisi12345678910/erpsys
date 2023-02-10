@@ -13,11 +13,12 @@ public class Dept implements Serializable {
 
   private Integer deptId;
   private String deptName;
-  private String deptState;
+  private String deptState="1";
   private Integer pId;
   private Integer cId;
 
   private String cName;
+  private String pName;
 
 
 

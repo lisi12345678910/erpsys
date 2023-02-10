@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -6,6 +6,26 @@
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
 <script type="text/javascript">
+  var pageNum = 0;
+  var pageSize = 0;
+  var companylike = '';
+  var customnamelike = '';
+  var address = 0;
+  var provinceid = 0;
+//模糊查询
+function queryPart() {
+    companylike = $("#companylike").val();
+    customnamelike = $("#customnamelike").val();
+    provinceid = $("#province").val();
+    address = $("#city").val();
+    if (address == "请选择城市"){
+      address = 0;
+    }
+    if (provinceid == "请选择省份"){
+      provinceid = 0;
+    }
+    queryPage(pageNum,pageSize);
+  }
 function tipOpen(content) {
 	$(".tipright p").text(content);
 	$("#tip").fadeIn(200);
@@ -13,6 +33,160 @@ function tipOpen(content) {
 function tipClose() {
 	$("#tip").fadeOut(200);
 }
+
+//查询所有的省和对应的市
+function queryProvinceAndCity(){
+  $.ajax({
+    url:"/market/province",
+    method:"post",
+    data:{},
+    success:function (result) {
+      var province = result.resultData;
+      var str = '<option>请选择省份</option>';
+      for (let i = 0; i < province.length; i++) {
+        str += '<option value="' + province[i].id + '">' + province[i].pname + '</option>';
+      }
+      $("#province").html(str);
+      var province = document.getElementById("province");
+      province.onchange = function () { //当选项改变时触发
+        pid = this.options[this.selectedIndex].value; //获取option的value
+        pname = this.options[this.selectedIndex].innerHTML; //获取option中间的文本
+        $.ajax({
+          url:"/market/city",
+          method:"post",
+          data:{pid:pid},
+          success:function (result) {
+            var city = result.resultData
+            var str1 = '<option>请选择城市</option>'
+            for (let i = 0; i < city.length; i++) {
+              str1 += '<option value="' + city[i].id + '">' + city[i].cname + '</option>';
+            }
+            $("#city").html(str1);
+          }
+        })
+      }
+    }
+  })
+}
+
+//分页
+function queryPage(pageNum,pageSize){
+  $.ajax({
+    url:"/market/customerPage",
+    method:"post",
+    data:{pageNum:pageNum,pageSize:pageSize,companylike:companylike,customnamelike:customnamelike,address:address,provinceid:provinceid},
+    success:function (page) {
+      var totalCount = page.totalCount;
+      var pageNum = page.pageNum;
+      var totalPage = page.totalPage;
+      var pageSize = page.pageSize;
+      var beforpageNum = pageNum - 1;
+      if (beforpageNum <= 0){
+        beforpageNum = 1;
+      }
+      var afterpageNum = pageNum + 1;
+      if (afterpageNum >= totalPage){
+        afterpageNum = totalPage;
+      }
+
+      let begin;
+      let end;
+      if (totalPage < 10){
+        begin = 1;
+        end = totalPage;
+      }else{
+        begin = pageNum - 5;
+        end = pageNum + 4;
+
+        if (begin < 1){
+          begin = 1;
+          end = 10;
+        }
+        if (end > totalPage){
+          end = totalPage;
+          begin = end - 9;
+        }
+      }
+
+      var str1 = '<thead>\n' +
+              '        <tr>\n' +
+              '          <th>序号</th>\n' +
+              '          <th>客户姓名</th>\n' +
+              '          <th>性别</th>\n' +
+              '          <th>联系电话</th>\n' +
+              '          <th>所属公司</th>\n' +
+              '          <th>所属区域</th>\n' +
+              '          <th>分配时间</th>\n' +
+              '          <th>客服人员</th>\n' +
+              '          <th>操作</th>\n' +
+              '        </tr>\n' +
+              '      </thead>\n' +
+              '      <tbody>';
+      var list = page.data;
+      for (let i = 0; i < list.length; i++) {
+        var xuhao = 0;
+        if (pageNum > 1){
+          xuhao = (pageNum-1)*pageSize+(i+1)
+        }else {
+          xuhao = i+1;
+        }
+        let gender = list[i].sex;
+        if(list[i].sex==1){
+          gender = "男";
+        }else if(list[i].sex==2){
+          gender = "女";
+        }
+        let province = list[i].province;
+        let city = list[i].city;
+        let address = province+city;
+        let status = list[i].status;
+        if(list[i].status==1){
+          status = "可用";
+        }else if(list[i].status==2){
+          status = "不可用";
+        }
+        str1 += '<tr>\n' +
+                '          <td>'+xuhao+'</td>\n' +
+                '          <td>'+list[i].customname+'</td>\n' +
+                '          <td>'+gender+'</td>\n' +
+                '          <td>'+list[i].telephone+'</td>\n' +
+                '          <td>'+list[i].company+'</td>\n' +
+                '          <td>'+address+'</td>\n' +
+                '          <td>'+list[i].distractime+'</td>\n' +
+                '          <td>'+list[i].servicename+'</td>\n' +
+                '          <td>\n' +
+                '          \t<a href="/market/customerView?id='+list[i].customid+'&pageNum='+pageNum+'&panduan='+2+'" class="tablelink">查看详情</a>\n' +
+                '          </td>\n' +
+                '        </tr>';
+      }
+      str1 += '</tbody>';
+      $(".tablelist").html(str1);
+
+
+      var str2 = '<div class="message">共<i class="blue">'+totalCount+'</i>条记录，当前显示第&nbsp;<i class="blue">'+pageNum+'&nbsp;</i>页</div>\n' +
+              '      <ul class="paginList">\n' +
+              '        <li class="paginItem"><a href="javascript:;" onclick="queryPage('+beforpageNum+','+pageSize+')"><span class="pagepre"></span></a></li>'
+
+      for (let i = begin; i <= end; i++) {
+        if (i == pageNum){
+          str2 += '<li class="paginItem current"><a href="javascript:;" onclick="queryPage('+(i)+','+pageSize+')">'+(i)+'</a></li>';
+        }else {
+          str2 += '<li class="paginItem"><a href="javascript:;" onclick="queryPage('+(i)+','+pageSize+')">'+(i)+'</a></li>';
+        }
+      }
+      str2 += '<li class="paginItem"><a href="javascript:;" onclick="queryPage('+afterpageNum+','+pageSize+')"><span class="pagenxt"></span></a></li>\n' +
+              '      </ul>';
+      $(".pagin").html(str2);
+    }
+  })
+}
+
+
+$(function () {
+  queryProvinceAndCity();
+  queryPage(pageNum,pageSize);
+})
+
 </script>
 </head>
 
@@ -28,109 +202,26 @@ function tipClose() {
   <form action="" method="post">
     <ul class="tools">
       <li> 公司名称:
-        <input type="text" />
+        <input type="text" id="companylike" />
       </li>
       <li> 客户姓名:
-        <input type="text" />
+        <input type="text" id="customnamelike" />
       </li>
       <li> 所属区域：
-        <select>
+        <select id="province">
           <option>请选择省份</option>
-          <option>北京</option>
-          <option>江苏</option>
-          <option>天津</option>
         </select>
-        <select>
+        <select id="city">
           <option>请选择城市</option>
-          <option>北京</option>
-          <option>南京</option>
-          <option>天津</option>
         </select>
       </li>
-      <li class="subBut" onclick="window.location.href='customerList.html'"><img src="../../../static/images/t06.png" />查询</li>
+      <li class="subBut" onclick="queryPart()"><img src="../../../static/images/t06.png" />查询</li>
     </ul>
     <table class="tablelist">
-      <thead>
-        <tr>
-          <th>序号</th>
-          <th>客户姓名</th>
-          <th>性别</th>
-          <th>联系电话</th>
-          <th>所属公司</th>
-          <th>所属区域</th>
-          <th>分配时间</th>
-          <th>客服人员</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>王金平</td>
-          <td>男</td>
-          <td>17370899727</td>
-          <td>阿里巴巴</td>
-          <td>江苏南京</td>
-          <td>2013-09-09 15:05:05</td>
-          <td>管理员</td>
-          <td>
-          	<a href="customerView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>张永祥</td>
-          <td>女</td>
-          <td>17370897894</td>
-          <td>腾讯公司</td>
-          <td>江苏南京</td>
-          <td>2013-09-09 15:05:05</td>
-          <td>管理员</td>
-          <td>
-          	<a href="customerView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>王金平</td>
-          <td>男</td>
-          <td>17370899727</td>
-          <td>阿里巴巴</td>
-          <td>江苏南京</td>
-          <td>2013-09-09 15:05:05</td>
-          <td>管理员</td>
-          <td>
-          	<a href="customerView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>张永祥</td>
-          <td>女</td>
-          <td>17370897894</td>
-          <td>腾讯公司</td>
-          <td>江苏南京</td>
-          <td>2013-09-09 15:05:05</td>
-          <td>管理员</td>
-          <td>
-          	<a href="customerView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-      </tbody>
+
     </table>
     <div class="pagin">
-      <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
-      <ul class="paginList">
-        <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
-        <li class="paginItem"><a href="javascript:;">1</a></li>
-        <li class="paginItem current"><a href="javascript:;">2</a></li>
-        <li class="paginItem"><a href="javascript:;">3</a></li>
-        <li class="paginItem"><a href="javascript:;">4</a></li>
-        <li class="paginItem"><a href="javascript:;">5</a></li>
-        <li class="paginItem more"><a href="javascript:;">...</a></li>
-        <li class="paginItem"><a href="javascript:;">10</a></li>
-        <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>
-      </ul>
+
     </div>
   </form>
 </div>

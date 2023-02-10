@@ -6,7 +6,7 @@
     <cache>
     </cache>
 
-    <select id="deptlist" resultType="com.zte.sys.model.Dept">
+    <select id="deptlist" resultType="Dept">
         select * from dept,city where dept.C_ID = city.ID
         <if test="deptName != null and deptName != ''">
             and dept.DEPT_NAME = #{deptName}
@@ -19,7 +19,28 @@
         </if>
     </select>
 
-    <select id="simpledeptlist" resultType="com.zte.sys.model.Dept">
+    <select id="simpledeptlist" resultType="Dept">
         select * from dept
+    </select>
+
+    <insert id="deptadd">
+        insert into dept values (#{deptId},#{deptName},#{deptState},#{pId},#{cId})
+    </insert>
+
+    <select id="finddept" resultType="Dept">
+        select * from dept,city,province where dept.P_ID = province.ID and dept.C_ID = city.ID
+        and dept.DEPT_ID = #{deptId}
+    </select>
+
+    <update id="updatedept">
+        update dept set dept.DEPT_ID = #{deptId},dept.DEPT_NAME = #{deptName},dept.P_ID = #{pId},dept.C_ID = #{cId} where dept.DEPT_ID = #{deptId}
+    </update>
+
+    <update id="updatedeptstatus">
+        update dept set DEPT_STATE = !DEPT_STATE where DEPT_ID = #{uId}
+    </update>
+
+    <select id="haveornodept" resultType="com.zte.sys.model.Dept">
+        select  * from dept where DEPT_NAME = #{deptName}
     </select>
 </mapper>

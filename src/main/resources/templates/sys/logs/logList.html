@@ -20,12 +20,14 @@ let uId = ""
 let uname = ""
 let jcontent = ""
 let moduleRname = ""
+let logStartTime = ""
+let logEndTime = ""
 function query(pagenum){
   $.ajax({
     url:"/loglist",
     type:"post",
     dataType:"json",
-    data:{pageNum:pagenum,uId:uId,uname:uname,jcontent:jcontent,moduleRname:moduleRname},
+    data:{pageNum:pagenum,uId:uId,uname:uname,jcontent:jcontent,moduleRname:moduleRname,logStartTime:logStartTime,logEndTime:logEndTime},
     success:function (dat) {
       let resultData = dat.resultData.data;
       //------------------------------------------------------------------------------------------------------------------------
@@ -73,7 +75,7 @@ function query(pagenum){
           <td>${resultDatum.jcontent}</td>
           <td>${resultDatum.jdate}</td>
           <td>
-            <a href="logView.html" class="tablelink">查看日志信息</a>
+            <a href="/logView/${resultDatum.jid}" class="tablelink">查看日志信息</a>
           </td>
         </tr>`
       }
@@ -103,8 +105,9 @@ function query(pagenum){
   })
 }
 $(function () {
-  let pageNum = 1
-  query(pageNum)
+
+  // let pageNum = 1
+  query(1)
 
 
   $("#search").click(function () {
@@ -112,7 +115,9 @@ $(function () {
     uname = $("#uname").val().trim();
     jcontent = $("#jcontent").val().trim();
     moduleRname = $("#moduleRname").val().trim();
-    query(pageNum)
+    logStartTime = $("#logStartTime").val().trim();
+    logEndTime = $("#logEndTime").val().trim();
+    query(1)
 
   })
 })

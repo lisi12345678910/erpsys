@@ -14,6 +14,162 @@ function tipClose() {
 	$("#tip").fadeOut(200);
 }
 </script>
+  <script>
+    $(function () {
+      var pageNumsss = "[[${pageNum}]]";
+      queryWarehouse(pageNumsss);
+      province();
+    })
+
+    var pageNums;
+    var valOption;
+    var txtOption;
+    var valOption2;
+    var txtOption2;
+    function queryWarehouse(pageNum) {
+      /*用jQuery实现*/
+      var cname = $("#queryname").val();
+      if (valOption=="请选择省份"){
+        valOption="";
+      }
+      if (valOption2=="请选择城市"){
+        valOption2="";
+      }
+      $.ajax({
+        url: "/PageWarehouse",
+        method: "post",
+        data: {pageNum: pageNum, pageSize: 5, cname: cname,province:valOption,city:valOption2},
+        dataType: "json",
+        success: function (rel) {
+          pageNums=rel.pageNum;
+          let str = "     <thead>\n" +
+                  "        <tr>\n" +
+                  "          <th>序号</th>\n" +
+                  "          <th>仓库名称</th>\n" +
+                  "          <th>负责人</th>\n" +
+                  "          <th>联系电话</th>\n" +
+                  "          <th>所属区域</th>\n" +
+                  "          <th>状态</th>\n" +
+                  "          <th>创建时间</th>\n" +
+                  "          <th>创建人</th>\n" +
+                  "          <th>操作</th>\n" +
+                  "        </tr>\n" +
+                  "      </thead>";
+          rel.data.forEach(function (warehouse, i) {
+            let state = warehouse.state;
+            if (warehouse.state == 1) {
+              state = "可用";
+            } else if (warehouse.state == 2) {
+              state = "不可用";
+            }
+
+            str += "<tbody>\n" +
+                    "   <tr>\n" +
+                    "          <td>" + warehouse.id + "</td>\n" +
+                    "          <td>" + warehouse.cname + "</td>\n" +
+                    "          <td>" + warehouse.name + "</td>\n" +
+                    "          <td>" + warehouse.phone + "</td>\n" +
+                    "          <td>" + warehouse.province + "" + warehouse.city + "</td>\n" +
+                    "          <td>" + state + "</td>\n" +
+                    "          <td>" + warehouse.creationTime + "</td>\n" +
+                    "          <td>" + warehouse.name2 + "</td>\n" +
+                    "          <td>\n" +
+                    "          \t<a href=\"/storageBrowseView?id="+warehouse.id+"&&pageNum="+rel.pageNum+"&&index=2\" class=\"tablelink\">查看详情</a>\n"+
+                    "          </td>\n" +
+                    "        </tr>" +
+                    "</tbody>\n";
+
+          })
+          $(".tablelist").html(str);
+
+          var index = " <div class=\"message\">共<i class=\"blue\">" + rel.totalCount + "</i>条记录，当前显示第&nbsp;<i class=\"blue\">" + rel.pageNum + "&nbsp;</i>页</div>";
+          index += "<ul class=\"paginList\">"
+          var before = rel.pageNum - 1;
+          if (before <= 1) {
+            before = 1;
+          }
+          index += " <li class=\"paginItem\"><a onclick=\"queryWarehouse(" + before + ")\" href=\"javascript:;\"><span class=\"pagepre\"></span></a></li>";
+
+          var begin = rel.pageNum - 5;
+          var end = rel.pageNum + 4;
+          if (begin < 1) {
+            begin = 1;
+            end = 10;
+          }
+          if (end > rel.totalPage) {
+            end = rel.totalPage;
+            begin = end - 9;
+          }
+          if (rel.totalPage < 10) {
+            begin = 1;
+            end = rel.totalPage;
+          }
+
+          for (let i = begin; i <= end; i++) {
+            var li;
+            if (rel.pageNum === i) {
+              li = "<li class=\"paginItem\"><a onclick=\"queryWarehouse(" + i + ")\" href=\"javascript:;\">" + i + "</a></li>"
+            }
+            index += "<li class=\"paginItem\"><a onclick=\"queryWarehouse(" + i + ")\" href=\"javascript:;\">" + i + "</a></li>";
+          }
+          var afterNum = rel.pageNum + 1;
+          if (afterNum >= rel.totalPage) {
+            afterNum = rel.totalPage;
+          }
+          index += "<li class=\"paginItem\"><a onclick=\"queryWarehouse(" + afterNum + ")\" href=\"javascript:;\"><span class=\"pagenxt\"></span></a></li>";
+          index += "</ul>"
+          $(".pagin").html(index);
+        }
+      })
+    }
+
+    function province() {
+      $.ajax({
+        url: "/province",
+        method: "post",
+        data: {},
+        dataType: "json",
+        success: function (rel) {
+          console.log(rel.resultData)
+          let str = "<select id=\"testSelect\">" +
+                  "   <option>请选择省份</option>" ;
+          rel.resultData.forEach(function (warehouse, i) {
+            str += "  <option value="+warehouse.id+">"+warehouse.pname+"</option>";
+          })
+          str+=" </select>";
+          $("#testSelect").html(str);
+
+          /*JavaScript实现*/
+          var testSelect = document.getElementById("testSelect");
+          testSelect.onchange = function() { //当选项改变时触发
+            valOption = this.options[this.selectedIndex].value; //获取option的value
+            txtOption = this.options[this.selectedIndex].innerHTML; //获取option中间的文本
+            $.ajax({
+              url: "/city",
+              method: "post",
+              data: {id:valOption},
+              dataType: "json",
+              success: function (rel) {
+                console.log(rel.resultData)
+                let str2 = "<select id=\"testSelect2\">\n" +
+                        "                    <option>请选择城市</option>"
+                rel.resultData.forEach(function (city, i) {
+                  str2 += "   <option  value=" + city.id + ">" + city.cname + "</option>";
+                })
+                str2 += " </select>";
+                $("#testSelect2").html(str2);
+                var testSelect2 = document.getElementById("testSelect2");
+                testSelect2.onchange = function () { //当选项改变时触发
+                  valOption2 = this.options[this.selectedIndex].value; //获取option的value
+                  txtOption2 = this.options[this.selectedIndex].innerHTML; //获取option中间的文本
+                }
+              }
+            })
+          }
+        }
+      })
+    }
+  </script>
 </head>
 
 <body>
@@ -28,92 +184,26 @@ function tipClose() {
   <form action="" method="post">
     <ul class="tools">
       <li>仓库名称:
-        <input type="text" />
+        <input id="queryname" type="text" />
       </li>
       <li> 所属区域：
-        <select>
+        <select id="testSelect">
           <option>请选择省份</option>
           <option>北京</option>
           <option>江苏</option>
           <option>天津</option>
         </select>
-        <select>
+        <select id="testSelect2">
           <option>请选择城市</option>
           <option>北京</option>
           <option>南京</option>
           <option>天津</option>
         </select>
       </li>
-      <li class="subBut" onclick="window.location.href='storageList.html'"><img src="../../../static/images/t06.png" />查询</li>
+      <li class="subBut" onclick="queryWarehouse()"><img src="../../../static/images/t06.png" />查询</li>
     </ul>
     <table class="tablelist">
-      <thead>
-        <tr>
-          <th>序号</th>
-          <th>仓库名称</th>
-          <th>负责人</th>
-          <th>联系电话</th>
-          <th>所属区域</th>
-          <th>状态</th>
-          <th>创建时间</th>
-          <th>创建人</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>南京21号仓库</td>
-          <td>朱元璋</td>
-          <td>17370899727</td>
-          <td>江苏南京</td>
-          <td>可用</td>
-          <td>2013-09-09 15:05:05</td>
-          <td>马云</td>
-          <td>
-          	<a href="storageView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>武汉71号仓库</td>
-          <td>周瑜</td>
-          <td>17370899727</td>
-          <td>湖北武汉</td>
-          <td>不可用</td>
-          <td>2013-09-09 15:05:05</td>
-          <td>马化腾</td>
-          <td>
-          	<a href="storageView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>南京21号仓库</td>
-          <td>朱元璋</td>
-          <td>17370899727</td>
-          <td>江苏南京</td>
-          <td>可用</td>
-          <td>2013-09-09 15:05:05</td>
-          <td>马云</td>
-          <td>
-          	<a href="storageView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>武汉71号仓库</td>
-          <td>周瑜</td>
-          <td>17370899727</td>
-          <td>湖北武汉</td>
-          <td>不可用</td>
-          <td>2013-09-09 15:05:05</td>
-          <td>马化腾</td>
-          <td>
-          	<a href="storageView.html" class="tablelink">查看详情</a>
-          </td>
-        </tr>
-      </tbody>
+
     </table>
     <div class="pagin">
       <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>

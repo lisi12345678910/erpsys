@@ -5,6 +5,94 @@
 <title>无标题文本</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+  <script>
+    $(function () {
+      queryWarehouse(1);
+    })
+
+    var pageNums;
+    function queryWarehouse(pageNum) {
+      var cname = $("#queryname1").val();
+      var sppm = $("#queryname2").val();
+      var splx = $("#queryname3").val();
+      var spmc = $("#queryname4").val();
+      $.ajax({
+        url: "/PageKcWarehouse",
+        method: "post",
+        data: {pageNum: pageNum, pageSize: 5,cname:cname,sppm:sppm,splx:splx,spmc:spmc},
+        dataType: "json",
+        success: function (rel) {
+          pageNums=rel.pageNum;
+          let str = "<thead>\n" +
+                  "        <tr>\n" +
+                  "          <th>序号</th>\n" +
+                  "          <th>仓库名称</th>\n" +
+                  "          <th>商品品牌</th>\n" +
+                  "          <th>商品类型</th>\n" +
+                  "          <th>商品名称</th>\n" +
+                  "          <th>厂商名称</th>\n" +
+                  "          <th>商品数量</th>\n" +
+                  "          <th>单位</th>\n" +
+                  "        </tr>\n" +
+                  "      </thead>";
+          rel.data.forEach(function (warehouse, i) {
+            str += "<tbody>\n" +
+                    "   <tr>\n" +
+                    "          <td>" + warehouse.id + "</td>\n" +
+                    "          <td>" + warehouse.cname + "</td>\n" +
+                    "          <td>" + warehouse.sppm + "</td>\n" +
+                    "          <td>" + warehouse.splx + "</td>\n" +
+                    "          <td>" + warehouse.spmc + "</td>\n" +
+                    "          <td>" + warehouse.csmc + "</td>\n"+
+                    "          <td>" + warehouse.repertory + "</td>\n"+
+                    "          <td>台</td>\n"+
+                    "        </tr>"+
+                    "</tbody>\n";
+
+          })
+          $(".tablelist").html(str);
+
+          var index = " <div class=\"message\">共<i class=\"blue\">" + rel.totalCount + "</i>条记录，当前显示第&nbsp;<i class=\"blue\">" + rel.pageNum + "&nbsp;</i>页</div>";
+          index += "<ul class=\"paginList\">"
+          var before = rel.pageNum - 1;
+          if (before <= 1) {
+            before = 1;
+          }
+          index += " <li class=\"paginItem\"><a onclick=\"queryWarehouse(" + before + ")\" href=\"javascript:;\"><span class=\"pagepre\"></span></a></li>";
+
+          var begin = rel.pageNum - 5;
+          var end = rel.pageNum + 4;
+          if (begin < 1) {
+            begin = 1;
+            end = 10;
+          }
+          if (end > rel.totalPage) {
+            end = rel.totalPage;
+            begin = end - 9;
+          }
+          if (rel.totalPage < 10) {
+            begin = 1;
+            end = rel.totalPage;
+          }
+
+          for (let i = begin; i <= end; i++) {
+            var li;
+            if (rel.pageNum === i) {
+              li = "<li class=\"paginItem\"><a onclick=\"queryWarehouse(" + i + ")\" href=\"javascript:;\">" + i + "</a></li>"
+            }
+            index += "<li class=\"paginItem\"><a onclick=\"queryWarehouse(" + i + ")\" href=\"javascript:;\">" + i + "</a></li>";
+          }
+          var afterNum = rel.pageNum + 1;
+          if (afterNum >= rel.totalPage) {
+            afterNum = rel.totalPage;
+          }
+          index += "<li class=\"paginItem\"><a onclick=\"queryWarehouse(" + afterNum + ")\" href=\"javascript:;\"><span class=\"pagenxt\"></span></a></li>";
+          index += "</ul>"
+          $(".pagin").html(index);
+        }
+      })
+    }
+  </script>
 </head>
 
 <body>
@@ -19,18 +107,18 @@
   <form action="" method="post">
     <ul class="tools">
       <li>仓库名称:
-        <input type="text" />
+        <input id="queryname1" type="text" />
       </li>
       <li>商品品牌:
-        <input type="text" />
+        <input id="queryname2" type="text" />
       </li>
       <li>商品类型:
-        <input type="text" />
+        <input id="queryname3" type="text" />
       </li>
       <li>商品名称:
-        <input type="text" />
+        <input id="queryname4" type="text" />
       </li>
-      <li class="subBut" onclick="window.location.href='deliveryList.html'"><img src="../../../static/images/t06.png" />查询</li>
+      <li class="subBut" onclick="queryWarehouse()"><img src="../../../static/images/t06.png" />查询</li>
     </ul>
     <table class="tablelist">
       <thead>

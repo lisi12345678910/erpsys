@@ -1,11 +1,10 @@
 package com.zte.sys.control;
 
 
-import com.zte.sys.model.City;
-import com.zte.sys.model.Dept;
-import com.zte.sys.model.Users;
+import com.zte.common.model.City;
+
+import com.zte.logaop.Log;
 import com.zte.sys.service.ISysCityService;
-import com.zte.sys.service.ISysUserService;
 import com.zte.util.PageModel;
 import com.zte.util.ResultMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.List;
 
 @Controller
 public class SysCityAction {
@@ -34,6 +31,7 @@ public class SysCityAction {
      */
     @RequestMapping("/arealist")
     @ResponseBody
+    @Log(value = "30",action = "查询区域列表")
     public ResultMessage arealist(City city, PageModel<City> pageModel){
         PageModel<City> pageModel1 =cityService.arealist(city,pageModel);
         ResultMessage resultMessage = new ResultMessage();

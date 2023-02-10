@@ -1,12 +1,218 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+    <script>
+        $(function () {
+            queryjobusers();
+            province();
+            gs();
+        })
+
+        var valOption;
+        var txtOption;
+        var valOption2;
+        var txtOption2;
+        function province() {
+            $.ajax({
+                url: "/province",
+                method: "post",
+                data: {},
+                dataType: "json",
+                success: function (rel) {
+                    console.log(rel.resultData)
+                    let str = "<select id=\"testSelect\">" +
+                        "   <option>请选择省份</option>" ;
+                    rel.resultData.forEach(function (warehouse, i) {
+                        str += "  <option value="+warehouse.id+">"+warehouse.pname+"</option>";
+                    })
+                    str+=" </select>";
+                    $("#testSelect").html(str);
+
+                    /*JavaScript实现*/
+                    var testSelect = document.getElementById("testSelect");
+                    testSelect.onchange = function() { //当选项改变时触发
+                        valOption = this.options[this.selectedIndex].value; //获取option的value
+                        txtOption = this.options[this.selectedIndex].innerHTML; //获取option中间的文本
+                        $.ajax({
+                            url: "/city",
+                            method: "post",
+                            data: {id:valOption},
+                            dataType: "json",
+                            success: function (rel) {
+                                console.log(rel.resultData)
+                                let str2 = "<select id=\"testSelect2\">\n" +
+                                    "                    <option>请选择城市</option>"
+                                rel.resultData.forEach(function (city, i) {
+                                    str2 += "   <option  value=" + city.id + ">" + city.cname + "</option>";
+                                })
+                                str2 += " </select>";
+                                $("#testSelect2").html(str2);
+                                var testSelect2 = document.getElementById("testSelect2");
+                                testSelect2.onchange = function () { //当选项改变时触发
+                                    valOption2 = this.options[this.selectedIndex].value; //获取option的value
+                                    txtOption2 = this.options[this.selectedIndex].innerHTML; //获取option中间的文本
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+        }
+
+        var usersid;
+        var usersname;
+        function queryjobusers() {
+            $.ajax({
+                url: "/jobidandusers",
+                method: "post",
+                data: {},
+                dataType: "json",
+                success: function (rel) {
+                    let str = "   <select class=\"dfselect\" id=\"fzr\">";
+                    rel.resultData.forEach(function (users, i) {
+                        str += " <option value=" + users.uid + ">" + users.uname + "</option>";
+                    })
+                    str += " </select>";
+                    $("#fzr").html(str);
+                    /*JavaScript实现*/
+                    var fzr = document.getElementById("fzr");
+                    fzr.onchange = function () { //当选项改变时触发
+                        usersid = this.options[this.selectedIndex].value; //获取option的value
+                        usersname = this.options[this.selectedIndex].innerHTML; //获取option中间的文本
+                    }
+                }
+            })
+        }
+
+        var cname;
+        var bnames = false;
+        var cAddress;
+        var bcAddresss = false;
+        var phone;
+        var bphone = false;
+        var testSelect;
+        var testSelect2;
+        function gs() {
+            //仓库名格式判断
+            $("#cname").blur(function () {
+                cname = $("#cname").val();
+                if (cname != null && cname != '' && cname.length < 30){
+                    bnames = true;
+                    $("#cname").css({"borderColor":"black"});
+                    $("#tip1").css({"color":"black"})
+                }else {
+                    bnames = false;
+                    $("#cname").css({"borderColor":"red"});
+                    $("#tip1").css({"color":"red"})
+                }
+            })
+            //仓库地址格式判断
+            $("#cAddress").blur(function () {
+                cAddress = $("#cAddress").val();
+                if (cAddress != null && cAddress != '' && cAddress.length < 30){
+                    bcAddresss = true;
+                    $("#cAddress").css({"borderColor":"black"});
+                    $("#tip2").css({"color":"black"})
+                }else {
+                    bcAddresss = false;
+                    $("#cAddress").css({"borderColor":"red"});
+                    $("#tip2").css({"color":"red"})
+                }
+            })
+            //仓库联系电话格式判断
+            $("#phone").blur(function () {
+                phone = $("#phone").val()
+                var regex = /^1\d{10}$/;
+                var flag = regex.test(phone);
+                if (flag){
+                    bphone = true;
+                    $("#tip4").css({"color":"black"})
+                    $("#phone").css({"borderColor":"black"});
+                }else {
+                    bphone = false;
+                    $("#tip4").css({"color":"red"})
+                    $("#phone").css({"borderColor":"red"});
+                }
+            })
+          //仓库省份格式判断
+            $("#testSelect").blur(function () {
+                testSelect = $("#testSelect").val();
+                if (testSelect != "请选择省份"){
+                    $("#tip3").css({"color":"black"})
+                }else {
+                    $("#tip3").css({"color":"red"})
+                }
+            })
+
+            //仓库市格式判断
+            $("#testSelect2").blur(function () {
+                testSelect2 = $("#testSelect2").val();
+                if (testSelect2 != "请选择城市"){
+                    $("#tip3").css({"color":"black"})
+                }else {
+                    $("#tip3").css({"color":"red"})
+                }
+            })
+        }
+
+        function Add() {
+            if (confirm("是否提交")) {
+              var   cnames = $("#cname").val();
+              var   cAddresss = $("#cAddress").val();
+              var   testSelects = $("#testSelect").val();
+              var   testSelects2 = $("#testSelect2").val();
+              var   fzr = $("#fzr").val();
+              var   phones = $("#phone").val();
+              var   ms = $("#ms").val()
+              var   zt = $("#zt").val()
+              var   usersid = [[${uid}]];
+              var   cjsj = $("#cjsj").val();
+
+              if (bnames === true && bcAddresss === true && bphone === true &&
+                      testSelects != "请选择省份" &&  testSelects2 != "请选择城市"){
+                $.ajax({
+                  url: "/AddWarehouse",
+                  method: "post",
+                  data: {cName:cnames,cAddress:cAddresss,provinceId:testSelects,
+                    usreId:fzr,phone:phones,details:ms,state:zt,usersId:usersid,creationTime:cjsj,cityId:testSelects2},
+                  dataType: "json",
+                  success: function (rel) {
+                     if (rel.flag == true){
+                       alert("添加成功")
+                       location.href="/rep/ware/allWare";
+                     }
+                  }
+                })
+              }else {
+                if (bnames === false){
+                  $("#tip1").css({"color":"red"})
+                }
+                if (bcAddresss === false){
+                  $("#tip2").css({"color":"red"})
+                }
+                if (bphone === false){
+                  $("#tip4").css({"color":"red"})
+                }
+                if (testSelects == "请选择省份"){
+                  $("#tip3").css({"color":"red"})
+                }
+                if (testSelects2 == "请选择城市"){
+                  $("#tip3").css({"color":"red"})
+                }
+                alert("请填写正确信息")
+              }
+            }
+        }
+
+   </script>
 </head>
 
 <body>
+
 <div class="place"> <span>位置：</span>
   <ul class="placeul">
     <li>仓库管理</li>
@@ -19,35 +225,29 @@
   <ul class="forminfo">
     <li>
       <label>仓库名称</label>
-      <input name="" type="text" class="dfinput" />
-      <i>必填，不能超过30个字符</i>
+      <input id="cname" type="text" class="dfinput" />
+      <i id="tip1">必填，不能超过30个字符</i>
     </li>
     <li>
       <label>仓库地址</label>
-      <input name="" type="text" class="dfinput" />
-      <i>必填，不能超过300个字符</i>
+      <input id="cAddress" type="text" class="dfinput" />
+      <i id="tip2">必填，不能超过30个字符</i>
     </li>
     <li>
       <label>所属区域</label>
-      <select class="dfselect">
-          <option>请选择</option>
-          <option>北京</option>
-          <option>江苏</option>
-          <option>天津</option>
+      <select class="dfselect" id="testSelect">
+
       </select>
       省
-      <select class="dfselect">
-          <option>请选择</option>
-          <option>北京</option>
-          <option>南京</option>
-          <option>天津</option>
+      <select class="dfselect" id="testSelect2">
+          <option>请选择城市</option>
       </select>
       市
-      <i>必选</i>
+      <i id="tip3">必选</i>
     </li>
     <li>
       <label>负责人</label>
-      <select class="dfselect">
+      <select class="dfselect" id="fzr">
           <option>请选择</option>
           <option>周仓</option>
           <option>廖化</option>
@@ -57,17 +257,17 @@
     </li>
     <li>
       <label>联系方式</label>
-      <input name="" type="text" class="dfinput" />
-       <i>必填，不能超过30个字符</i>
+      <input id="phone" type="text" class="dfinput" />
+       <i id="tip4">必填，不能超过30个字符</i>
     </li>
     <li>
       <label>描述</label>
-      <textarea class="textinput"></textarea>
+      <textarea id="ms" class="textinput"></textarea>
       <i>可选</i>
     </li>
     <li>
       <label>状态</label>
-      <select class="dfselect">
+      <select class="dfselect" id="zt">
           <option value="1">可用</option>
           <option value="0">不可用</option>
         </select>
@@ -75,19 +275,20 @@
     </li>
     <li>
       <label>创建人</label>
-      <input name="" type="text" value="马云" readonly="readonly" class="roinput" />
+      <input name="" type="text" th:value="${uname}" readonly="readonly" class="roinput" />
       <i>不能编辑</i>
     </li>
     <li>
       <label>创建时间</label>
-      <input name="" type="text" value="2017-11-18 15:36:10" readonly="readonly" class="roinput" />
+      <input id="cjsj" type="text" th:value="${#dates.format(date,'yyyy-MM-dd HH:mm:ss')}" readonly="readonly" class="roinput" />
+
       <i>不能编辑</i>
     </li>
     <li>
       <label>&nbsp;</label>
-      <input name="" type="button" class="btn" value="确定"/>
+      <input name="" type="button" class="btn" value="确定" onclick="Add()"/>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='storageList.html'"/>
+      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='/rep/ware/allWare'"/>
     </li>
   </ul>
 </div>

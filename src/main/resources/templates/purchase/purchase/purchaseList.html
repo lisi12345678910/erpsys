@@ -1,24 +1,219 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml">-->
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>客户管理</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
 <script type="text/javascript">
-function deltipOpen() {
+function deltipOpen(purchaseId) {
+  $("#thisPurchaseId").val(purchaseId);
 	$("#deltip").fadeIn(200);
 }
 function deltipClose() {
 	$("#deltip").fadeOut(200);
 }
-function examinetipOpen() {
+function examinetipOpen(purchaseId) {
+  $("#thisPurchaseId").val(purchaseId);
 	$("#examinetip").fadeIn(200);
 }
 function examinetipclose() {
 	$("#examinetip").fadeOut(200);
 }
+function addcheck() {
+  var val = $("#userSelect").val();
+  var val1 = $("#thisPurchaseId").val();
+  $.ajax({
+    url:"/purchase/addCheck",
+    method:"post",
+    data:{checkId:val,purchaseId:val1},
+    success:function () {
+      examinetipclose()
+      var pageNum = $("#pageNum").val();
+      var pageSize = $("#pageSize").val();
+      findPurchaseList(pageNum,pageSize);
+    }
+  })
+}
+
+function delThisPurchase() {
+  var val1 = $("#thisPurchaseId").val();
+  $.ajax({
+    url:"/purchase/delPurchase",
+    method:"post",
+    data:{purchaseId:val1},
+    success:function () {
+    }
+  })
+  deltipClose();
+  var pageNum = $("#pageNum").val();
+  var pageSize = $("#pageSize").val();
+  findPurchaseList(pageNum,pageSize);
+}
 </script>
+  <script>
+    function findPurchaseList(pageNum,pageSize) {
+      $("#pageNum").val(pageNum);
+      $("#pageSize").val(pageSize);
+      $.ajax({
+        type:"post",
+        url:"/purchase/findAllPurchase",
+        data: $("#searchForm").serializeArray(),
+        success:function (rel) {
+
+          var totalCount = rel.resultData.totalCount;
+          var pageNum = rel.resultData.pageNum;
+          var totalPage = rel.resultData.totalPage;
+          var pageSize = rel.resultData.pageSize;
+          var beforpageNum = pageNum - 1;
+          if (beforpageNum <= 0){
+            beforpageNum = 1;
+          }
+          var afterpageNum = pageNum + 1;
+          if (afterpageNum >= totalPage){
+            afterpageNum = totalPage;
+          }
+          let begin;
+          let end;
+          if (totalPage < 10){
+            begin = 1;
+            end = totalPage;
+          }else{
+            begin = pageNum - 5;
+            end = pageNum + 4;
+
+            if (begin < 1){
+              begin = 1;
+              end = 10;
+            }
+            if (end > totalPage){
+              end = totalPage;
+              begin = end - 9;
+            }
+          }
+          var str = '      <thead>\n' +
+                  '        <tr>\n' +
+                  '          <th>序号</th>\n' +
+                  '          <th>采购单编号</th>\n' +
+                  '          <th>采购时间</th>\n' +
+                  '          <th>金额</th>\n' +
+                  '          <th>操作人</th>\n' +
+                  '          <th>审核状态</th>\n' +
+                  '          <th>审核人</th>\n' +
+                  '          <th>审核时间</th>\n' +
+                  '          <th>操作</th>\n' +
+                  '        </tr>\n' +
+                  '      </thead>\n' +
+                  '      <tbody>';
+          var a = 0 ;
+          // var s = "";
+          var status = "";
+          for (var i = 0; i < rel.resultData.data.length ; i++) {
+
+            a++;
+            var purchaseId = rel.resultData.data[i].purchaseId;
+            var checkStatus = rel.resultData.data[i].checkStatus;
+            str += '        <tr>\n' +
+                    '          <td>' + a + '</td>\n' +
+                    '          <td>' + purchaseId + '</td>\n' +
+                    '          <td>' + rel.resultData.data[i].purchaseTime + '</td>\n' +
+                    '          <td>￥' + rel.resultData.data[i].totalMoney + '</td>\n' +
+                    '          <td>' + rel.resultData.data[i].creatName + '</td>\n'
+            if (checkStatus == 1){
+              status = '未审核';
+              str += '          <td>' + status + '</td>\n' +
+                      '          <td>' + rel.resultData.data[i].checkName + '</td>\n' +
+                      '          <td>' + rel.resultData.data[i].checkTime + '</td>\n' +
+                      '          <td>\n' +
+                      '            <a href="/purchase/purchaseUpdateView?purchaseId=' + purchaseId + '" class="tablelink">修改</a>\n' +
+                      `            <a href="javascript:void(0);" class="tablelink" onclick="deltipOpen('${purchaseId}')">删除</a>\n` +
+                      `            <a href="javascript:void(0);" class="tablelink" onclick="examinetipOpen('${purchaseId}')">提交审核</a>\n` +
+                      '            </td>\n' +
+                      '        </tr>'
+            }else if (checkStatus == 2){
+              status = '审核中';
+              str += '          <td>' + status + '</td>\n' +
+                      '          <td>' + rel.resultData.data[i].checkName + '</td>\n' +
+                      '          <td>' + rel.resultData.data[i].checkTime + '</td>\n' +
+                      '          <td>\n' +
+                      '            <a href="/purchase/toPurchaseView?puid=' + purchaseId + '" class="tablelink">查看详情</a>\n' +
+                      '            </td>\n' +
+                      '        </tr>'
+            }else if (checkStatus == 3){
+              status = '审核通过';
+              str += '          <td>' + status + '</td>\n' +
+                      '          <td>' + rel.resultData.data[i].checkName + '</td>\n' +
+                      '          <td>' + rel.resultData.data[i].checkTime + '</td>\n' +
+                      '          <td>\n' +
+                      '            <a href="/purchase/toPurchaseView?puid=' + purchaseId + '" class="tablelink">查看详情</a>\n';
+              if (rel.resultData.data[i].warehuoseId == ''){
+                str += '未入库';
+              }else {
+                str += '            <a href="/stockView?pageNum='+pageNum+'&&rkIndentString='+purchaseId+'&&index=2" class="tablelink">入库详情</a>\n';
+              }
+              str +=  '            </td>\n' +
+                      '        </tr>'
+            }else if (checkStatus == 4){
+              status = '审核未通过';
+              str += '          <td>' + status + '</td>\n' +
+                      '          <td>' + rel.resultData.data[i].checkName + '</td>\n' +
+                      '          <td>' + rel.resultData.data[i].checkTime + '</td>\n' +
+                      '          <td>\n' +
+                      '            <a href="/purchase/purchaseUpdateView?purchaseId=' + purchaseId + '" class="tablelink">修改</a>\n' +
+                      `            <a href="javascript:void(0);" class="tablelink" onclick="examinetipOpen('${purchaseId}')">提交审核</a>\n` +
+                      '            </td>\n' +
+                      '        </tr>'
+            }
+          }
+          str += '      </tbody>'
+          $("#tablelist").html(str);
+          var str2 = '<div class="message">共<i class="blue">'+totalCount+'</i>条记录，当前显示第&nbsp;<i class="blue">'+pageNum+'&nbsp;</i>页</div>\n' +
+                  '      <ul class="paginList">\n' +
+                  '        <li class="paginItem"><a href="javascript:;" onclick="findPurchaseList('+beforpageNum+','+pageSize+')"><span class="pagepre"></span></a></li>'
+
+          for (let i = begin; i <= end; i++) {
+            if (i == pageNum){
+              str2 += '<li class="paginItem current"><a href="javascript:;" onclick="findPurchaseList('+ i +','+pageSize+')">'+ i +'</a></li>';
+            }else {
+              str2 += '<li class="paginItem"><a href="javascript:;" onclick="findPurchaseList('+ i +','+pageSize+')">'+ i +'</a></li>';
+            }
+          }
+          str2 += '<li class="paginItem"><a href="javascript:;" onclick="findPurchaseList('+afterpageNum+','+pageSize+')"><span class="pagenxt"></span></a></li>\n' +
+                  '      </ul>';
+          $(".pagin").html(str2);
+
+        }
+      })
+    }
+    $(function () {
+      var pageNum = 1;
+      var pageNumsss = "[[${pageNum}]]"
+      if (pageNumsss != ''){
+        pageNum = pageNumsss;
+      }
+      var pageSize = 5;
+      findPurchaseList(pageNum,pageSize);
+      $.ajax({
+        url:"/purchase/findAllUserByJob",
+        method:"post",
+        data:{jobId:"12"},
+        success:function (rel) {
+          var str = '            \t<option>请选择</option>\n';
+          for (let i = 0; i < rel.resultData.length; i++) {
+            str += '                <option value="' + rel.resultData[i].uid + '">' + rel.resultData[i].uname + '</option>\n'
+          }
+          $("#userSelect").html(str);
+        }
+      })
+    })
+
+    function searchPurchases() {
+      var pageNum = 1;
+      var pageSize = 5;
+      findPurchaseList(pageNum,pageSize)
+    }
+  </script>
 </head>
 
 <body>
@@ -30,30 +225,33 @@ function examinetipclose() {
   </ul>
 </div>
 <div class="rightinfo">
-  <form action="" method="post">
+  <form id="searchForm" action="" method="post">
     <ul class="tools">
       <li> 采购单编号:
-        <input type="text" />
+        <input name="purchaseId" type="text" />
+        <input id="pageNum" name="pageNum" type="hidden" value="1"/>
+        <input id="pageSize" name="pageSize" type="hidden" value="5"/>
       </li>
       <li> 采购时间:
-        <input type="text" />-<input type="text" />
+<!--        <input type="text" />-<input type="text" />-->
+        <input name="minPurchaseTime" type="text" />-<input name="maxPurchaseTime" type="text" />
       </li>
       <li> 金额:
-        <input type="text" class="stinput" />-<input type="text" class="stinput" />
+        <input name="minTotalMoney" type="text" class="stinput" />-<input name="maxTotalMoney" type="text" class="stinput" />
       </li>
       <li> 审核状态：
-        <select>
-          <option>请选择</option>
+        <select name="checkStatus">
+          <option value="0">请选择</option>
           <option value="1">未审核</option>
           <option value="2">审核中</option>
           <option value="3">审核通过</option>
           <option value="4">审核未通过</option>
         </select>
       </li>
-      <li class="subBut" onclick="window.location.href='purchaseList.html'"><img src="../../../static/images/t06.png" />查询</li>
-      <li class="subBut" onclick="window.location.href='purchaseAdd.html'"><img src="../../../static/images/t01.png" />添加</li>
+      <li class="subBut" onclick="searchPurchases()"><img src="../../../static/images/t06.png" />查询</li>
+      <li class="subBut" onclick="window.location.href='/purchase/purchaseAddView'"><img src="../../../static/images/t01.png" />添加</li>
     </ul>
-    <table class="tablelist">
+    <table class="tablelist" id="tablelist">
       <thead>
         <tr>
           <th>序号</th>
@@ -126,7 +324,7 @@ function examinetipclose() {
         </tr>
       </tbody>
     </table>
-    <div class="pagin">
+    <div class="pagin" id="pagin">
       <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
       <ul class="paginList">
         <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
@@ -144,13 +342,13 @@ function examinetipclose() {
   <!-- 删除提示框 -->
   <div id="deltip" class="tip">
     <div class="tiptop"><span>提示信息</span><a onclick="deltipClose()"></a></div>
-    <div class="tipinfo"> <span><img src="../../images/ticon.png" /></span>
+    <div class="tipinfo"> <span><img src="../../../static/images/ticon.png" /></span>
       <div class="tipright">
         <p>是否确认删除此条信息？</p>
         <cite>如果是请点击确定按钮 ，否则请点取消。</cite> </div>
     </div>
     <div class="tipbtn">
-      <input name="" type="button"  class="sure" value="确定" onclick="deltipClose()" />
+      <input name="" type="button"  class="sure" value="确定" onclick="delThisPurchase()" />
       &nbsp;
       <input name="" type="button"  class="cancel" value="取消" onclick="deltipClose()" />
     </div>
@@ -161,26 +359,21 @@ function examinetipclose() {
     <div class="tiptop">
     	<span>提示信息</span><a onclick="examinetipclose()"></a>
     </div>
-    <div class="tipinfo1"> 
+    <div class="tipinfo1">
+      <input type="hidden" value="" id="thisPurchaseId">
     	
         部门：
-            <select class="dfselect">
-            	<option>请选择</option>
-                <option>销售部</option>
-                <option>采购部</option>
-                <option>财务部</option>
+            <select class="dfselect" readonly="readonly">
+                <option value="2" selected="selected">采购部</option>
             </select>
 			<p/>
             职位：
-            <select class="dfselect">
-            	<option>请选择</option>
-                <option>部门经理</option>
-                <option>部门副经理</option>
-                <option>部门主管</option>
+            <select class="dfselect" readonly="readonly" id="jobId">
+                <option value="12" selected="selected">部门经理</option>
             </select>
    			<p/>
-            职位：
-            <select class="dfselect">
+            名称：
+            <select class="dfselect" id="userSelect">
             	<option>请选择</option>
                 <option>刘备</option>
                 <option>曹操</option>
@@ -188,8 +381,7 @@ function examinetipclose() {
 			<p/>
     </div>
     <div class="tipbtn">
-      <input name="" type="button"  class="sure" value="确定" onclick="examinetipclose()" />
-      &nbsp;
+      <input name="" type="button"  class="sure" value="确定" onclick="addcheck()" />
       <input name="" type="button"  class="cancel" value="取消" onclick="examinetipclose()" />
     </div>
   </div>

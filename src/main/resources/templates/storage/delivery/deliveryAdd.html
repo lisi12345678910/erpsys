@@ -1,9 +1,95 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+  <script>
+    $(function () {
+      cname()
+      gs()
+    })
+
+    function cname() {
+      $.ajax({
+        url: "/warehouseCname",
+        method: "post",
+        data: {},
+        dataType: "json",
+        success: function (rel) {
+          let str = "<select class=\"dfselect\" id=\"cname\">\n"
+          rel.resultData.forEach(function (warehouse, i) {
+            str +=" <option value="+warehouse.id+">"+warehouse.cname+"</option>"
+          })
+          str+="</select>";
+          $("#cname").html(str);
+        }
+      })
+    }
+    var dd;
+    var bdd = false;
+    function gs() {
+      //订单是否存在且审核通过判断
+      $("#dd").blur(function () {
+        dd = $("#dd").val();
+        if (dd != null && dd != '') {
+          $.ajax({
+            url: "/queryOrders",
+            method: "post",
+            data: {id: dd},
+            dataType: "json",
+            success: function (rel) {
+              console.log(rel.flag)
+              if (rel.flag) {
+                bdd = true;
+                $("#dd").css({"borderColor": "black"});
+                $("#tip1").css({"color": "black"})
+                $("#tip1").html("订单可用")
+              } else {
+                bdd = false;
+                $("#dd").css({"borderColor": "red"});
+                $("#tip1").css({"color": "red"})
+                $("#tip1").html(rel.msg)
+              }
+            }
+          })
+        }else {
+          bdd = false;
+          $("#dd").css({"borderColor":"red"});
+          $("#tip1").css({"color":"red"})
+          $("#tip1").html("请填写订单")
+        }
+      })
+    }
+
+    function Add() {
+      if (confirm("是否提交")) {
+        var   indent = $("#dd").val();
+        var   warehouseId = $("#cname").val();
+        var   cDate= $("#cksj").val();
+        if (bdd== true){
+          $.ajax({
+            url: "/AddCkWarehouse",
+            method: "post",
+            data: {indent:indent,warehouseId:warehouseId,cDate:cDate},
+            dataType: "json",
+            success: function (rel) {
+              if (rel.flag == true){
+                alert("添加成功")
+                location.href="/rep/ckware/allckware";
+              }
+            }
+          })
+        }else {
+          if (bdd === false){
+            $("#tip1").css({"color":"red"})
+          }
+          alert("请填写正确信息")
+        }
+      }
+    }
+  </script>
 </head>
 
 <body>
@@ -19,14 +105,14 @@
   <ul class="forminfo">
     <li>
       <label>订单编号</label>
-      <input name="" type="text" class="dfinput" />
+      <input id="dd" type="text" class="dfinput" />
       &nbsp;&nbsp;
       <a href="../../market/order/orderView.html" title="点击查看客户详细信息" class="tablelink">详情</a>
-      <i>必须是审核通过的订单</i>
+      <i id="tip1">必须是审核通过的订单</i>
     </li>
     <li>
       <label>仓库</label>
-      <select class="dfselect">
+      <select class="dfselect" id="cname">
           <option>请选择</option>
           <option>南京21号仓库</option>
           <option>武汉71号仓库</option>
@@ -36,18 +122,18 @@
     </li>
     <li>
       <label>出库时间</label>
-      <input name="" type="text" class="dfinput" />
+      <input id="cksj" type="text"  th:value="${#dates.format(date,'yyyy-MM-dd HH:mm:ss')}" class="dfinput" />
       <i>必填</i>
     </li>
     <li>
       <label>出库人</label>
-      <input name="" type="text" value="马云" readonly="readonly" class="roinput" />
+      <input name="" type="text" value="马云" th:value="${uname}" readonly="readonly" class="roinput" />
       <i>不能编辑</i>
     <li>
       <label>&nbsp;</label>
-      <input name="" type="button" class="btn" value="确定"/>
+      <input name="" type="button" class="btn" value="确定" onclick="Add()"/>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='deliveryList.html'"/>
+      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='/rep/ckware/allckware'"/>
     </li>
   </ul>
 </div>

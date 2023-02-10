@@ -1,6 +1,7 @@
 <!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
 <!--<html xmlns="http://www.w3.org/1999/xhtml">-->
 <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>用户管理</title>
@@ -10,22 +11,27 @@
 function tipOpen(content) {
 	$(".tipright p").text(content);
 	$("#tip").fadeIn(200);
+
 }
 function tipClose() {
 	$("#tip").fadeOut(200);
 }
-//添加
-function add(){
+
+//撤职
+function disuse(uid,pageNum){
+
   $.ajax({
-    url:"/addusers",
+    url:"/updatestatus",
     type:"post",
     dataType:"json",
-    data:{},
+    data:{uId:uid},
     success:function (dat) {
-
+      queryUsers(pageNum)
     }
   })
+
 }
+
 
 //查部门
 function querydepts(){
@@ -67,6 +73,7 @@ function queryUsers(pagenum){
               let totalPage = dat.resultData["totalPage"];//总页数
               let totalCount = dat.resultData.totalCount;//总条数
               let pageNum = dat.resultData.pageNum;//当前页0
+
               //上一页
               let pageBefore = pageNum-1;
               //下一页
@@ -76,25 +83,28 @@ function queryUsers(pagenum){
               }else {
                 pageNext = pageNum+1;
               }
+
+
               //------------------------------------------------------------------------------------------------------------------------
               let str = ''
               for (let i = 0; i < resultData.length; i++) {
                   let resultDatum = resultData[i];
                 str += `<tr>
           <td>${i+1}</td>
-          <td>${resultDatum.uId}</td>
+          <td>${resultDatum.uid}</td>
           <td>${resultDatum.uname}</td>
           <td>${resultDatum.utelephone}</td>
           <td>${resultDatum.deptName}</td>
           <td>${resultDatum.jobName}</td>
-          <td>男</td>
+          <td>${resultDatum.sex==1?"男":"女"}</td>
           <td>28</td>
-          <td>在职</td>
-          <td>2013-09-09 15:05:05</td>
-          <td></td>
+          <td>${resultDatum.statusId==1?"在职":"离职"}</td>
+          <td>${resultDatum.hiredate}</td>
+          <td>${resultDatum.leavedate}</td>
           <td>
-            <a href="userUpdate.html" class="tablelink">修改</a>
-            <a href="javascript:void(0);" class="tablelink" onclick="tipOpen('您确定此员工离职吗？')">离职</a>
+            <a href="/userView/${resultDatum.uid}/${pageNum}" class="tablelink">查看详情</a>
+            <a href="/userupdate/${resultDatum.uid}" class="tablelink">修改</a>
+            <a  class="tablelink" onclick="disuse(${resultDatum.uid},${pageNum})">${resultDatum.statusId==1?"离职":""}</a>
           </td>
         </tr>`
               }
@@ -127,9 +137,12 @@ function queryUsers(pagenum){
 }
 
 $(function () {
+  var pagmm ='[[${session.pagmm}]]';
+  console.log(pagmm)
   //加载部门搜索条件
   querydepts()
   //加载分页展示数据
+
   let pageNum = 1
   queryUsers(pageNum)
 
@@ -178,7 +191,7 @@ $(function () {
         </select>
       </li>
       <li class="subBut" id="search"><img src="../../../static/images/t06.png" />查询</li>
-      <li class="subBut" id="add" onclick="add()"><img src="../../../static/images/t01.png" />添加</li>
+      <li class="subBut" id="add" ><a href="/addusers"><img src="../../../static/images/t01.png" />添加</a></li>
     </ul>
     <table class="tablelist">
       <thead>

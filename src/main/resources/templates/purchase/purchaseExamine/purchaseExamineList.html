@@ -1,11 +1,107 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+  <script>
+    function findPurchaseList(pageNum,pageSize) {
+      $("#pageNum").val(pageNum);
+      $("#pageSize").val(pageSize);
+      $.ajax({
+        type:"post",
+        url:"/purchase/findExaminePurchase",
+        data: $("#searchForm").serializeArray(),
+        success:function (rel) {
+          var totalCount = rel.resultData.totalCount;
+          var pageNum = rel.resultData.pageNum;
+          var totalPage = rel.resultData.totalPage;
+          var pageSize = rel.resultData.pageSize;
+          var beforpageNum = pageNum - 1;
+          if (beforpageNum <= 0){
+            beforpageNum = 1;
+          }
+          var afterpageNum = pageNum + 1;
+          if (afterpageNum >= totalPage){
+            afterpageNum = totalPage;
+          }
+          let begin;
+          let end;
+          if (totalPage < 10){
+            begin = 1;
+            end = totalPage;
+          }else{
+            begin = pageNum - 5;
+            end = pageNum + 4;
 
+            if (begin < 1){
+              begin = 1;
+              end = 10;
+            }
+            if (end > totalPage){
+              end = totalPage;
+              begin = end - 9;
+            }
+          }
+          var str = '      <thead>\n' +
+                  '        <tr>\n' +
+                  '          <th>序号</th>\n' +
+                  '          <th>采购单编号</th>\n' +
+                  '          <th>采购时间</th>\n' +
+                  '          <th>金额</th>\n' +
+                  '          <th>操作人</th>\n' +
+                  '          <th>审核状态</th>\n' +
+                  '          <th>操作</th>\n' +
+                  '        </tr>\n' +
+                  '      </thead>\n' +
+                  '      <tbody>';
+          var a = 0 ;
+          var status = "审核中";
+          for (var i = 0; i < rel.resultData.data.length ; i++) {
+            a++;
+            var purchaseId = rel.resultData.data[i].purchaseId;
+            str += '        <tr>\n' +
+                    '          <td>' + a + '</td>\n' +
+                    '          <td>' + purchaseId + '</td>\n' +
+                    '          <td>' + rel.resultData.data[i].purchaseTime + '</td>\n' +
+                    '          <td>￥' + rel.resultData.data[i].totalMoney + '</td>\n' +
+                    '          <td>' + rel.resultData.data[i].creatName + '</td>\n' +
+                    '          <td>' + status + '</td>\n' +
+                    '          <td>\n' +
+                    '            <a href="/purchase/purchaseExamine?purchaseId=' + purchaseId + '" class="tablelink">审核</a>\n' +
+                    '            </td>\n' +
+                    '        </tr>';
+          }
+          str += '      </tbody>'
+          $("#tablelist").html(str);
+          var str2 = '<div class="message">共<i class="blue">'+totalCount+'</i>条记录，当前显示第&nbsp;<i class="blue">'+pageNum+'&nbsp;</i>页</div>\n' +
+                  '      <ul class="paginList">\n' +
+                  '        <li class="paginItem"><a href="javascript:;" onclick="findPurchaseList('+beforpageNum+','+pageSize+')"><span class="pagepre"></span></a></li>'
+
+          for (let i = begin; i <= end; i++) {
+            if (i == pageNum){
+              str2 += '<li class="paginItem current"><a href="javascript:;" onclick="findPurchaseList('+ i +','+pageSize+')">'+ i +'</a></li>';
+            }else {
+              str2 += '<li class="paginItem"><a href="javascript:;" onclick="findPurchaseList('+ i +','+pageSize+')">'+ i +'</a></li>';
+            }
+          }
+          str2 += '<li class="paginItem"><a href="javascript:;" onclick="findPurchaseList('+afterpageNum+','+pageSize+')"><span class="pagenxt"></span></a></li>\n' +
+                  '      </ul>';
+          $(".pagin").html(str2);
+        }
+      })
+    }
+    $(function () {
+      var pageNum = 1;
+      var pageSize = 5;
+      findPurchaseList(pageNum,pageSize);
+    })
+    function searchPurchases() {
+      var pageNum = 1;
+      var pageSize = 5;
+      findPurchaseList(pageNum,pageSize)
+    }
+  </script>
 <body>
 <div class="place"> <span>位置：</span>
   <ul class="placeul">
@@ -15,22 +111,24 @@
   </ul>
 </div>
 <div class="rightinfo">
-  <form action="" method="post">
+  <form action="" method="post" id="searchForm">
     <ul class="tools">
       <li> 采购单编号:
-        <input type="text" />
+        <input name="purchaseId" type="text" />
+        <input id="pageNum" name="pageNum" type="hidden" value="1"/>
+        <input id="pageSize" name="pageSize" type="hidden" value="5"/>
       </li>
       <li> 采购时间:
-        <input type="text" />-<input type="text" />
+        <input name="minPurchaseTime" type="text" />-<input name="maxPurchaseTime" type="text" />
       </li>
       <li> 金额:
-        <input type="text" class="stinput" />-<input type="text" class="stinput" />
+        <input name="minTotalMoney" type="text" class="stinput" />-<input name="maxTotalMoney" type="text" class="stinput" />
       </li>
-      <li class="subBut" onclick="window.location.href='purchaseExamineList.html'">
+      <li class="subBut" onclick="searchPurchases()">
       <img src="../../../static/images/t06.png" />查询
       </li>
     </ul>
-    <table class="tablelist">
+    <table class="tablelist" id="tablelist">
       <thead>
         <tr>
           <th>序号</th>

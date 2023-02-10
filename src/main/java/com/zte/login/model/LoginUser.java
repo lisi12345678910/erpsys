@@ -20,7 +20,7 @@ public class LoginUser implements Serializable {
   private String uname;
   private String upassword;
   private String utelephone;
-  private Integer jobId;
+  private String jobId;
   private Integer sex;
   private Integer statusId;
   private Date hiredate;

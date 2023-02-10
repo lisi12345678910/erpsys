@@ -15,6 +15,22 @@ function tipClose() {
 	$("#tip").fadeOut(200);
 }
 
+//部门注销
+function disuse(uid,pageNum){
+
+  $.ajax({
+    url:"/updatedeptstatus",
+    type:"post",
+    dataType:"json",
+    data:{uId:uid},
+    success:function (dat) {
+      query(pageNum)
+    },
+
+  })
+
+}
+
 
 //查省份
 function queryprovince(){
@@ -40,7 +56,7 @@ function queryprovince(){
 let pid = ""
 function querycitys(){
   $.ajax({
-    url:"/deptcitylist",
+    url:"/deptcitylist1",
     type:"post",
     dataType:"json",
     data:{pId:pid},
@@ -87,11 +103,15 @@ function query(pagenum){
       let str = ''
       for (let i = 0; i < resultData.length; i++) {
         let resultDatum = resultData[i];
+        let state;
         if (resultDatum.deptState==1) {
           resultDatum.deptState="正常"
+          state="注销"
         }else {
-          resultDatum.deptState="不正常"
+          resultDatum.deptState="注销"
+          state="恢复"
         }
+
         str+=`<tr>
           <td>${i+1}</td>
           <td>${resultDatum.deptId}</td>
@@ -99,8 +119,9 @@ function query(pagenum){
           <td>${resultDatum.cname}</td>
           <td>${resultDatum.deptState}</td>
           <td>
-            <a href="deptUpdate.html" class="tablelink">修改</a>
-            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认注销此条信息？')">注销</a>
+            <a href="/deptUpdate/${resultDatum.deptId}" class="tablelink">修改</a>
+            <a href="javascript:void(0)" class="tablelink" onclick="disuse(${resultDatum.deptId},${pageNum})">${state}</a>
+<!--            <a href="javascript:void(0)" class="tablelink" onclick="tipOpen('是否确认注销此条信息？')">注销</a>-->
           </td>
         </tr>`
 
@@ -134,12 +155,14 @@ function query(pagenum){
 $(function () {
   let pageNum = 1
   query(pageNum)
+  //查省份
   queryprovince()
+  //绑定事件根据省份查城市
   $("#proid").blur(function () {
     pid = $("#proid").val().trim()
     querycitys()
   })
-
+  //绑定事件条件查数据
   $("#search").click(function () {
     deptname = $("#deptname").val().trim();
     proid = $("#proid").val().trim();
@@ -165,22 +188,18 @@ $(function () {
       </li>
       <li> 所属区域：
         <select id="proid">
-          <option>请选择省份</option>
-<!--          <option>北京</option>-->
-<!--          <option>江苏</option>-->
-<!--          <option>天津</option>-->
+          <option>请选择</option>
+
         </select>
         <select id="cid">
-          <option>请选择城市</option>
-<!--          <option>北京</option>-->
-<!--          <option>南京</option>-->
-<!--          <option>天津</option>-->
+          <option>请选择</option>
+
         </select>
       </li>
 
 
-      <li class="subBut" onclick="" id="search" ><img src="../../../static/images/t06.png" />查询</li>
-      <li class="subBut" onclick="window.location.href='deptAdd.html'"><img src="../../../static/images/t01.png" />添加</li>
+      <li class="subBut" id="search" ><img src="../../../static/images/t06.png" />查询</li>
+      <li class="subBut" onclick=""><a href="/adddept"> <img src="../../../static/images/t01.png" />添加</a></li>
     </ul>
     <table class="tablelist">
       <thead>

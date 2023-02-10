@@ -1,9 +1,55 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link href="../../../static/css/style.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="../../../static/js/jquery.js"></script>
+  <script>
+    $(function () {
+      function getParameter(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = location.search.substr(1).match(reg);
+        if (r != null) {
+          return (r[2]);
+        }
+        return null;
+      }
+      var parameter = getParameter("firmId");
+      $.ajax({
+        url:"/purchase/findFirm",
+        method:"post",
+        data:{firmId:parameter},
+        success:function (rel) {
+          var firmName = rel.resultData[0].firmName;
+          var firmFounder = rel.resultData[0].firmFounder;
+          var firmTel = rel.resultData[0].firmTel;
+          var firmAddress = rel.resultData[0].firmAddress;
+          var firmCityName = rel.resultData[0].firmCityName;
+          var firmContent = rel.resultData[0].firmContent;
+          var name = rel.resultData[0].createName;
+          var time = rel.resultData[0].createTime;
+          var firmProvinceName = rel.resultData[0].firmProvinceName;
+          var str = '';
+          if (rel.resultData[0].status == "1"){
+            str = "不可用";
+            $("#status").html(str);
+          }else {
+            str = "可用";
+            $("#status").html(str);
+          }
+          str = firmProvinceName + '省' + firmCityName + '市';
+          $("#provinceAndCity").html(str)
+          $("#firmName").html(firmName)
+          $("#firmFounder").html(firmFounder)
+          $("#firmTel").html(firmTel)
+          $("#firmAddress").html(firmAddress)
+          $("#firmContent").html(firmContent)
+          $("#createName").html(name)
+          $("#createTime").html(time)
+        }
+      })
+    })
+  </script>
 </head>
 
 <body>
@@ -19,43 +65,43 @@
   <ul class="forminfo">
     <li>
       <label>厂商名称</label>
-      <cite>阿里巴巴</cite>
+      <cite id="firmName">阿里巴巴</cite>
     </li>
     <li>
       <label>负责人</label>
-      <cite>马云</cite>
+      <cite id="firmFounder">马云</cite>
     </li>
     <li>
       <label>联系方式</label>
-      <cite>17370899727</cite>
+      <cite id="firmTel">17370899727</cite>
     </li>
     <li>
       <label>联系地址</label>
-      <cite>江苏南京苏铺路180号泸州花园7栋3单元1801室</cite>
+      <cite id="firmAddress">江苏南京苏铺路180号泸州花园7栋3单元1801室</cite>
     </li>
     <li>
       <label>所属区域</label>
-      <cite>江苏省南京市</cite>
+      <cite id="provinceAndCity">江苏省南京市</cite>
     </li>
     <li>
       <label>描述</label>
-      <cite>阿里巴巴上市公司</cite>
+      <cite id="firmContent">阿里巴巴上市公司</cite>
     </li>
     <li>
       <label>状态</label>
-      <cite>可用</cite>
+      <cite id="status">可用</cite>
     </li>
     <li>
       <label>创建人</label>
-      <cite>曹操</cite>
+      <cite id="createName">曹操</cite>
     </li>
     <li>
       <label>创建时间</label>
-      <cite>2017-11-18 15:36:10</cite>
+      <cite id="createTime">2017-11-18 15:36:10</cite>
     </li>
     <li>
       <label>&nbsp;</label>
-      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='manufacturerList.html'"/>
+      <input name="" type="button" class="btn" value="返回" onclick="window.location.href='/purchase/manufacturer/flist'"/>
     </li>
   </ul>
 </div>

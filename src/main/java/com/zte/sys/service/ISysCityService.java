@@ -1,9 +1,8 @@
 package com.zte.sys.service;
 
-import com.zte.sys.model.City;
-import com.zte.util.PageModel;
+import com.zte.common.model.City;
 
-import java.util.List;
+import com.zte.util.PageModel;
 
 public interface ISysCityService {
 
