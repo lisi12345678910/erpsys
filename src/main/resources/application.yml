@@ -10,7 +10,7 @@ spring:
   datasource:
     username: root
     password: root
-    url: jdbc:mysql:///erp1
+    url: jdbc:mysql://127.0.0.1:3307/erp1?useSSL=false&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
     initialSize: 10
     minIdle: 1
