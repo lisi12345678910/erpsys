@@ -10,7 +10,6 @@ import com.zte.sys.service.ISysUserService;
 import com.zte.util.PageModel;
 import com.zte.util.ResultMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +24,7 @@ public class SysUserAction {
 
     @Autowired
     private ISysUserService userService;
-    @Autowired
-    private RedisTemplate redisTemplate;
+
 
 
     /**

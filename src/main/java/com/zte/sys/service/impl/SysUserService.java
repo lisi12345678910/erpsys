@@ -98,5 +98,10 @@ public class SysUserService  extends ServiceImpl<ISysUserDao,Users> implements I
         return jobList;
     }
 
+    @Override
+    public Job findjob(Integer i) {
+        return deptDao.getJob(i);
+    }
+
 
 }

@@ -2,7 +2,6 @@ package com.zte.sys.control;
 
 
 import com.zte.common.model.Job;
-import com.zte.logaop.Log;
 import com.zte.login.model.Module;
 import com.zte.sys.model.Dept;
 
@@ -10,7 +9,6 @@ import com.zte.sys.service.ISysPositionService;
 import com.zte.util.PageModel;
 import com.zte.util.ResultMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,16 +24,12 @@ public class SysPositionAction {
 
     @Autowired
     private ISysPositionService positionService;
-    @Autowired
-    private RedisTemplate redisTemplate;
-
-
-
 
     @RequestMapping("/positionlist")
     @ResponseBody
 //    @Log(value = "27",action = "查询职位列表")
     private ResultMessage positionlist(Job job, PageModel<Job> pageModel){
+        System.out.println(positionService);
         PageModel<Job> pageModel1 = positionService.positionlist(job,pageModel);
         ResultMessage resultMessage = new ResultMessage();
         resultMessage.setResultData(pageModel1);
@@ -159,7 +153,7 @@ public class SysPositionAction {
      */
     @RequestMapping("/updatepositionstatus")
     @ResponseBody
-    @Log(value = "27",action = "改变职位状态")
+//    @Log(value = "27",action = "改变职位状态")
     public ResultMessage updatepositionstatus(Integer uId) {
         Boolean aBoolean = positionService.updatepositionstatus(uId);
         ResultMessage resultMessage = new ResultMessage();

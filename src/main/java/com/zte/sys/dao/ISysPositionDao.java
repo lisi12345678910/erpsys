@@ -33,4 +33,6 @@ public interface ISysPositionDao {
 
 
     Job haveornoposition(String jobName);
+
+    Job getJob();
 }

@@ -78,4 +78,5 @@
     <select id="haveornoposition" resultType="com.zte.common.model.Job">
         select * from job where JOB_NAME = #{jobName}
     </select>
+
 </mapper>

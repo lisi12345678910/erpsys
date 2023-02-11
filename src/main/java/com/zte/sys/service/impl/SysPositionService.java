@@ -11,12 +11,14 @@ import com.zte.sys.model.Dept;
 
 import com.zte.sys.service.ISysPositionService;
 import com.zte.util.PageModel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 public class SysPositionService implements ISysPositionService {
     @Autowired
     private ISysPositionDao iSysPositionDao;
@@ -24,6 +26,9 @@ public class SysPositionService implements ISysPositionService {
     private ISysModuleDao moduleDao;
     @Autowired
     private ISysDeptDao deptDao;
+
+
+
 
 
     @Override
@@ -36,6 +41,7 @@ public class SysPositionService implements ISysPositionService {
         pageSize = pageSize <= 0 ? 3 : pageSize;
         PageHelper.startPage(pageNum, pageSize);
         //---------------------------------------
+
         List<Job> jobList = iSysPositionDao.positionlist(job);
         PageInfo<Job> usersPageInfo = new PageInfo<>(jobList);
         //----------------------------------------

@@ -43,4 +43,5 @@
     <select id="haveornodept" resultType="com.zte.sys.model.Dept">
         select  * from dept where DEPT_NAME = #{deptName}
     </select>
+
 </mapper>

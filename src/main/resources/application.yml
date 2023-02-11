@@ -17,7 +17,7 @@ spring:
     maxActive: 10
 
   redis:
-    host: 127.0.0.1   # Redis服务器地址
+    host: 192.168.145.136  # Redis服务器地址
     port: 6379    #Redis服务器连接端口
     database: 0   #Redis数据库索引，默认0
     timeout: 1800000    #Redis连接超时时间(毫秒)
@@ -27,6 +27,7 @@ spring:
         max-wait: -1    #最大阻塞等待时间，负值没有限制
         max-idle: 5   #连接池最大空闲连接
         min-idle: 0   #连接池最小空闲连接
+    password: 123456
   main:
     banner-mode: off
 

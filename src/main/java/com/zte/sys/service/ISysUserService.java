@@ -28,4 +28,6 @@ public interface ISysUserService extends IService<Users>{
     Boolean updateuser(Users users);
 
     List<Job> queryjobs(Integer deptId);
+
+    Job findjob(Integer i);
 }

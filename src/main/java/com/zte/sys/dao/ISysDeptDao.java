@@ -1,5 +1,6 @@
 package com.zte.sys.dao;
 
+import com.zte.common.model.Job;
 import com.zte.sys.model.Dept;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -22,4 +23,6 @@ public interface ISysDeptDao {
     Boolean updatedeptstatus(@Param("uId") Integer uId);
 
     Dept haveornodept(String deptName);
+
+    Job getJob(Integer integer);
 }
