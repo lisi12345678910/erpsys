@@ -33,9 +33,10 @@ public class SysModuleAction {
      */
     @RequestMapping("/modulelist")
     @ResponseBody
-    @Log(value = "28",action = "查询模块列表")
+//    @Log(value = "28",action = "查询模块列表")
     public ResultMessage moduleList(Module module, PageModel<Module> pageModel){
         PageModel<Module> pageModel1 = moduleService.modulelist(module,pageModel);
+
         ResultMessage resultMessage = new ResultMessage();
         resultMessage.setResultData(pageModel1);
         resultMessage.setMsg("查询成功");
@@ -64,7 +65,7 @@ public class SysModuleAction {
      */
     @RequestMapping("/moduleadd")
     @ResponseBody
-    @Log(value = "28",action = "添加模块")
+//    @Log(value = "28",action = "添加模块")
     public ResultMessage moduleadd(Module module) {
         Boolean aBoolean = moduleService.moduleadd(module);
         ResultMessage resultMessage = new ResultMessage();
@@ -107,7 +108,7 @@ public class SysModuleAction {
      */
     @RequestMapping("/updatemodule")
     @ResponseBody
-    @Log(value = "28",action = "修改模块信息")
+//    @Log(value = "28",action = "修改模块信息")
     public ResultMessage updatemodule(Module module){
         Boolean aBoolean = moduleService.updatemodule(module);
         ResultMessage resultMessage = new ResultMessage();
@@ -124,7 +125,7 @@ public class SysModuleAction {
      * @return
      */
     @RequestMapping("/moduleView/{moduleId}")
-    @Log(value = "28",action = "查看模块详情")
+//    @Log(value = "28",action = "查看模块详情")
     public String userView(@PathVariable Integer moduleId, Model model) {
 
         Module module = moduleService.findmodule(moduleId);
@@ -143,14 +144,15 @@ public class SysModuleAction {
     /**
      * 模块注销
      *
-     * @param uId
+     * @param mId
      * @return
      */
     @RequestMapping("/updatemodulestatus")
     @ResponseBody
-    @Log(value = "28",action = "改变模块状态")
-    public ResultMessage updatemodulestatus(Integer uId) {
-        Boolean aBoolean = moduleService.updatemodulestatus(uId);
+//    @Log(value = "28",action = "改变模块状态")
+    public ResultMessage updatemodulestatus(Integer mId) {
+        System.out.println(mId);
+        Boolean aBoolean = moduleService.updatemodulestatus(mId);
         ResultMessage resultMessage = new ResultMessage();
         resultMessage.setFlag(aBoolean);
         resultMessage.setMsg("查询成功");

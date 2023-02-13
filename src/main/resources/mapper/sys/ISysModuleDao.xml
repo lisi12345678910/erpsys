@@ -48,12 +48,14 @@
         select MODULE_ID from module where MODULE_PID
     </select>
 
-    <select id="isfather" resultType="java.lang.Integer">
-        select MODULE_PID from module where MODULE_ID = #{mId}
+    <select id="isfather" resultType="com.zte.login.model.Module">
+        select * from module where MODULE_ID = #{mId}
     </select>
 
     <update id="updatesonmodulestatus">
-        update module set MODULE_STATE = !MODULE_STATE where MODULE_PID = #{integer}
+        <![CDATA[
+        update module set MODULE_STATE = !MODULE_STATE where MODULE_ID = #{integer}
+        ]]>
     </update>
 
     <select id="haveornomodule" resultType="com.zte.login.model.Module">

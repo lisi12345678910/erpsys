@@ -68,15 +68,12 @@ public class SysModuleService extends ServiceImpl<ISysModuleDao, Module> impleme
     public Boolean updatemodulestatus(Integer mId) {
 
 
+        Module module = iSysModuleDao.isfather(mId);
 
-        Integer integer = iSysModuleDao.isfather(mId);
-        if (integer.equals(0)) {
+        iSysModuleDao.updatesonmodulestatus(mId);
+        if (module.getModulePid()==0) {
             //是父模块
-            iSysModuleDao.updatesonmodulestatus(mId);
             iSysModuleDao.updatemodulestatus(mId);
-        }else {
-            //mid不是父模块
-            iSysModuleDao.updatesonmodulestatus(mId);
         }
         return true;
     }

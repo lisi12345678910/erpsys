@@ -16,13 +16,13 @@ function tipClose() {
 }
 
 //模块禁用
-function disuse(uid,pageNum){
+function disuse(mid,pageNum){
 
   $.ajax({
     url:"/updatemodulestatus",
     type:"post",
     dataType:"json",
-    data:{uId:uid},
+    data:{mId:mid},
     success:function (dat) {
       query(pageNum)
     },
@@ -59,7 +59,7 @@ function query(pageNum){
         let resultDatum = resultData[i];
 
         let state;
-        if (resultDatum.moduleState == 1) {
+        if (resultDatum.moduleState === 1) {
           resultDatum.moduleState = "禁用"
           state="恢复"
         } else {

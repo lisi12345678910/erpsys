@@ -1,5 +1,6 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+﻿<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml">-->
+<!DOCTYPE html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>无标题文档</title>
@@ -16,12 +17,12 @@
                     if (data!=null){
                         var str = '';
                         for (let i = 0; i < data.length; i++) {
-                            if (data[i].modulePid == 0){
+                            if (data[i].modulePid === 0){
                                 str += '        <dd>\n' +
                                     '            <div class="title">' + data[i].moduleRname + '</div>\n' +
                                     '            <ul class="menuson">';
                                 for (let j = 0; j < data.length; j++) {
-                                    if (data[j].modulePid == data[i].moduleId){
+                                    if (data[j].modulePid === data[i].moduleId){
                                         str += '                <li><cite></cite><a href="/' + data[j].moduleMurl + '" target="rightFrame">' + data[j].moduleRname + '</a><i></i></li>';
                                     }
                                 }

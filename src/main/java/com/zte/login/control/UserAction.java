@@ -31,13 +31,17 @@ public class UserAction {
     public ResultMessage login(LoginUserCondition condition, String remember, HttpServletResponse response){
         LoginUser loginUser = iLoginService.queryUserByCondition(condition);
         ResultMessage rm = new ResultMessage();
+
         if (loginUser!=null){
             if (loginUser.getStatusId() == 1){
                 List<Module> list = iLoginService.queryPermissionByJob(loginUser);
+
                 if (list!=null){
                     loginUser.setModules(list);
                 }
+
                 redisTemplate.opsForValue().set("loginUser",loginUser);
+
                 rm.setStatus("200");
                 rm.setFlag(true);
                 rm.setMsg("登录成功！");
@@ -59,6 +63,8 @@ public class UserAction {
             rm.setFlag(false);
             rm.setMsg("登录失败，用户名或密码错误！");
         }
+
+
         return rm;
     }
 

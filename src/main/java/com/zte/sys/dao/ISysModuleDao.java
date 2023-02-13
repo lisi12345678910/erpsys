@@ -29,7 +29,7 @@ public interface ISysModuleDao extends BaseMapper<Module> {
 
     List<Integer> sonmoudlelist(Integer uId);
 
-    Integer isfather(Integer mId);
+    Module isfather(Integer mId);
 
     void updatesonmodulestatus(@Param("integer")Integer integer);
 
